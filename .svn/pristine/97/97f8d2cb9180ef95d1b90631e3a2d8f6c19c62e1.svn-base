@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DstoreExtendMapper">
+
+    <resultMap id="RMDstoreExtend" type="com.royao.model.DstoreExtend">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="accounts" column="accounts"/>
+        <result property="accountsNo" column="accounts_no"/>
+        <result property="accountHolder" column="account_holder"/>
+        <result property="serviceRatio" column="service_ratio"/>
+        <result property="serviceRatio1" column="service_ratio1"/>
+        <result property="serviceRatio2" column="service_ratio2"/>
+        <result property="serviceRatio3" column="service_ratio3"/>
+        <result property="serviceRatio4" column="service_ratio4"/>
+        <result property="serviceRatio5" column="service_ratio5"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		id,store_id,accounts,accounts_no,account_holder,service_ratio,service_ratio1,service_ratio2,service_ratio3,service_ratio4,service_ratio5
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_store_extend (
+        	id ,
+        	store_id ,
+        	accounts ,
+        	accounts_no ,
+        	account_holder ,
+        	service_ratio ,
+        	service_ratio1 ,
+        	service_ratio2 ,
+        	service_ratio3 ,
+        	service_ratio4 ,
+        	service_ratio5 
+        ) VALUES (
+        	#{id} ,
+        	#{storeId} ,
+        	#{accounts} ,
+        	#{accountsNo} ,
+        	#{accountHolder} ,
+        	#{serviceRatio} ,
+        	#{serviceRatio1} ,
+        	#{serviceRatio2} ,
+        	#{serviceRatio3} ,
+        	#{serviceRatio4} ,
+        	#{serviceRatio5} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_store_extend SET
+	        store_id = #{storeId} ,
+	        accounts = #{accounts} ,
+	        accounts_no = #{accountsNo} ,
+	        account_holder = #{accountHolder} ,
+	        service_ratio = #{serviceRatio} ,
+	        service_ratio1 = #{serviceRatio1} ,
+	        service_ratio2 = #{serviceRatio2} ,
+	        service_ratio3 = #{serviceRatio3} ,
+	        service_ratio4 = #{serviceRatio4} ,
+	        service_ratio5 = #{serviceRatio5} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_store_extend WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDstoreExtend">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_store_extend 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_store_extend where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_extend
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDstoreExtend">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_extend
+    </select>
+
+
+    <select id="queryByStoreId" resultMap="RMDstoreExtend">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_extend where store_id = #{0}
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDstoreExtend">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_extend
+
+        <where>
+            <if test="@Ognl@isNotEmpty(id)">
+                AND id = #{id}
+            </if>
+            <if test="@Ognl@isNotEmpty(storeId)">
+                AND store_id = #{storeId}
+            </if>
+            <if test="@Ognl@isNotEmpty(accounts)">
+                AND accounts = #{accounts}
+            </if>
+            <if test="@Ognl@isNotEmpty(accountsNo)">
+                AND accounts_no = #{accountsNo}
+            </if>
+            <if test="@Ognl@isNotEmpty(accountHolder)">
+                AND account_holder = #{accountHolder}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio)">
+                AND service_ratio = #{serviceRatio}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio1)">
+                AND service_ratio1 = #{serviceRatio1}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio2)">
+                AND service_ratio2 = #{serviceRatio2}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio3)">
+                AND service_ratio3 = #{serviceRatio3}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio4)">
+                AND service_ratio4 = #{serviceRatio4}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio5)">
+                AND service_ratio5 = #{serviceRatio5}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

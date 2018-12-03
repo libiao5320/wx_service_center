@@ -1,0 +1,14 @@
+package com.royao.services.inface;
+
+import java.util.List;
+
+import com.royao.model.Dkiting;
+import com.royao.services.base.BaseService;
+
+public interface DkitingService extends BaseService<Dkiting>{
+
+	Integer plistWithPageCount(Dkiting kiting) throws Exception;
+
+	List<Dkiting> plistWithPage(Dkiting kiting) throws Exception;
+
+}

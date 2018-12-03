@@ -1,0 +1,11 @@
+package com.royao.services.inface;
+
+import java.util.List;
+
+import com.royao.model.DmemberRemark;
+
+public interface DmemberRemarkService {
+
+	List<DmemberRemark> findList(DmemberRemark remark);
+
+}

@@ -1,0 +1,226 @@
+package com.royao.pctrl;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dcomplain;
+import com.royao.model.Devaluate;
+import com.royao.model.Dmember;
+import com.royao.model.Dorder;
+import com.royao.model.Drefund;
+import com.royao.model.Dstore;
+import com.royao.model.Order;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DbalanceLogsService;
+import com.royao.services.inface.DevaluateService;
+import com.royao.services.inface.DmemberService;
+import com.royao.services.inface.DorderService;
+import com.royao.services.inface.DrefundService;
+import com.royao.util.JsonUtil;
+
+/**
+ * 未付余款管理
+ * @author wangya
+ *
+ */
+
+@Controller
+@RequestMapping("/p_Dorder")
+public class PDorder {
+	private static final Map<?, ?> Map = null;
+
+
+	private Logger loger  = Logger.getLogger(this.getClass());
+	
+	
+	@Autowired
+	private DorderService dorderService;
+	
+	@Autowired
+	private DevaluateService evaluateService;
+	
+	@Autowired
+	private DmemberService userService;
+	
+	@Autowired
+	private DbalanceLogsService logsService;
+	
+
+	/**
+	 * p端订单管理(未付余额管理)
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+
+	@ResponseBody
+	@RequestMapping("/plist.htm")
+	public String plist(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?> params = requestContent.getBody();
+		
+		int page = Integer.parseInt(params.get("page").toString());
+		int size = 10;
+		if(null != params.get("size")){
+			size = Integer.parseInt(params.get("size").toString());
+		}
+		params.remove("page");
+		params.remove("size");
+		PageObject p = new PageObject();
+		p.setPageNo(page);
+		p.setPageSize(size);
+		Dorder or = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		or.setPageInfo(p);
+		try {
+			List<Dorder> ors = this.dorderService.DqueryAllOrderBy(or);
+			result.put("rows", ors);
+			Long total = this.dorderService.DqueryAllOrderByCount(or);
+			result.put("total", total);
+			/*result.put("rows", page);
+			result.put("size",size);*/
+			try {
+				responseContent = ResponseHandler.makeResponse(result, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+
+	
+	/**
+	 * 退款申请管理
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	
+
+	@ResponseBody
+	@RequestMapping("/plist1.htm")
+	public String plist1(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?> params = requestContent.getBody();
+		
+		int page = Integer.parseInt(params.get("page").toString());
+		int size = 10;
+		if(null != params.get("size")){
+			size = Integer.parseInt(params.get("size").toString());
+		}
+		params.remove("page");
+		params.remove("size");
+		PageObject p = new PageObject();
+		p.setPageNo(page);
+		p.setPageSize(size);
+		Dorder or = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		or.setPageInfo(p);
+		try {
+			List<Dorder> ors = this.dorderService.TqueryAllOrderBy(or);
+			result.put("rows", ors);
+			Long total = this.dorderService.TqueryAllOrderByCount(or);
+			result.put("total", total);
+			
+			
+			
+			try {
+				responseContent = ResponseHandler.makeResponse(result, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+
+
+	
+	
+	/**
+	 * 退款申请
+	 *
+	 */
+	
+	@ResponseBody
+	@RequestMapping("/detail.htm")
+	public String detail(HttpServletRequest request,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+       RequestContent requestContent = RequestHandler.execute(request);
+        
+        Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?>  map = requestContent.getBody();
+        
+		
+		Dorder  dorder= JSON.parseObject(JsonUtil.map2json(map), Dorder.class);
+        try {
+        	
+        	List<Map> ors= this.dorderService.RqueryAllOrderByCount(dorder);
+        	result.put("rows",ors);
+        	
+        	responseContent = ResponseHandler.makeResponse(result, true);
+		} catch (Exception e) {
+			loger.info("退款申请失败", e);
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+
+	
+	/**
+	 * 更新处理退款请求
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/update.htm")
+	public String update(HttpServletRequest request,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        
+        Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?>  map = requestContent.getBody();
+		
+        
+		
+		Dorder or = JSON.parseObject(JsonUtil.map2json(map), Dorder.class);
+        try {
+        	int ors = this.dorderService.updateOrderStateByOrderId(or);
+        	result.put("state",ors);
+        	
+        	responseContent = ResponseHandler.makeResponse(result, true);
+		} catch (Exception e) {
+			loger.info("退款申请失败", e);
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+}

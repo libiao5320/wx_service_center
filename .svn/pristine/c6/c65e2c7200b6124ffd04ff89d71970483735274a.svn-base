@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DredpacketsMapper">
+
+	<resultMap id="RMDredpackets" type="com.royao.model.Dredpackets">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="type" column="type"/>
+        <result property="quantity" column="quantity"/>
+        <result property="singleAmount" column="single_amount"/>
+        <result property="amount" column="amount"/>
+        <result property="validityTime" column="validity_time"/>
+        <result property="mountingTime" column="mounting_time"/>
+        <result property="reduceTime" column="reduce_time"/>
+        <result property="status" column="status"/>
+        <result property="orderBy" column="order_by"/>
+        <result property="remark" column="remark"/>
+        <result property="receive" column="receive"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,name,type,quantity,single_amount,amount,validity_time,mounting_time,reduce_time,status,order_by,remark,receive,create_time,create_by,update_time,update_by
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO d_redpackets (
+        	id ,
+        	name ,
+        	type ,
+        	quantity ,
+        	single_amount ,
+        	amount ,
+        	validity_time ,
+        	mounting_time ,
+        	reduce_time ,
+        	status ,
+        	order_by ,
+        	remark ,
+        	receive ,
+        	create_time ,
+        	create_by ,
+        	update_time ,
+        	update_by 
+        ) VALUES (
+        	#{id} ,
+        	#{name} ,
+        	#{type} ,
+        	#{quantity} ,
+        	#{singleAmount} ,
+        	#{amount} ,
+        	#{validityTime} ,
+        	#{mountingTime} ,
+        	#{reduceTime} ,
+        	#{status} ,
+        	#{orderBy} ,
+        	#{remark} ,
+        	#{receive} ,
+        	#{createTime} ,
+        	#{createBy} ,
+        	#{updateTime} ,
+        	#{updateBy} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_redpackets SET
+	        name = #{name} ,
+	        type = #{type} ,
+	        quantity = #{quantity} ,
+	        single_amount = #{singleAmount} ,
+	        amount = #{amount} ,
+	        validity_time = #{validityTime} ,
+	        mounting_time = #{mountingTime} ,
+	        reduce_time = #{reduceTime} ,
+	        status = #{status} ,
+	        order_by = #{orderBy} ,
+	        remark = #{remark} ,
+	        receive = #{receive} ,
+	        create_time = #{createTime} ,
+	        create_by = #{createBy} ,
+	        update_time = #{updateTime} ,
+	        update_by = #{updateBy} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_redpackets WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDredpackets">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM d_redpackets 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_redpackets where 1=1
+
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+    	SELECT <include refid="columns" />
+	    FROM d_redpackets 
+		where 1=1 
+		limit #begin# , #end#
+    </select>
+	
+	
+	
+	  <select id="queryAll" resultMap="RMDredpackets">
+    	SELECT <include refid="columns" />
+	    FROM d_redpackets 
+	  </select>
+	  
+	    <select id="queryByCondition" resultMap="RMDredpackets">
+    	SELECT <include refid="columns" />
+	    FROM d_redpackets 
+		
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(name)">
+				AND name = #{name}
+			</if>
+	       <if test="@Ognl@isNotEmpty(type)">
+				AND type = #{type}
+			</if>
+	       <if test="@Ognl@isNotEmpty(quantity)">
+				AND quantity = #{quantity}
+			</if>
+	       <if test="@Ognl@isNotEmpty(singleAmount)">
+				AND single_amount = #{singleAmount}
+			</if>
+	       <if test="@Ognl@isNotEmpty(amount)">
+				AND amount = #{amount}
+			</if>
+	       <if test="@Ognl@isNotEmpty(validityTimeBegin)">
+				AND validity_time >= #{validityTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(validityTimeEnd)">
+				AND validity_time &lt;= #{validityTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(mountingTimeBegin)">
+				AND mounting_time >= #{mountingTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(mountingTimeEnd)">
+				AND mounting_time &lt;= #{mountingTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(reduceTimeBegin)">
+				AND reduce_time >= #{reduceTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(reduceTimeEnd)">
+				AND reduce_time &lt;= #{reduceTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(status)">
+				AND status = #{status}
+			</if>
+	       <if test="@Ognl@isNotEmpty(orderBy)">
+				AND order_by = #{orderBy}
+			</if>
+	       <if test="@Ognl@isNotEmpty(remark)">
+				AND remark = #{remark}
+			</if>
+	       <if test="@Ognl@isNotEmpty(receive)">
+				AND receive = #{receive}
+			</if>
+	       <if test="@Ognl@isNotEmpty(createTimeBegin)">
+				AND create_time >= #{createTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+				AND create_time &lt;= #{createTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(createBy)">
+				AND create_by = #{createBy}
+			</if>
+	       <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+				AND update_time >= #{updateTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+				AND update_time &lt;= #{updateTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateBy)">
+				AND update_by = #{updateBy}
+			</if>
+		</where>
+	  </select>
+
+	
+</mapper>
+

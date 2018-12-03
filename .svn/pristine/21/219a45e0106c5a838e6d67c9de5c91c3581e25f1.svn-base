@@ -1,0 +1,220 @@
+package com.royao.pctrl;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Devaluate;
+import com.royao.model.Dorder;
+import com.royao.model.Order;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DevaluateService;
+import com.royao.services.inface.DorderService;
+import com.royao.util.JsonUtil;
+
+
+@Controller
+@RequestMapping("/pc_order")
+public class PcOrderCtrl {
+	
+	@Autowired
+	private DorderService dorderService;
+	
+	@Autowired
+	private DevaluateService evaluateService;
+	
+	/**
+	 * p端订单管理
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/p_list.htm")
+	public String p_list(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?> params = requestContent.getBody();
+		
+		int page = Integer.parseInt(params.get("page").toString());
+		int size = 10;
+		if(null != params.get("size")){
+			size = Integer.parseInt(params.get("size").toString());
+		}
+		params.remove("page");
+		params.remove("size");
+		PageObject p = new PageObject();
+		p.setPageNo(page);
+		p.setPageSize(size);
+		Order or = JSON.parseObject(JsonUtil.map2json(params), Order.class);
+		or.setPageInfo(p);
+		try {
+			List<Dorder> ors = this.dorderService.queryAllOrderBy(or);
+			result.put("data", ors);
+			Long total = this.dorderService.queryAllOrderByCount(or);
+			result.put("total", total);
+			result.put("rows", page);
+			result.put("size",size);
+			try {
+				responseContent = ResponseHandler.makeResponse(result, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	
+	/**
+	 * 订单
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/detail.htm")
+	public String detail(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+		
+		Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?> params = requestContent.getBody();
+		if(null != params && params.size() > 0){
+			String id = params.get("id").toString();
+			try {
+				Dorder dod = this.dorderService.queryById(Long.parseLong(id));
+				result.put("order", dod);
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	
+	/**
+	 * 订单评价列表
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/evaluate.htm")
+	public String evaluate(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?> params = requestContent.getBody();
+		
+		int page = Integer.parseInt(params.get("page").toString());
+		int size = 10;
+		if(null != params.get("size")){
+			size = Integer.parseInt(params.get("size").toString());
+		}
+		params.remove("page");
+		params.remove("size");
+		PageObject p = new PageObject();
+		p.setPageNo(page);
+		p.setPageSize(size);
+		Order or = JSON.parseObject(JsonUtil.map2json(params), Order.class);
+		or.setPageInfo(p);
+		
+		try {
+			List<Devaluate>  list = this.evaluateService.query(or);
+			List<Map<String,Object>> rs = new ArrayList<Map<String,Object>>();
+			for (Devaluate ate : list) {
+				Map<String,Object> map = new HashMap<String, Object>();
+				map.put("id", ate.getId());
+				map.put("orderSn",ate.getOrder().getOrderSn());
+				map.put("goodsName", ate.getOrder().getGoodsName());
+				map.put("userName",ate.getMember().getMemberName());
+				map.put("storeName",ate.getOrder().getStoreName());
+				map.put("time", ate.getCreateTime());
+				map.put("grade",ate.getGrade());
+				map.put("text", ate.getDetail());
+				rs.add(map);
+			}
+			Long total = this.evaluateService.queryCount(or);
+			result.put("rows", rs);
+			result.put("total", total);
+			try {
+				responseContent = ResponseHandler.makeResponse(result, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	
+	/**
+	 * 评价拒绝
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/updateShow.htm")
+	public String updateShow(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<String,Object>  result = new HashMap<String, Object>();
+		
+		Map<?,?> params = requestContent.getBody();
+		
+		String returnMsg="PARAMS_IS_NULL";
+		
+		if(null != params){
+			try {
+				Devaluate  evaluate = this.evaluateService.queryById(Long.parseLong(params.get("id").toString()));
+				evaluate.setIsShow("N");
+				try {
+					this.evaluateService.update(evaluate);
+					returnMsg = "SUCCESS";
+				} catch (Exception e) {
+					e.printStackTrace();
+					returnMsg = "UPDATE_EVALUATE_FAIL";
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				returnMsg="QUERY_EVALUATE_FAIL";
+			}
+		}
+		result.put("returnMsg", returnMsg);
+		
+		try {
+			responseContent = ResponseHandler.makeResponse(result, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return JSONObject.toJSONString(responseContent);
+	}
+}

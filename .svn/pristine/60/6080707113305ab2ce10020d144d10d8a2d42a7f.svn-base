@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DstoreManagerMapper">
+
+    <resultMap id="RMDstoreManager" type="com.royao.model.DstoreManager">
+        <result property="smId" column="sm_id"/>
+        <result property="smStoreId" column="sm_store_id"/>
+        <result property="smStoreName" column="sm_store_name"/>
+        <result property="smName" column="sm_name"/>
+        <result property="smPhone" column="sm_phone"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		sm_id,sm_store_id,sm_store_name,sm_name,sm_phone
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="smId">
+        <![CDATA[
+        INSERT INTO d_store_manager (
+        	sm_id ,
+        	sm_store_id ,
+        	sm_store_name ,
+        	sm_name ,
+        	sm_phone 
+        ) VALUES (
+        	#{smId} ,
+        	#{smStoreId} ,
+        	#{smStoreName} ,
+        	#{smName} ,
+        	#{smPhone} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_store_manager SET
+	        sm_store_id = #{smStoreId} ,
+	        sm_store_name = #{smStoreName} ,
+	        sm_name = #{smName} ,
+	        sm_phone = #{smPhone} 
+        WHERE 
+	        sm_id = #{smId} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_store_manager WHERE
+        sm_id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDstoreManager">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_store_manager 
+	        WHERE 
+		        sm_id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_store_manager where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_manager
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDstoreManager">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_manager
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDstoreManager">
+        SELECT
+        <include refid="columns"/>
+        FROM d_store_manager
+
+        <where>
+            <if test="@Ognl@isNotEmpty(smId)">
+                AND sm_id = #{smId}
+            </if>
+            <if test="@Ognl@isNotEmpty(smStoreId)">
+                AND sm_store_id = #{smStoreId}
+            </if>
+            <if test="@Ognl@isNotEmpty(smStoreName)">
+                AND sm_store_name = #{smStoreName}
+            </if>
+            <if test="@Ognl@isNotEmpty(smName)">
+                AND sm_name = #{smName}
+            </if>
+            <if test="@Ognl@isNotEmpty(smPhone)">
+                AND sm_phone = #{smPhone}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

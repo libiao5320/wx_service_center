@@ -1,0 +1,65 @@
+package com.royao.http;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.model.base.BaseEntity;
+import com.royao.util.DateUtil;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by libia on 2016/1/4.
+ */
+public class ResponseHandler {
+
+	private static final String SUCCESSCODE = "200";
+	private static final String FAILCODE = "500";
+   
+
+    private static final String SUCCESS = "SUCCESS"; // 接口请求成功
+
+    private static final String INVALID_REQUEST = "INVALID_REQUEST"; // 无效的接口请求
+
+   public static ResponseContent makeResponse(Object result , boolean flag ) throws Exception {
+
+	   ResponseContent responseContent  = new ResponseContent();
+	   ResponseHead responseHead = new ResponseHead();
+
+       JSON json = null;
+       if( result instanceof List)
+       {
+           json =  JSONArray.parseArray(JSONArray.toJSONString(result));
+       }
+       else if(result instanceof BaseEntity)
+       {
+           json =  JSON.parseObject(JSONObject.toJSONString(result));
+       }
+       else
+       {
+           json = JSON.parseObject(JSONObject.toJSONString(result));
+       }
+
+       if ( result != null ) {
+           responseContent.setBody(json);
+       } else {
+           throw new Exception("接口返回报错");
+       }
+
+       if( flag  ) {
+           responseHead.setResultCode(SUCCESSCODE);
+           responseHead.setDescription(SUCCESS);
+       }
+       else
+       {
+           responseHead.setResultCode(FAILCODE);
+           responseHead.setDescription(INVALID_REQUEST);
+       }
+       responseHead.setResponseTime(DateUtil.format("yyyyMMddHHmmss", DateUtil.current()));
+       responseContent.setHead(responseHead);
+
+       return responseContent;
+
+   }
+}

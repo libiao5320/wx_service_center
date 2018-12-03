@@ -1,0 +1,433 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2016
+ */
+
+package com.royao.model;
+
+import java.util.Date;
+
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+public class Dorder extends BaseEntity implements java.io.Serializable {
+	private static final long serialVersionUID = 5454155825314635342L;
+
+	public static final String TABLE_ALIAS = "Dorder";
+	public static final String ALIAS_ORDER_ID = "订单索引id";
+	public static final String ALIAS_ORDER_SN = "订单编号";
+	public static final String ALIAS_PAY_SN = "支付单号";
+	public static final String ALIAS_STORE_ID = "卖家店铺id";
+	public static final String ALIAS_STORE_NAME = "卖家店铺名称";
+	public static final String ALIAS_BUYER_ID = "买家id";
+	public static final String ALIAS_BUYER_NAME = "买家姓名";
+	public static final String ALIAS_GOODS_ID = "产品id";
+	public static final String ALIAS_GOODS_NAME = "产品名称";
+	public static final String ALIAS_GOODS_NUM = "产品数量";
+	public static final String ALIAS_ADD_TIME = "订单生成时间";
+	public static final String ALIAS_PAYMENT_CODE = "支付方式名称代码";
+	public static final String ALIAS_PAYMENT_TIME = "支付(付款)时间";
+	public static final String ALIAS_FINNSHED_TIME = "订单完成时间";
+	public static final String ALIAS_ORDER_AMOUNT = "订单价格";
+	public static final String ALIAS_COUPON_ID = "优惠券id";
+	public static final String ALIAS_COUPON_AMOUNT = "优惠券金额";
+	public static final String ALIAS_RCB_ID = "rcbId";
+	public static final String ALIAS_RCB_AMOUNT = "红包支付金额";
+	public static final String ALIAS_GOODS_LITPIC = "产品图片";
+	public static final String ALIAS_ORDER_STATE = "订单状态：";
+	public static final String ALIAS_LOCK_STATE = "锁定状态:0是正常,大于0是锁定,默认是0";
+	public static final String ALIAS_DELETE_STATE = "删除状态0未删除1放入回收站2彻底删除";
+	public static final String ALIAS_REFUND_AMOUNT = "退款金额";
+	public static final String ALIAS_DELAY_TIME = "延迟时间,默认为0";
+	public static final String ALIAS_ORDER_FROM = "1WEB2mobile";
+	public static final String ALIAS_ORDER_TYPE = "订单类型1普通订单(默认),2预定订单";
+	public static final String ALIAS_REMARK = "备注";
+
+	// 可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+	// columns START
+
+	private java.lang.Integer orderId;
+	private java.lang.Long orderSn;
+
+	private java.lang.Long paySn;
+
+	private java.lang.Integer storeId;
+
+	private java.lang.String storeName;
+
+	private java.lang.Long memberId;
+
+	private java.lang.String memberName;
+
+	private java.lang.Long goodsId;
+
+	private java.lang.String goodsName;
+
+	private java.lang.Long goodsNum;
+
+	private java.util.Date addTime;
+
+	private java.lang.String paymentCode;
+
+	private java.util.Date paymentTime;
+
+	private java.util.Date finnshedTime;
+
+	private java.lang.Long orderAmount;
+
+	private java.lang.Long couponId;
+
+	private java.lang.Long couponAmount;
+
+	private java.lang.Long rcbId;
+
+	private java.lang.Long rcbAmount;
+
+	private String goodsLitpic;
+
+	private Integer orderState;
+
+	private Integer lockState;
+
+	private Integer deleteState;
+
+	private java.lang.Long refundAmount;
+
+	private java.util.Date delayTime;
+
+	private Integer orderFrom;
+
+	private Integer orderType;
+	private String remark;
+
+	private Long bookDownPayment;
+
+	private Long bookFinalPayment;
+
+	private String qrCode;
+
+	private Date verifyConsumptionTime;
+
+	private String verifyConsumptionPerson;
+	
+	
+	private String mTrueName;//'订单附加信息真实姓名',
+	private String mMobile;//'订单附加信息电话',
+	private String mDate;//'订单附加信息日期',
+	private String mAddress;// '订单附加信息地址',
+
+	// columns END
+
+	
+	
+	public Long getBookDownPayment() {
+		return bookDownPayment;
+	}
+
+	public String getmTrueName() {
+		return mTrueName;
+	}
+
+	public void setmTrueName(String mTrueName) {
+		this.mTrueName = mTrueName;
+	}
+
+	public String getmMobile() {
+		return mMobile;
+	}
+
+	public void setmMobile(String mMobile) {
+		this.mMobile = mMobile;
+	}
+
+	public String getmDate() {
+		return mDate;
+	}
+
+	public void setmDate(String mDate) {
+		this.mDate = mDate;
+	}
+
+	public String getmAddress() {
+		return mAddress;
+	}
+
+	public void setmAddress(String mAddress) {
+		this.mAddress = mAddress;
+	}
+
+	public void setBookDownPayment(Long bookDownPayment) {
+		this.bookDownPayment = bookDownPayment;
+	}
+
+	public Long getBookFinalPayment() {
+		return bookFinalPayment;
+	}
+
+	public void setBookFinalPayment(Long bookFinalPayment) {
+		this.bookFinalPayment = bookFinalPayment;
+	}
+
+	public Dorder() {
+	}
+
+	public Dorder(java.lang.Integer orderId) {
+		this.orderId = orderId;
+	}
+
+	public void setOrderId(java.lang.Integer value) {
+		this.orderId = value;
+	}
+
+	public java.lang.Integer getOrderId() {
+		return this.orderId;
+	}
+
+	public void setOrderSn(java.lang.Long value) {
+		this.orderSn = value;
+	}
+
+	public java.lang.Long getOrderSn() {
+		return this.orderSn;
+	}
+
+	public void setPaySn(java.lang.Long value) {
+		this.paySn = value;
+	}
+
+	public java.lang.Long getPaySn() {
+		return this.paySn;
+	}
+
+	public void setStoreId(java.lang.Integer value) {
+		this.storeId = value;
+	}
+
+	public java.lang.Integer getStoreId() {
+		return this.storeId;
+	}
+
+	public void setStoreName(java.lang.String value) {
+		this.storeName = value;
+	}
+
+	public java.lang.String getStoreName() {
+		return this.storeName;
+	}
+
+	public java.lang.Long getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(java.lang.Long memberId) {
+		this.memberId = memberId;
+	}
+
+	public java.lang.String getMemberName() {
+		return memberName;
+	}
+
+	public void setMemberName(java.lang.String memberName) {
+		this.memberName = memberName;
+	}
+
+	public void setGoodsId(java.lang.Long value) {
+		this.goodsId = value;
+	}
+
+	public java.lang.Long getGoodsId() {
+		return this.goodsId;
+	}
+
+	public void setGoodsName(java.lang.String value) {
+		this.goodsName = value;
+	}
+
+	public java.lang.String getGoodsName() {
+		return this.goodsName;
+	}
+
+	public void setGoodsNum(java.lang.Long value) {
+		this.goodsNum = value;
+	}
+
+	public java.lang.Long getGoodsNum() {
+		return this.goodsNum;
+	}
+
+	public void setAddTime(java.util.Date value) {
+		this.addTime = value;
+	}
+
+	public java.util.Date getAddTime() {
+		return this.addTime;
+	}
+
+	public void setPaymentCode(java.lang.String value) {
+		this.paymentCode = value;
+	}
+
+	public java.lang.String getPaymentCode() {
+		return this.paymentCode;
+	}
+
+	public void setPaymentTime(java.util.Date value) {
+		this.paymentTime = value;
+	}
+
+	public java.util.Date getPaymentTime() {
+		return this.paymentTime;
+	}
+
+	public void setFinnshedTime(java.util.Date value) {
+		this.finnshedTime = value;
+	}
+
+	public java.util.Date getFinnshedTime() {
+		return this.finnshedTime;
+	}
+
+	public void setOrderAmount(java.lang.Long value) {
+		this.orderAmount = value;
+	}
+
+	public java.lang.Long getOrderAmount() {
+		return this.orderAmount;
+	}
+
+	public void setCouponId(java.lang.Long value) {
+		this.couponId = value;
+	}
+
+	public java.lang.Long getCouponId() {
+		return this.couponId;
+	}
+
+	public void setCouponAmount(java.lang.Long value) {
+		this.couponAmount = value;
+	}
+
+	public java.lang.Long getCouponAmount() {
+		return this.couponAmount;
+	}
+
+	public void setRcbId(java.lang.Long value) {
+		this.rcbId = value;
+	}
+
+	public java.lang.Long getRcbId() {
+		return this.rcbId;
+	}
+
+	public void setRcbAmount(java.lang.Long value) {
+		this.rcbAmount = value;
+	}
+
+	public java.lang.Long getRcbAmount() {
+		return this.rcbAmount;
+	}
+
+	public String getGoodsLitpic() {
+		return goodsLitpic;
+	}
+
+	public void setGoodsLitpic(String goodsLitpic) {
+		this.goodsLitpic = goodsLitpic;
+	}
+
+	public void setOrderState(Integer value) {
+		this.orderState = value;
+	}
+
+	public Integer getOrderState() {
+		return this.orderState;
+	}
+
+	public void setLockState(Integer value) {
+		this.lockState = value;
+	}
+
+	public Integer getLockState() {
+		return this.lockState;
+	}
+
+	public void setDeleteState(Integer value) {
+		this.deleteState = value;
+	}
+
+	public Integer getDeleteState() {
+		return this.deleteState;
+	}
+
+	public void setRefundAmount(java.lang.Long value) {
+		this.refundAmount = value;
+	}
+
+	public java.lang.Long getRefundAmount() {
+		return this.refundAmount;
+	}
+
+	public void setDelayTime(java.util.Date value) {
+		this.delayTime = value;
+	}
+
+	public java.util.Date getDelayTime() {
+		return this.delayTime;
+	}
+
+	public void setOrderFrom(Integer value) {
+		this.orderFrom = value;
+	}
+
+	public Integer getOrderFrom() {
+		return this.orderFrom;
+	}
+
+	public void setOrderType(Integer value) {
+		this.orderType = value;
+	}
+
+	public Integer getOrderType() {
+		return this.orderType;
+	}
+
+	public void setRemark(java.lang.String value) {
+		this.remark = value;
+	}
+
+	public java.lang.String getRemark() {
+		return this.remark;
+	}
+
+	public String getQrCode() {
+		return qrCode;
+	}
+
+	public void setQrCode(String qrCode) {
+		this.qrCode = qrCode;
+	}
+
+	public Date getVerifyConsumptionTime() {
+		return verifyConsumptionTime;
+	}
+
+	public void setVerifyConsumptionTime(Date verifyConsumptionTime) {
+		this.verifyConsumptionTime = verifyConsumptionTime;
+	}
+
+	public String getVerifyConsumptionPerson() {
+		return verifyConsumptionPerson;
+	}
+
+	public void setVerifyConsumptionPerson(String verifyConsumptionPerson) {
+		this.verifyConsumptionPerson = verifyConsumptionPerson;
+	}
+
+}

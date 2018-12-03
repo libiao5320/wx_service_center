@@ -1,0 +1,14 @@
+package com.royao.mapper;
+
+import java.util.List;
+
+import com.royao.db.BaseDao;
+import com.royao.model.Dkiting;
+
+public interface DkitingMapper extends BaseDao<Dkiting>{
+
+	Integer plistWithPageCount(Dkiting kiting);
+
+	List<Dkiting> plistWithPage(Dkiting t);
+
+}

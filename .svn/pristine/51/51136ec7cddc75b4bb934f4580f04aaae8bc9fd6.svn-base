@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DstoreTextMapper">
+	<resultMap id="RMDstoreText" type="com.royao.model.DstoreText">
+        <result property="id" column="id"/>
+        <result property="text" column="text"/>
+    </resultMap>
+    
+    <sql id="columns">
+        <![CDATA[
+		id,text
+	    ]]>
+    </sql>
+    
+    <select id="queryById" resultMap="RMDstoreText">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_store_text 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+</mapper>

@@ -1,0 +1,192 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+package com.royao.services.impl;
+
+import com.royao.commons.enums.RedpacketsStatus;
+import com.royao.mapper.DorderMapper;
+import com.royao.mapper.DredpacketsDistributeMapper;
+import com.royao.mapper.DredpacketsMapper;
+import com.royao.model.Dorder;
+import com.royao.model.Dredpackets;
+import com.royao.model.DredpacketsDistribute;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DmemberService;
+import com.royao.services.inface.DorderService;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+@Service("orderServiceImpl")
+public class DorderServiceImpl extends BaseServiceImpl<Dorder> implements DorderService {
+
+    @Autowired
+    private DorderMapper dorderMapper;
+    
+    
+    @Autowired
+    private DredpacketsMapper dredpacketsMapper;
+    
+    @Autowired
+    private DmemberService dmemberservice; 
+    
+    
+    @Autowired
+    private DredpacketsDistributeMapper dredpacketsdistributeMapper;
+
+    public int save(Dorder dorder) throws Exception {
+        return dorderMapper.save(dorder);
+    }
+
+    public int update(Dorder dorder) throws Exception {
+        return dorderMapper.update(dorder);
+    }
+
+    public int delete(Long id) throws Exception {
+        return dorderMapper.delete(id);
+    }
+
+    public Dorder queryById(Long id) throws Exception {
+        return dorderMapper.queryById(id);
+    }
+
+    public List<Dorder> queryByCondtion(Map map) throws Exception {
+        return dorderMapper.queryByCondtion(map);
+    }
+
+    public List<Dorder> queryAll() throws Exception {
+        return dorderMapper.queryAll();
+    }
+
+    public List<Dorder> listWithPage(Dorder t) throws Exception {
+        return null;
+    }
+
+    @Cacheable(value = "myCache", key = "#dorder")
+    public List queryByUser(Dorder dorder) throws Exception {
+        return dorderMapper.queryByUser(dorder);
+    }
+
+    public Integer queryOrderCountByUserId(Long memId) throws Exception {
+        return dorderMapper.queryOrderCountByUserId(memId);
+    }
+
+    public Map queryDifferentStatusOrderCountByUserId(Long memId) throws Exception {
+        return dorderMapper.queryDifferentStatusOrderCountByUserId(memId);
+    }
+
+	public void setOrderStatus(Integer  orderState,Long paySn,String paymentTime,String finnshedTime) throws SQLException {
+         this.dorderMapper.setOrderStatus(orderState,paySn,paymentTime,finnshedTime);		
+	}
+
+	public List<Dorder> queryByPaySn(Integer orderState,Long paySn) throws SQLException {
+		
+		return dorderMapper.queryByPaySn(orderState, paySn);
+	}
+
+	public List<Dorder> getByGoodsdelaytime(Dorder or) throws SQLException {
+		return this.dorderMapper.getByGoodsdelaytime(or);
+	}
+
+	public List<Dorder> getByTimeId(Dorder or) throws SQLException {
+		return this.dorderMapper.getByTimeId(or);
+	}
+	
+	
+	/**
+	 * 订单公共流程(红包)实现方法
+	 * orderId
+	 */
+	public String commonRedOrder(Dorder dorder) throws SQLException {
+		String rcdid=dorder.getRcbId()+"";
+		try {
+			/**/
+			/**修改红包状态**/
+			if(StringUtils.isNotBlank(rcdid) && !"".equals(rcdid)  && !"null".equals(rcdid) ){
+				logger.info("有红包"+dorder.getRcbId());
+				/*子红包*/
+				DredpacketsDistribute dredpacketsDistribute=dredpacketsdistributeMapper.queryById(dorder.getRcbId());
+				dredpacketsDistribute.setStatus(RedpacketsStatus.used);//已经使用 
+				dredpacketsDistribute.setUpdateTime(new Date());
+				
+				dredpacketsdistributeMapper.update(dredpacketsDistribute);
+				/*大红包*/
+				Dredpackets dredpackets=new Dredpackets();
+				dredpackets.setId(dredpacketsDistribute.getRedpacketsId());//主红包id
+				dredpacketsMapper.updateAlreadyUsed(dredpackets);
+			}else{
+				logger.info("未绑定红包");
+			}
+				
+				return "SUCCESS";
+			} catch (Exception e) {
+				logger.error("订单公共流程（red红包）实现方法异常："+e.getMessage());
+				e.printStackTrace();
+			}
+		 logger.error("订单公共流程（red红包）实现方法异常");
+		 return "FILE";
+	}
+	
+	/**
+	 * 订单公共流程实现方法
+	 * orderId
+	 */
+	public String commonOrder(Map<String,Object> map) throws SQLException {
+		
+		Long orderId=0L;
+		try {
+			if(StringUtils.isNotBlank(map.get("orderId")+"")){
+				orderId=Long.parseLong(map.get("orderId")+"");
+			}
+			/**/
+			Dorder dorder=dorderMapper.queryById(orderId);
+			
+			dorder.setOrderState(2);//状态 2 未消费
+			dorder.setPaymentTime(new Date());//支付时间
+			
+			/**修改订单状态**/
+			dorderMapper.update(dorder);
+			
+			/**修改红包状态**/
+			this.commonRedOrder(dorder);
+			
+			dmemberservice.setJianAccountUtil(map);
+				
+				Map<String,Object> accountMap=new HashMap<String, Object>();
+				
+			     /**
+			     * memberId 会员id
+			     * pdAmount 扣款总额
+				 * sn  交易单号
+				 * explain流水说明
+				 * **/
+				accountMap.put("memberId", dorder.getMemberId());
+				accountMap.put("pdAmount", dorder.getPdAmount());
+				accountMap.put("paySn", dorder.getPaySn());
+				accountMap.put("explain","购物消费");
+				accountMap.put("frozenAmount",dorder.getBookFinalPayment());//冻结总金额
+				
+				return "SUCCESS";
+			} catch (Exception e) {
+				logger.error("订单公共流程实现方法异常："+e.getMessage());
+				e.printStackTrace();
+			}
+			logger.error("订单公共流程实现方法异常");
+		 return "FILE";
+	}
+
+}

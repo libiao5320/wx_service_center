@@ -1,0 +1,132 @@
+package com.royao.ctrl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.commons.enums.YN;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dtechie;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DtechieService;
+import com.royao.util.JsonUtil;
+
+/**
+ * 
+ * ClassName: TechieCenterCtrl 
+ * @Description: 私人健康师
+ * @author Liu Pinghui
+ * @date 2016年1月8日
+ */
+@Controller
+@RequestMapping("/techie")
+public class TechieCenterCtrl {
+
+	Logger logger = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private DtechieService techieService;
+	
+	/**
+	 * 
+	 * @Description: 私人健康师列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月9日
+	 */
+	@ResponseBody
+	@RequestMapping("/list.htm")
+	public String list(HttpServletRequest request , HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+        
+        Map<?, ?> params = requestContent.getBody();
+        response.setCharacterEncoding("utf-8");
+
+        Dtechie param = JSON.parseObject(JsonUtil.map2json(params), Dtechie.class);
+        PageObject pageInfo = new PageObject();
+        
+		try {
+			
+			if(null != requestContent.getBody()){
+				
+				if(null != requestContent.getBody().get("pageNo")){
+					//是否存在分页信息
+					pageInfo.setPageNo(Integer.parseInt(requestContent.getBody().get("pageNo")));
+					
+				}else{//没有分页信息，则默认显示第一页
+					pageInfo.setPageNo(1);
+				}
+				param.setPageInfo(pageInfo);
+				if(null != requestContent.getBody().get("iisjob")){
+					if(YN.on.equals(requestContent.getBody().get("iisjob").toString())){
+						param.setIisjob(YN.on);
+					}
+					if(YN.off.equals(requestContent.getBody().get("iisjob").toString())){
+						param.setIisjob(YN.off);
+					}
+				}
+				
+				List<Dtechie> techieList= this.techieService.listWithPage(param);
+				if(techieList != null && techieList.size() > 0){
+					responseContent = ResponseHandler.makeResponse(techieList,true);
+				}
+				
+			}
+			
+		}catch(Exception e){
+			logger.info("商家下面的所有商品列表！", e);
+		}
+		
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	/**
+	 * 
+	 * @Description: 获取健康师主页
+	 * @param @param request
+	 * @param @param response
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月8日
+	 */
+	@ResponseBody
+	@RequestMapping("/detail.htm")
+	public String detail(HttpServletRequest request , HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+		try {
+			
+			if(null != requestContent.getBody()){
+				Dtechie techie = this.techieService.findById(Long.parseLong(requestContent.getBody().get("id")));
+				if(techie != null){
+					responseContent = ResponseHandler.makeResponse(techie,true);
+				}		
+			}
+		}catch(Exception e){
+			logger.info("获取健康师主页信息", e);
+		}
+		
+		return JSONObject.toJSONString(responseContent);
+	}
+}

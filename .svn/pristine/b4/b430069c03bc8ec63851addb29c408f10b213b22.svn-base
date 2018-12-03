@@ -1,0 +1,8 @@
+package com.royao.services.inface;
+
+import com.royao.model.Dkiting;
+import com.royao.services.base.BaseService;
+
+public interface DkitingService extends BaseService<Dkiting>{
+
+}

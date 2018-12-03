@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DredpacketsDistributeMapper">
+
+	<resultMap id="RMDredpacketsDistribute" type="com.royao.model.DredpacketsDistribute">
+        <result property="id" column="id"/>
+        <result property="redpacketsId" column="redpackets_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="name" column="name"/>
+        <result property="money" column="money"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,redpackets_id,member_id,name,money,status,create_time,update_time
+	    ]]>
+	</sql>
+	
+	<!-- 根据红包ID查询所有未派发的子红包 -->
+	<select id="queryByredpacketsId" resultMap="RMDredpacketsDistribute" parameterType="com.royao.model.DredpacketsDistribute">
+		SELECT <include refid="columns" />
+		FROM d_redpackets_distribute
+		<where>
+			<if test="redpacketsId != null">AND redpackets_id = #{redpacketsId}</if>
+			<if test="status != null and status != ''">AND status = #{status}</if>
+		</where>
+	</select>
+	
+	<!-- 根据红包ID和用户ID检查该用户是否已经领取了该红包 -->
+	<select id="queryByredIdAndMemberId" resultMap="RMDredpacketsDistribute" parameterType="com.royao.model.DredpacketsDistribute">
+		SELECT <include refid="columns" />
+		FROM d_redpackets_distribute
+		WHERE redpackets_id = ${redpacketsId} 
+		AND member_id = ${memberId}
+	</select>
+	<!-- 根据用户ID查询用户的所有红包 -->
+	<select id="queryByMemberId" resultMap="RMDredpacketsDistribute" parameterType="com.royao.model.DredpacketsDistribute">
+		SELECT <include refid="columns" />
+		FROM d_redpackets_distribute
+		<where>
+			<if test="memberId != null">AND member_id = ${memberId}</if>
+			<if test="status != null and status != ''">AND status = ${status}</if>
+		</where>
+	</select>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO d_redpackets_distribute (
+        	id ,
+        	redpackets_id ,
+        	member_id ,
+        	name ,
+        	money ,
+        	status ,
+        	create_time ,
+        	update_time 
+        ) VALUES (
+        	#{id} ,
+        	#{redpacketsId} ,
+        	#{memberId} ,
+        	#{name} ,
+        	#{money} ,
+        	#{status} ,
+        	#{createTime} ,
+        	#{updateTime} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_redpackets_distribute SET
+	        redpackets_id = #{redpacketsId} ,
+	        member_id = #{memberId} ,
+	        name = #{name} ,
+	        money = #{money} ,
+	        status = #{status} ,
+	        create_time = #{createTime} ,
+	        update_time = #{updateTime} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_redpackets_distribute WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDredpacketsDistribute">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM d_redpackets_distribute 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_redpackets_distribute where 1=1
+
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+    	SELECT <include refid="columns" />
+	    FROM d_redpackets_distribute 
+		where 1=1 
+		limit #begin# , #end#
+    </select>
+	
+	
+	
+	  <select id="queryAll" resultMap="RMDredpacketsDistribute">
+    	SELECT <include refid="columns" />
+	    FROM d_redpackets_distribute 
+	  </select>
+	  
+	    <select id="queryByCondition" resultMap="RMDredpacketsDistribute">
+    	SELECT <include refid="columns" />
+	    FROM d_redpackets_distribute 
+		
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(redpacketsId)">
+				AND redpackets_id = #{redpacketsId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(memberId)">
+				AND member_id = #{memberId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(name)">
+				AND name = #{name}
+			</if>
+	       <if test="@Ognl@isNotEmpty(money)">
+				AND money = #{money}
+			</if>
+	       <if test="@Ognl@isNotEmpty(status)">
+				AND status = #{status}
+			</if>
+	       <if test="@Ognl@isNotEmpty(createTimeBegin)">
+				AND create_time >= #{createTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+				AND create_time &lt;= #{createTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+				AND update_time >= #{updateTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+				AND update_time &lt;= #{updateTimeEnd}
+		   </if>
+		</where>
+	  </select>
+
+	
+</mapper>
+

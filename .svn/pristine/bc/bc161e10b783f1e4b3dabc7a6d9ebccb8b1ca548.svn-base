@@ -1,0 +1,323 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class Dstore extends BaseEntity implements java.io.Serializable{
+	private static final long serialVersionUID = 5454155825314635342L;
+	
+	//alias
+	public static final String TABLE_ALIAS = "Dstore";
+	public static final String ALIAS_STORE_ID = "店铺索引id";
+	public static final String ALIAS_STORE_NAME = "店铺名称";
+	public static final String ALIAS_GRADE_ID = "店铺等级";
+	public static final String ALIAS_SELLER_NAME = "店主卖家用户名";
+	public static final String ALIAS_SC_ID = "店铺分类";
+	public static final String ALIAS_STORE_COMPANY_NAME = "店铺公司名称";
+	public static final String ALIAS_PROVINCE_ID = "店铺所在省份ID";
+	public static final String ALIAS_CITY_ID = "城市编号";
+	public static final String ALIAS_AREA_INFO = "地区内容，冗余数据";
+	public static final String ALIAS_STORE_ADDRESS = "详细地区";
+	public static final String ALIAS_STORE_ZIP = "邮政编码";
+	public static final String ALIAS_STORE_STATE = "店铺状态，0关闭，1开启，2审核中";
+	public static final String ALIAS_STORE_SORT = "店铺排序";
+	public static final String ALIAS_STORE_TIME = "店铺开通时间";
+	public static final String ALIAS_STORE_DESCRIBE = "店铺描述";
+	public static final String ALIAS_STORE_LABEL = "店铺logo";
+	public static final String ALIAS_PACT_IMG = "店铺合同图片";
+	public static final String ALIAS_STORE_PHONE = "商家电话";
+	public static final String ALIAS_STORE_ZY = "主营商品";
+	public static final String ALIAS_STORE_SERVICECREDIT = "服务态度分数";
+	public static final String ALIAS_STORE_COLLECT = "店铺收藏数量";
+	public static final String ALIAS_STORE_WORKINGTIME = "工作时间";
+	public static final String ALIAS_STORE_SALES_GROSS = "销售总额";
+	public static final String ALIAS_STORE_SALES = "店铺销量";
+	public static final String ALIAS_SORT = "排序";
+	public static final String ALIAS_REMARK = "备注";
+	public static final String ALIAS_LBS = "当前位置坐标";
+	public static final String ALIAS_STATUS = "状态，normal-正常，delete-逻辑删除";
+	
+	//date formats
+	
+	//可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+	//columns START
+	
+	private Integer storeId;
+
+	private String storeName;
+
+	private Integer gradeId;
+
+	private String sellerName;
+
+	private Integer scId;
+
+	private String storeCompanyName;
+
+	private Integer provinceId;
+	
+	private Integer cityId;
+
+	private String areaInfo;
+
+	private String storeAddress;
+
+	private String storeZip;
+
+	private Boolean storeState;
+
+	private Integer storeSort;
+
+	private String storeTime;
+
+	private String storeDescribe;
+
+	private String storeLabel;
+
+	private String pactImg;
+
+	private String storePhone;
+
+	private String storeZy;
+
+	private Float storeServicecredit;
+
+	private Integer storeCollect;
+
+	private String storeWorkingtime;
+	
+	private Long storeSalesGross;
+
+	private Integer storeSales;
+
+	private Integer sort;
+
+	private String remark;
+
+	private String lbs;
+
+	private String status;
+	//columns END
+
+	public Dstore(){
+	}
+
+	public Dstore(
+		Integer storeId
+	){
+		this.storeId = storeId;
+	}
+
+	public void setStoreId(Integer value) {
+		this.storeId = value;
+	}
+	
+	public Integer getStoreId() {
+		return this.storeId;
+	}
+	public void setStoreName(String value) {
+		this.storeName = value;
+	}
+	
+	public String getStoreName() {
+		return this.storeName;
+	}
+	public void setGradeId(Integer value) {
+		this.gradeId = value;
+	}
+	
+	public Integer getGradeId() {
+		return this.gradeId;
+	}
+	public void setSellerName(String value) {
+		this.sellerName = value;
+	}
+	
+	public String getSellerName() {
+		return this.sellerName;
+	}
+	public void setScId(Integer value) {
+		this.scId = value;
+	}
+	
+	public Integer getScId() {
+		return this.scId;
+	}
+	public void setStoreCompanyName(String value) {
+		this.storeCompanyName = value;
+	}
+	
+	public String getStoreCompanyName() {
+		return this.storeCompanyName;
+	}
+	public void setProvinceId(Integer value) {
+		this.provinceId = value;
+	}
+	
+	public Integer getProvinceId() {
+		return this.provinceId;
+	}
+	public void setCityId(Integer value) {
+		this.cityId = value;
+	}
+	
+	public Integer getCityId() {
+		return this.cityId;
+	}
+	public void setAreaInfo(String value) {
+		this.areaInfo = value;
+	}
+	
+	public String getAreaInfo() {
+		return this.areaInfo;
+	}
+	public void setStoreAddress(String value) {
+		this.storeAddress = value;
+	}
+	
+	public String getStoreAddress() {
+		return this.storeAddress;
+	}
+	public void setStoreZip(String value) {
+		this.storeZip = value;
+	}
+	
+	public String getStoreZip() {
+		return this.storeZip;
+	}
+	public void setStoreState(Boolean value) {
+		this.storeState = value;
+	}
+	
+	public Boolean getStoreState() {
+		return this.storeState;
+	}
+	public void setStoreSort(Integer value) {
+		this.storeSort = value;
+	}
+	
+	public Integer getStoreSort() {
+		return this.storeSort;
+	}
+	public void setStoreTime(String value) {
+		this.storeTime = value;
+	}
+	
+	public String getStoreTime() {
+		return this.storeTime;
+	}
+	public void setStoreDescribe(String value) {
+		this.storeDescribe = value;
+	}
+	
+	public String getStoreDescribe() {
+		return this.storeDescribe;
+	}
+	public void setStoreLabel(String value) {
+		this.storeLabel = value;
+	}
+	
+	public String getStoreLabel() {
+		return this.storeLabel;
+	}
+	public void setPactImg(String value) {
+		this.pactImg = value;
+	}
+	
+	public String getPactImg() {
+		return this.pactImg;
+	}
+	public void setStorePhone(String value) {
+		this.storePhone = value;
+	}
+	
+	public String getStorePhone() {
+		return this.storePhone;
+	}
+	public void setStoreZy(String value) {
+		this.storeZy = value;
+	}
+	
+	public String getStoreZy() {
+		return this.storeZy;
+	}
+	public void setStoreServicecredit(Float value) {
+		this.storeServicecredit = value;
+	}
+	
+	public Float getStoreServicecredit() {
+		return this.storeServicecredit;
+	}
+	public void setStoreCollect(Integer value) {
+		this.storeCollect = value;
+	}
+	
+	public Integer getStoreCollect() {
+		return this.storeCollect;
+	}
+	public void setStoreWorkingtime(String value) {
+		this.storeWorkingtime = value;
+	}
+	
+	public String getStoreWorkingtime() {
+		return this.storeWorkingtime;
+	}
+	public void setStoreSalesGross(Long value) {
+		this.storeSalesGross = value;
+	}
+	
+	public Long getStoreSalesGross() {
+		return this.storeSalesGross;
+	}
+	public void setStoreSales(Integer value) {
+		this.storeSales = value;
+	}
+	
+	public Integer getStoreSales() {
+		return this.storeSales;
+	}
+	public void setSort(Integer value) {
+		this.sort = value;
+	}
+	
+	public Integer getSort() {
+		return this.sort;
+	}
+	public void setRemark(String value) {
+		this.remark = value;
+	}
+	
+	public String getRemark() {
+		return this.remark;
+	}
+	public void setLbs(String value) {
+		this.lbs = value;
+	}
+	
+	public String getLbs() {
+		return this.lbs;
+	}
+	public void setStatus(String value) {
+		this.status = value;
+	}
+	
+	public String getStatus() {
+		return this.status;
+	}
+
+}
+

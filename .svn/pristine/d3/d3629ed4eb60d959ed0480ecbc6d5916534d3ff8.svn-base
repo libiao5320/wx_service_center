@@ -1,0 +1,40 @@
+package com.royao.ctrl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.royao.model.Devent;
+import com.royao.model.Dgoods;
+import com.royao.services.inface.DgoodsService;
+
+/**
+ * 产品数据后端
+ * @author yangx
+ *
+ * @className 
+ * @date 2016年1月4日 下午5:31:30
+ */
+@Controller
+@RequestMapping("/goods")
+public class GoodsCenterCtrl {
+	
+	@Autowired
+	private  DgoodsService dgoodsService;	
+	@RequestMapping("/list.htm")
+	public String index(){
+		
+		try {
+			List<Dgoods> list = dgoodsService.queryAll();
+			
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return "goods/list";
+	}
+
+}

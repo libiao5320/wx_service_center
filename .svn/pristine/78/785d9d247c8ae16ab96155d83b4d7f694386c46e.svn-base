@@ -1,0 +1,160 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2016
+ */
+
+package com.royao.model;
+
+
+import com.royao.commons.enums.SettingType;
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class DsystemSet extends BaseEntity implements java.io.Serializable{
+	private static final long serialVersionUID = 5454155825314635342L;
+	
+	//alias
+	public static final String TABLE_ALIAS = "DsystemSet";
+	public static final String ALIAS_ID = "主键";
+	public static final String ALIAS_SNAME = "名称";
+	public static final String ALIAS_SKEY = "键";
+	public static final String ALIAS_SVALUE = "值";
+	public static final String ALIAS_CREATE_TIME = "创建时间";
+	public static final String ALIAS_CREATE_BY = "创建人";
+	public static final String ALIAS_UPDATE_TIME = "修改时间";
+	public static final String ALIAS_UPDATE_BY = "修改人";
+	
+	public static final String ALIAS_REMARK = "备注";
+	
+	//date formats
+	public static final String FORMAT_CREATE_TIME = "";
+	public static final String FORMAT_UPDATE_TIME = "";
+	public static final String FORMAT_UPDATE_BY = "";
+	
+	//可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+	//columns START
+	
+	private java.lang.Long id;
+	private java.lang.String sname;
+	private java.lang.String skey;
+	private java.lang.String svalue;
+	
+	private java.util.Date createTime;
+	
+	private java.lang.Integer createBy;
+	
+	private java.util.Date updateTime;
+	
+	private java.util.Date updateBy;
+	private java.lang.String remark;
+    private SettingType type;
+    private java.lang.String unit;
+	//columns END
+
+
+	public DsystemSet(){
+	}
+
+	public DsystemSet(
+		java.lang.Long id
+	){
+		this.id = id;
+	}
+
+	public void setId(java.lang.Long value) {
+		this.id = value;
+	}
+	
+	public java.lang.Long getId() {
+		return this.id;
+	}
+	public void setSname(java.lang.String value) {
+		this.sname = value;
+	}
+	
+	public java.lang.String getSname() {
+		return this.sname;
+	}
+	public void setSkey(java.lang.String value) {
+		this.skey = value;
+	}
+	
+	public java.lang.String getSkey() {
+		return this.skey;
+	}
+
+	public java.lang.String getSvalue() {
+		return svalue;
+	}
+
+	public void setSvalue(java.lang.String svalue) {
+		this.svalue = svalue;
+	}
+
+	public void setCreateTime(java.util.Date value) {
+		this.createTime = value;
+	}
+	
+	public java.util.Date getCreateTime() {
+		return this.createTime;
+	}
+	public void setCreateBy(java.lang.Integer value) {
+		this.createBy = value;
+	}
+	
+	public java.lang.Integer getCreateBy() {
+		return this.createBy;
+	}
+
+	public void setUpdateTime(java.util.Date value) {
+		this.updateTime = value;
+	}
+	
+	public java.util.Date getUpdateTime() {
+		return this.updateTime;
+	}
+	
+	
+	public void setUpdateBy(java.util.Date value) {
+		this.updateBy = value;
+	}
+	
+	public java.util.Date getUpdateBy() {
+		return this.updateBy;
+	}
+	public void setRemark(java.lang.String value) {
+		this.remark = value;
+	}
+	
+	public java.lang.String getRemark() {
+		return this.remark;
+	}
+
+	public SettingType getType() {
+		return type;
+	}
+
+	public void setType(SettingType type) {
+		this.type = type;
+	}
+
+	public java.lang.String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(java.lang.String unit) {
+		this.unit = unit;
+	}
+	
+	
+	
+}
+

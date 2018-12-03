@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DclearMapper">
+
+
+
+    <resultMap id="RMDclear" type="com.royao.model.Dclear">
+    <result property="id" column="id"/>
+    <result property="seriNo" column="seri_no"/>
+    <result property="storeId" column="store_id"/>
+    <result property="storeName" column="store_name"/>
+    <result property="clearFee" column="clear_fee"/>
+    <result property="saleFee" column="sale_fee"/>
+        <result property="createTime" column="create_time"/>
+        <result property="storeConfirm" column="store_confirm"/>
+        <result property="confirmUser" column="confirm_user"/>
+        <result property="confirmTime" column="confirm_time"/>
+        <result property="clearTime" column="clear_time"/>
+        <result property="clearState" column="clear_state"/>
+        <result property="clearRemark" column="clear_remark"/>
+        <result property="clearUser" column="clear_user"/>
+        <result property="clearModel" column="clear_model"/>
+    </resultMap>
+
+
+    <resultMap type="com.royao.model.Dclear" extends="RMDclear" id="RMDclearDetail">
+        <association property="orderList" column="id" select="com.royao.mapper.DorderMapper.queryClearOrder"></association>
+    </resultMap>
+
+
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+
+           insert into d_clear (id ,seri_no,store_id,store_name,clear_fee,sale_fee,
+            create_time,store_confirm,confirm_user,
+            confirm_time,clear_time,clear_state,
+            clear_remark,clear_user) values (#{id},#{seriNo},#{storeId},#{storeName},
+            #{clearFee},#{saleFee},#{createTime},#{storeConfirm},
+            #{confirmUser},#{confirmTime},#{clearTime},
+            #{clearState},#{clearRemark},#{clearUser});
+
+        ]]>
+
+    </insert>
+
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="addClearOrder" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+          insert into d_clear_order (id,order_id,clear_id) values (#{id},#{orderId},#{clearId});
+
+        ]]>
+    </insert>
+
+
+    <select  id="queryById" resultMap="RMDclearDetail">
+
+          select * from d_clear where id = #{value}
+
+    </select>
+
+
+    <select id="queryClear" resultMap="RMDclear" >
+
+          select a.*, if ( ISNULL(concat(b.accounts,'[',b.account_holder,']',b.accounts_no)) ,'无',concat(b.accounts,'[',b.account_holder,']',b.accounts_no)) as clear_model from d_clear a
+          left outer join d_store_extend b on a.store_id = b.store_id
+
+        <where>
+            1=1
+            <if test="storeFieldValue != null and  storeFieldValue != ''">
+
+                <if test="storeFieldName == 'storeName'" >
+                    and  a.store_name = #{storeFieldValue}
+                </if>
+
+                <if test="storeFieldName == 'storeId'">
+                    and  a.store_id = #{storeFieldValue}
+                </if>
+            </if>
+
+
+            <if test="begin != null and  begin != ''">
+
+
+               and   a.create_time  > #{begin}
+            </if>
+
+
+            <if test="end != null and  end != ''">
+
+
+                and <![CDATA[    a.create_time   <  #{end} ]]>
+            </if>
+
+
+            <if test="orderClearState != null and  orderClearState != ''">
+
+                <if test="orderClearState == 'storeName'" >
+                    and  a.clear_state = #{orderClearState}
+                </if>
+
+            </if>
+
+        </where>
+        <if test="null != sort and sort == creatime ">
+            order by a.create_time  desc
+        </if>
+        <if test="null != sort and sort == cleartime ">
+            order by a.clear_time  desc
+        </if>
+
+            limit #{pageNo},#{pageSize}
+
+    </select>
+
+
+
+    <select id="queryClearCount" resultType="java.lang.Integer">
+
+            select count(a.store_id ) from d_clear a
+
+        <where>
+            1=1
+            <if test="storeFieldValue != null and  storeFieldValue != ''">
+
+                <if test="storeFieldName == 'storeName'" >
+                    and  a.store_name = #{storeFieldValue}
+                </if>
+
+                <if test="storeFieldName == 'storeId'">
+                    and  a.store_id = #{storeFieldValue}
+                </if>
+            </if>
+
+
+            <if test="begin != null and  begin != ''">
+
+
+                and   a.create_time  > #{begin}
+            </if>
+
+
+            <if test="end != null and  end != ''">
+
+
+                and <![CDATA[    a.create_time   <  #{end} ]]>
+            </if>
+
+
+            <if test="orderClearState != null and  orderClearState != ''">
+
+                <if test="orderClearState == 'storeName'" >
+                    and  a.clear_state = #{orderClearState}
+                </if>
+
+            </if>
+
+        </where>
+            ;
+
+    </select>
+
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,133 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+import com.royao.model.base.BaseEntity;
+
+import java.util.*;
+
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class Dcoupon extends BaseEntity implements java.io.Serializable {
+    private static final long serialVersionUID = 5454155825314635342L;
+
+    //alias
+    public static final String TABLE_ALIAS = "Dcoupon";
+    public static final String ALIAS_ID = "优惠券主键id";
+    public static final String ALIAS_MEMBER_ID = "用户id";
+    public static final String ALIAS_ORDER_ID = "orderId";
+    public static final String ALIAS_FACE_VALUE = "面值";
+    public static final String ALIAS_STATE = "状态 1未消费2已消费3已过期";
+    public static final String ALIAS_ADD_TIME = "领取时间";
+    public static final String ALIAS_BEGIN_TIME = "开始时间";
+    public static final String ALIAS_END_TIME = "过期时间";
+
+
+    //可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+    //columns START
+
+    private Integer id;
+
+    private Integer memberId;
+
+    private Integer orderId;
+
+    private Long faceValue;
+
+    private Integer state;
+
+    private Date addTime;
+
+    private Date beginTime;
+
+    private Date endTime;
+    //columns END
+
+    public Dcoupon() {
+    }
+
+    public Dcoupon(
+            Integer id
+    ) {
+        this.id = id;
+    }
+
+    public void setId(Integer value) {
+        this.id = value;
+    }
+
+    public Integer getId() {
+        return this.id;
+    }
+
+    public void setMemberId(Integer value) {
+        this.memberId = value;
+    }
+
+    public Integer getMemberId() {
+        return this.memberId;
+    }
+
+    public void setOrderId(Integer value) {
+        this.orderId = value;
+    }
+
+    public Integer getOrderId() {
+        return this.orderId;
+    }
+
+    public void setFaceValue(Long value) {
+        this.faceValue = value;
+    }
+
+    public Long getFaceValue() {
+        return this.faceValue;
+    }
+
+    public void setState(Integer value) {
+        this.state = value;
+    }
+
+    public Integer getState() {
+        return this.state;
+    }
+
+    public void setAddTime(Date value) {
+        this.addTime = value;
+    }
+
+    public Date getAddTime() {
+        return this.addTime;
+    }
+
+
+    public void setBeginTime(Date value) {
+        this.beginTime = value;
+    }
+
+    public Date getBeginTime() {
+        return this.beginTime;
+    }
+
+    public void setEndTime(Date value) {
+        this.endTime = value;
+    }
+
+    public Date getEndTime() {
+        return this.endTime;
+    }
+
+
+}
+

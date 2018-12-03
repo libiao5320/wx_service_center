@@ -1,0 +1,204 @@
+package com.royao.ctrl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.commons.enums.LogsMethod;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.DbalanceLogs;
+import com.royao.model.Dmember;
+import com.royao.model.Dvip;
+import com.royao.services.inface.DbalanceLogsService;
+import com.royao.services.inface.DmemberService;
+import com.royao.services.inface.DvipService;
+import com.royao.util.DateUtil;
+import com.royao.util.Validate;
+
+/**
+ *@author 杨鑫
+ *
+ *@RongYaoCardCtrl.java
+ *
+ *@email 450160147@qq.com
+ *
+ *@time 2016年1月6日
+ */
+@Controller
+@RequestMapping("/vip")
+public class RongYaoCardCtrl {
+
+	@Autowired
+	private DvipService vipService;
+	
+	
+	@Autowired
+	private DbalanceLogsService logsService;
+	
+	
+	@Autowired
+	private DmemberService memberService;
+	
+	/**
+	 * 查询所有荣耀vip卡的等级及金额
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/list.htm")
+	public String vip_index(HttpServletRequest request, HttpServletResponse response){
+		Map<String,Object> map = new HashMap<String, Object>();
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        
+        Map<?, ?> params = requestContent.getBody();
+        String usreId = "",isPaypwd = "N";
+        if(!Validate.isEmpty(params.get("userId").toString())){
+        	usreId =  params.get("userId").toString();
+	        params.remove("userId");
+        }
+        if(null != params){
+        	//Dvip vips = JSONObject.parseObject(JsonUtil.map2json(params), Dvip.class);
+			try {
+				System.out.println("进入查询所有vip卡等级============");
+				
+		        response.setCharacterEncoding("utf-8");
+		        List<Dvip> vip = this.vipService.queryByCondtion(params);
+		        if(!Validate.isEmpty(usreId)){
+		        	Dmember user = this.memberService.queryById(Long.parseLong(usreId));
+		        	if(null != user){
+			        	if(!Validate.isEmpty(user.getMemberPaypwd())){
+			        		isPaypwd ="Y";
+			        		//map.put("payPwd", user.getMemberPaypwd());
+			        	}
+		        	}
+		        	map.put("isPaypwd", isPaypwd);
+		        }
+		        if(null != vip && vip.size()>0){
+		        	map.put("vipCard", vip);
+		        	responseContent = ResponseHandler.makeResponse(map, true);
+		        }else{
+		        	return null;
+		        }
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	
+	/**
+	 * 充值或消费后插入流水记录
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/save_logs.htm")
+	public String logs_insert(HttpServletRequest request,HttpServletResponse response){
+		Map<String,Object> map = new HashMap<String, Object>();
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?,?> params = requestContent.getBody();
+        
+        String state = "N",msg="";
+        
+        if(null != params){
+        	DbalanceLogs logs = new DbalanceLogs();
+        	
+        	String userId = params.get("userId").toString();
+        	String money = params.get("money").toString();
+        	String sn = params.get("sn").toString();
+        	String type = params.get("type").toString();
+        	String explain = params.get("explain").toString();
+        	
+        	try {
+				Dmember   user = this.memberService.queryById(Long.parseLong(userId));
+				long balance = user.getAvailablePredeposit();
+				logs.setMemberId(Long.parseLong(userId));
+				logs.setSn(sn);
+				logs.setAmount(Long.parseLong(money));
+				logs.setBalance(user.getAvailablePredeposit());
+				logs.setExplain(explain);
+				logs.setMethod(LogsMethod.valueOf(type));
+				if("WXPAY".equals(type)){
+					logs.setState(1);
+				}else{
+					logs.setState(2);
+				}
+				logs.setCurrentBalance(Long.parseLong(money)+balance);
+				logs.setAddTime(DateUtil.current());
+				logs.setAddBy(user.getMemberName());
+				
+				this.logsService.save(logs);
+				state = "Y";
+			}catch (Exception e) {
+				e.printStackTrace();
+				msg="系统繁忙，请稍候再试。。";
+			}
+        }
+        try {
+        	map.put("state", state);
+        	map.put("msg", msg);
+			responseContent = ResponseHandler.makeResponse(map, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	
+	/**
+	 * 根据用户id获取用户信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/judgepaypwd.htm")
+	public Object judgepaypwd(HttpServletRequest request,HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        
+        Map<?, ?> params = requestContent.getBody();
+        
+        response.setCharacterEncoding("utf-8");
+        
+        
+        if(null != params){
+        	String userId = params.get("userId").toString();
+        	try {
+				Dmember  user = this.memberService.queryById(Long.parseLong(userId));
+				try {
+					responseContent = ResponseHandler.makeResponse(user, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        }
+        
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	
+	
+}

@@ -1,0 +1,653 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2016
+ */
+package com.royao.model;
+
+import java.util.List;
+
+import com.royao.model.base.BaseEntity;
+import com.royao.util.MoneyUtil;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class Dgoods extends BaseEntity implements java.io.Serializable {
+    private static final long serialVersionUID = 5454155825314635342L;
+
+    //alias
+    public static final String TABLE_ALIAS = "Dgoods";
+    public static final String ALIAS_GOODS_ID = "商品id(SKU)";
+    public static final String ALIAS_GOODS_NAME = "商品名称（+规格名称）";
+    public static final String ALIAS_GOODS_INTRODUCE = "产品简介：必填，纯文本，用于C端显示";
+    public static final String ALIAS_CONTENT_INTRODUCE = "内容介绍";
+    public static final String ALIAS_MEMBER_INTEREST = "贝多会员权益 必填，图文编辑器";
+    public static final String ALIAS_GOODS_JINGLE = "商品广告词";
+    public static final String ALIAS_STORE_ID = "店铺id";
+    public static final String ALIAS_STORE_NAME = "店铺名称";
+    public static final String ALIAS_GC_ID1 = "一级分类id";
+    public static final String ALIAS_GC_ID2 = "二级分类id";
+    public static final String ALIAS_GOODS_PRICE = "商品基础价格";
+    public static final String ALIAS_GOODS_VIP0_PRICE = "商品vip价格";
+    public static final String ALIAS_GOODS_VIP1_PRICE = "商品vip价格";
+    public static final String ALIAS_GOODS_VIP2_PRICE = "商品vip2价格";
+    public static final String ALIAS_GOODS_VIP3_PRICE = "商品vip3价格";
+    public static final String ALIAS_GOODS_VIP4_PRICE = "商品vip4价格";
+    public static final String ALIAS_SERVICE_RATIO = "标准服务费比例 填写100以内的正整数";
+    public static final String ALIAS_GOODS_SALENUM = "销售数量";
+    public static final String ALIAS_GOODS_COLLECT = "收藏数量";
+    public static final String ALIAS_GOODS_STORAGE = "商品库存";
+    public static final String ALIAS_GOODS_IMAGE = "商品主图";
+    public static final String ALIAS_GOODS_STATE = "商品状态 1已下架,2已上架，3库存";
+    public static final String ALIAS_GOODS_VERIFY = "商品审核 2通过，1未通过，10审核中";
+    public static final String ALIAS_GOODS_ADDTIME = "商品添加时间";
+    public static final String ALIAS_AREAID1 = "一级地区id";
+    public static final String ALIAS_AREAID2 = "二级地区id";
+    public static final String ALIAS_GOODS_COMMEND = "商品推荐 1否，2是 默认1";
+    public static final String ALIAS_GOODS_STCIDS = "店铺分类id";
+    public static final String ALIAS_EVALUATION_GOOD_STAR = "好评星级";
+    public static final String ALIAS_EVALUATION_COUNT = "评价数";
+    public static final String ALIAS_IS_BOOK = "是否为预定商品，1否，2是";
+    public static final String ALIAS_BOOK_DOWN_PAYMENT = "定金金额";
+    public static final String ALIAS_BOOK_FINAL_PAYMENT = "尾款金额";
+    public static final String ALIAS_BUY_KNOW = "购买须知";
+    public static final String ALIAS_UNIT = "单位";
+    public static final String ALIAS_SHOW_PRIORITY = "排序 默认按产品ID由大到小排序，可选择按销量由高到低排序";
+
+
+    //可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+    //columns START
+
+    private java.lang.Integer goodsId;
+    private java.lang.String goodsName;
+    private java.lang.String goodsIntroduce;
+    private java.lang.String contentIntroduce;
+    private java.lang.String memberInterest;
+    private java.lang.String goodsJingle;
+    private Long storeId;
+    private java.lang.String storeName;
+    private java.lang.Integer gcId1;
+    private java.lang.Integer gcId2;
+    private java.lang.Long goodsPrice;
+    private String goodsPriceDollar;
+    private java.lang.Long goodsVip0Price;
+    private String goodsVip0PriceDollar;
+    private java.lang.Long goodsVip1Price;
+    private String goodsVip1PriceDollar;
+    private java.lang.Long goodsVip2Price;
+    private String goodsVip2PriceDollar;
+    private java.lang.Long goodsVip3Price;
+    private String goodsVip3PriceDollar;
+    private java.lang.Long goodsVip4Price;
+    private String goodsVip4PriceDollar;
+    private java.lang.Long serviceRatio;
+
+    private java.lang.Integer goodsSalenum;
+
+    private java.lang.Integer goodsCollect;
+    private java.lang.Integer goodsStorage;
+    private java.lang.String goodsImage;
+    private Integer goodsState;
+    private Integer goodsVerify;
+    private java.util.Date goodsAddtime;
+    private java.lang.Integer areaid1;
+    private java.lang.Integer areaid2;
+    private Integer goodsCommend;
+    private java.lang.String goodsStcids;
+    private Integer evaluationGoodStar;
+    private java.lang.Integer evaluationCount;
+    private Integer isBook;
+    private java.lang.Long bookDownPayment;
+    private java.lang.Long bookFinalPayment;
+    private java.lang.String buyKnow;
+    private java.lang.String unit;
+    private java.lang.Integer showPriority;
+
+    private Integer goodEvaluationCount;
+    private Integer badEvaluationCount;
+    
+    private Integer serviceShComplaint;//售后投诉
+    private Integer serviceShRefund;//售后退款
+    private Integer evaluationGoodProbability;//好评概率
+    
+    private String productCode;//款号
+	private String standard;// 规格
+	private String  isPtRed;//是否能使用普通红包
+	private String isDiyText;//是否使用自定义文本框
+	
+	private List<Devaluate> devaluate;//评价列表
+	private Dstore dstore; 
+	
+	private List<DtechieGoods> dtechieGoods;//商品店铺关联表
+	
+    private java.lang.String text;//文本详情
+    private Float distance;
+    
+	
+    //columns END
+    
+    
+    
+	public String getIsPtRed() {
+		return isPtRed;
+	}
+
+	public String getIsDiyText() {
+		return isDiyText;
+	}
+
+	public void setIsDiyText(String isDiyText) {
+		this.isDiyText = isDiyText;
+	}
+
+	public void setIsPtRed(String isPtRed) {
+		this.isPtRed = isPtRed;
+	}
+	
+    public Integer getServiceShComplaint() {
+		return serviceShComplaint;
+	}
+
+
+	public java.lang.String getText() {
+		return text;
+	}
+
+
+	public void setText(java.lang.String text) {
+		this.text = text;
+	}
+
+
+	public List<DtechieGoods> getDtechieGoods() {
+		return dtechieGoods;
+	}
+
+
+	public void setDtechieGoods(List<DtechieGoods> dtechieGoods) {
+		this.dtechieGoods = dtechieGoods;
+	}
+
+
+	public Dstore getDstore() {
+		return dstore;
+	}
+
+
+	public void setDstore(Dstore dstore) {
+		this.dstore = dstore;
+	}
+
+
+	public List<Devaluate> getDevaluate() {
+		return devaluate;
+	}
+
+
+	public void setDevaluate(List<Devaluate> devaluate) {
+		this.devaluate = devaluate;
+	}
+
+
+	public Integer getEvaluationGoodProbability() {
+		return evaluationGoodProbability;
+	}
+
+	public void setEvaluationGoodProbability(Integer evaluationGoodProbability) {
+		this.evaluationGoodProbability = evaluationGoodProbability;
+	}
+
+	public void setServiceShComplaint(Integer serviceShComplaint) {
+		this.serviceShComplaint = serviceShComplaint;
+	}
+
+	public Integer getServiceShRefund() {
+		return serviceShRefund;
+	}
+
+	public void setServiceShRefund(Integer serviceShRefund) {
+		this.serviceShRefund = serviceShRefund;
+	}
+
+	public String getProductCode() {
+		return productCode;
+	}
+
+	public void setProductCode(String productCode) {
+		this.productCode = productCode;
+	}
+
+	public String getStandard() {
+		return standard;
+	}
+
+	public void setStandard(String standard) {
+		this.standard = standard;
+	}
+
+
+
+    public Dgoods() {
+    }
+
+    public Dgoods(
+            java.lang.Integer goodsId
+    ) {
+        this.goodsId = goodsId;
+    }
+
+    public void setGoodsId(java.lang.Integer value) {
+        this.goodsId = value;
+    }
+
+    public java.lang.Integer getGoodsId() {
+        return this.goodsId;
+    }
+
+    public void setGoodsName(java.lang.String value) {
+        this.goodsName = value;
+    }
+
+    public java.lang.String getGoodsName() {
+        return this.goodsName;
+    }
+
+    public void setGoodsIntroduce(java.lang.String value) {
+        this.goodsIntroduce = value;
+    }
+
+    public java.lang.String getGoodsIntroduce() {
+        return this.goodsIntroduce;
+    }
+
+    public void setContentIntroduce(java.lang.String value) {
+        this.contentIntroduce = value;
+    }
+
+    public java.lang.String getContentIntroduce() {
+        return this.contentIntroduce;
+    }
+
+    public void setMemberInterest(java.lang.String value) {
+        this.memberInterest = value;
+    }
+
+    public java.lang.String getMemberInterest() {
+        return this.memberInterest;
+    }
+
+    public void setGoodsJingle(java.lang.String value) {
+        this.goodsJingle = value;
+    }
+
+    public java.lang.String getGoodsJingle() {
+        return this.goodsJingle;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
+
+    public Long getStoreId() {
+        return this.storeId;
+    }
+
+    public void setStoreName(java.lang.String value) {
+        this.storeName = value;
+    }
+
+    public java.lang.String getStoreName() {
+        return this.storeName;
+    }
+
+    public void setGcId1(java.lang.Integer value) {
+        this.gcId1 = value;
+    }
+
+    public java.lang.Integer getGcId1() {
+        return this.gcId1;
+    }
+
+    public void setGcId2(java.lang.Integer value) {
+        this.gcId2 = value;
+    }
+
+    public java.lang.Integer getGcId2() {
+        return this.gcId2;
+    }
+
+    public void setGoodsPrice(Long goodsPrice) {
+        this.goodsPrice = goodsPrice;
+    }
+
+    public Long getGoodsPrice() {
+    	if (this.goodsPrice == null && this.goodsPriceDollar != null) {
+            this.goodsPrice = MoneyUtil.getDollarToCent(this.goodsPriceDollar);
+        }
+        return this.goodsPrice;
+    }
+
+    public String getGoodsPriceDollar() {
+    	if (this.goodsPriceDollar == null && this.goodsPrice != null) {
+            this.goodsPriceDollar = MoneyUtil.getCentToDollar(this.goodsPrice);
+        }
+		return goodsPriceDollar;
+	}
+
+
+	public String getGoodsVip0PriceDollar() {
+		if (this.goodsVip0PriceDollar == null && this.goodsVip0Price != null) {
+            this.goodsVip0PriceDollar = MoneyUtil.getCentToDollar(this.goodsVip0Price);
+        }
+		return goodsVip0PriceDollar;
+	}
+
+
+	public void setGoodsVip0PriceDollar(String goodsVip0PriceDollar) {
+		this.goodsVip0PriceDollar = goodsVip0PriceDollar;
+	}
+
+
+	public String getGoodsVip1PriceDollar() {
+		if (this.goodsVip1PriceDollar == null && this.goodsVip1Price != null) {
+            this.goodsVip1PriceDollar = MoneyUtil.getCentToDollar(this.goodsVip1Price);
+        }
+		return goodsVip1PriceDollar;
+	}
+
+
+	public void setGoodsVip1PriceDollar(String goodsVip1PriceDollar) {
+		this.goodsVip1PriceDollar = goodsVip1PriceDollar;
+	}
+
+
+	public String getGoodsVip2PriceDollar() {
+		if (this.goodsVip2PriceDollar == null && this.goodsVip2Price != null) {
+            this.goodsVip2PriceDollar = MoneyUtil.getCentToDollar(this.goodsVip2Price);
+        }
+		return goodsVip2PriceDollar;
+	}
+
+
+	public void setGoodsVip2PriceDollar(String goodsVip2PriceDollar) {
+		this.goodsVip2PriceDollar = goodsVip2PriceDollar;
+	}
+
+
+	public String getGoodsVip3PriceDollar() {
+		if (this.goodsVip3PriceDollar == null && this.goodsVip3Price != null) {
+            this.goodsVip3PriceDollar = MoneyUtil.getCentToDollar(this.goodsVip3Price);
+        }
+		return goodsVip3PriceDollar;
+	}
+
+
+	public void setGoodsVip3PriceDollar(String goodsVip3PriceDollar) {
+		this.goodsVip3PriceDollar = goodsVip3PriceDollar;
+	}
+
+
+	public String getGoodsVip4PriceDollar() {
+		if (this.goodsVip4PriceDollar == null && this.goodsVip4Price != null) {
+            this.goodsVip4PriceDollar = MoneyUtil.getCentToDollar(this.goodsVip4Price);
+        }
+		return goodsVip4PriceDollar;
+	}
+
+
+	public void setGoodsVip4PriceDollar(String goodsVip4PriceDollar) {
+		this.goodsVip4PriceDollar = goodsVip4PriceDollar;
+	}
+
+
+	public void setGoodsPriceDollar(String goodsPriceDollar) {
+		this.goodsPriceDollar = goodsPriceDollar;
+	}
+
+
+	public void setGoodsVip0Price(java.lang.Long value) {
+        this.goodsVip0Price = value;
+    }
+
+    public java.lang.Long getGoodsVip0Price() {
+    	if (this.goodsVip0Price == null && this.goodsVip0PriceDollar != null) {
+            this.goodsVip0Price = MoneyUtil.getDollarToCent(this.goodsVip0PriceDollar);
+        }
+        return this.goodsVip0Price;
+    }
+
+    public void setGoodsVip1Price(java.lang.Long value) {
+        this.goodsVip1Price = value;
+    }
+
+    public java.lang.Long getGoodsVip1Price() {
+    	if (this.goodsVip1Price == null && this.goodsVip1PriceDollar != null) {
+            this.goodsVip1Price = MoneyUtil.getDollarToCent(this.goodsVip1PriceDollar);
+        }
+        return this.goodsVip1Price;
+    }
+
+    public void setGoodsVip2Price(java.lang.Long value) {
+        this.goodsVip2Price = value;
+    }
+
+    public java.lang.Long getGoodsVip2Price() {
+    	if (this.goodsVip2Price == null && this.goodsVip2PriceDollar != null) {
+            this.goodsVip2Price = MoneyUtil.getDollarToCent(this.goodsVip2PriceDollar);
+        }
+        return this.goodsVip2Price;
+    }
+
+    public void setGoodsVip3Price(java.lang.Long value) {
+        this.goodsVip3Price = value;
+    }
+
+    public java.lang.Long getGoodsVip3Price() {
+    	if (this.goodsVip3Price == null && this.goodsVip3PriceDollar != null) {
+            this.goodsVip3Price = MoneyUtil.getDollarToCent(this.goodsVip3PriceDollar);
+        }
+        return this.goodsVip3Price;
+    }
+
+    public void setGoodsVip4Price(java.lang.Long value) {
+        this.goodsVip4Price = value;
+    }
+
+    public java.lang.Long getGoodsVip4Price() {
+    	if (this.goodsVip4Price == null && this.goodsVip4PriceDollar != null) {
+            this.goodsVip4Price = MoneyUtil.getDollarToCent(this.goodsVip4PriceDollar);
+        }
+        return this.goodsVip4Price;
+    }
+
+    public void setServiceRatio(java.lang.Long value) {
+        this.serviceRatio = value;
+    }
+
+    public java.lang.Long getServiceRatio() {
+        return this.serviceRatio;
+    }
+
+    public void setGoodsSalenum(java.lang.Integer value) {
+        this.goodsSalenum = value;
+    }
+
+    public java.lang.Integer getGoodsSalenum() {
+        return this.goodsSalenum;
+    }
+
+    public void setGoodsCollect(java.lang.Integer value) {
+        this.goodsCollect = value;
+    }
+
+    public java.lang.Integer getGoodsCollect() {
+        return this.goodsCollect;
+    }
+
+    public void setGoodsStorage(java.lang.Integer value) {
+        this.goodsStorage = value;
+    }
+
+    public java.lang.Integer getGoodsStorage() {
+        return this.goodsStorage;
+    }
+
+    public void setGoodsImage(java.lang.String value) {
+        this.goodsImage = value;
+    }
+
+    public java.lang.String getGoodsImage() {
+        return this.goodsImage;
+    }
+
+    public void setGoodsState(Integer value) {
+        this.goodsState = value;
+    }
+
+    public Integer getGoodsState() {
+        return this.goodsState;
+    }
+
+    public void setGoodsVerify(Integer value) {
+        this.goodsVerify = value;
+    }
+
+    public Integer getGoodsVerify() {
+        return this.goodsVerify;
+    }
+
+    public void setGoodsAddtime(java.util.Date value) {
+        this.goodsAddtime = value;
+    }
+
+    public java.util.Date getGoodsAddtime() {
+        return this.goodsAddtime;
+    }
+
+    public void setAreaid1(java.lang.Integer value) {
+        this.areaid1 = value;
+    }
+
+    public java.lang.Integer getAreaid1() {
+        return this.areaid1;
+    }
+
+    public void setAreaid2(java.lang.Integer value) {
+        this.areaid2 = value;
+    }
+
+    public java.lang.Integer getAreaid2() {
+        return this.areaid2;
+    }
+
+    public void setGoodsCommend(Integer value) {
+        this.goodsCommend = value;
+    }
+
+    public Integer getGoodsCommend() {
+        return this.goodsCommend;
+    }
+
+    public void setGoodsStcids(java.lang.String value) {
+        this.goodsStcids = value;
+    }
+
+    public java.lang.String getGoodsStcids() {
+        return this.goodsStcids;
+    }
+
+    public void setEvaluationGoodStar(Integer value) {
+        this.evaluationGoodStar = value;
+    }
+
+    public Integer getEvaluationGoodStar() {
+        return this.evaluationGoodStar;
+    }
+
+    public void setEvaluationCount(java.lang.Integer value) {
+        this.evaluationCount = value;
+    }
+
+    public java.lang.Integer getEvaluationCount() {
+        return this.evaluationCount;
+    }
+
+    public void setIsBook(Integer value) {
+        this.isBook = value;
+    }
+
+    public Integer getIsBook() {
+        return this.isBook;
+    }
+
+    public void setBookDownPayment(java.lang.Long value) {
+        this.bookDownPayment = value;
+    }
+
+    public java.lang.Long getBookDownPayment() {
+        return this.bookDownPayment;
+    }
+
+    public void setBookFinalPayment(java.lang.Long value) {
+        this.bookFinalPayment = value;
+    }
+
+    public java.lang.Long getBookFinalPayment() {
+        return this.bookFinalPayment;
+    }
+
+    public void setBuyKnow(java.lang.String value) {
+        this.buyKnow = value;
+    }
+
+    public java.lang.String getBuyKnow() {
+        return this.buyKnow;
+    }
+
+    public void setUnit(java.lang.String value) {
+        this.unit = value;
+    }
+
+    public java.lang.String getUnit() {
+        return this.unit;
+    }
+
+    public void setShowPriority(java.lang.Integer value) {
+        this.showPriority = value;
+    }
+
+    public java.lang.Integer getShowPriority() {
+        return this.showPriority;
+    }
+
+    public Integer getGoodEvaluationCount() {
+        return goodEvaluationCount;
+    }
+
+    public void setGoodEvaluationCount(Integer goodEvaluationCount) {
+        this.goodEvaluationCount = goodEvaluationCount;
+    }
+
+    public Integer getBadEvaluationCount() {
+        return badEvaluationCount;
+    }
+
+    public void setBadEvaluationCount(Integer badEvaluationCount) {
+        this.badEvaluationCount = badEvaluationCount;
+    }
+
+    public Float getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Float distance) {
+        this.distance = distance;
+    }
+}
+

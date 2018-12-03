@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DgoodsMapper">
+
+    <resultMap id="RMDgoods" type="com.royao.model.Dgoods">
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsIntroduce" column="goods_introduce"/>
+        <result property="contentIntroduce" column="content_introduce"/>
+        <result property="memberInterest" column="member_interest"/>
+        <result property="goodsJingle" column="goods_jingle"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="gcId1" column="gc_id_1"/>
+        <result property="gcId2" column="gc_id_2"/>
+        <result property="goodsPrice" column="goods_price"/>
+        <result property="goodsVip0Price" column="goods_vip0_price"/>
+        <result property="goodsVip1Price" column="goods_vip1_price"/>
+        <result property="goodsVip2Price" column="goods_vip2_price"/>
+        <result property="goodsVip3Price" column="goods_vip3_price"/>
+        <result property="goodsVip4Price" column="goods_vip4_price"/>
+        <result property="serviceRatio" column="service_ratio"/>
+        <result property="goodsSalenum" column="goods_salenum"/>
+        <result property="goodsCollect" column="goods_collect"/>
+        <result property="goodsStorage" column="goods_storage"/>
+        <result property="goodsImage" column="goods_image"/>
+        <result property="goodsState" column="goods_state"/>
+        <result property="goodsVerify" column="goods_verify"/>
+        <result property="goodsAddtime" column="goods_addtime"/>
+        <result property="areaid1" column="areaid_1"/>
+        <result property="areaid2" column="areaid_2"/>
+        <result property="goodsCommend" column="goods_commend"/>
+        <result property="goodsStcids" column="goods_stcids"/>
+        <result property="evaluationGoodStar" column="evaluation_good_star"/>
+        <result property="evaluationCount" column="evaluation_count"/>
+        <result property="isBook" column="is_book"/>
+        <result property="bookDownPayment" column="book_down_payment"/>
+        <result property="bookFinalPayment" column="book_final_payment"/>
+        <result property="buyKnow" column="buy_know"/>
+        <result property="unit" column="unit"/>
+        <result property="showPriority" column="show_priority"/>
+        <result property="goodEvaluationCount" column="goodEvaluationCount"/>
+        <result property="badEvaluationCount" column="badEvaluationCount"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="Dgoodscolumns">
+        <![CDATA[
+		goods_id,goods_name,goods_introduce,content_introduce,member_interest,goods_jingle,store_id,store_name,gc_id_1,gc_id_2,goods_price,goods_vip0_price,goods_vip1_price,goods_vip2_price,goods_vip3_price,goods_vip4_price,service_ratio,goods_salenum,goods_collect,goods_storage,goods_image,goods_state,goods_verify,goods_addtime,areaid_1,areaid_2,goods_commend,goods_stcids,evaluation_good_star,evaluation_count,is_book,book_down_payment,book_final_payment,buy_know,unit,show_priority
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="goodsId">
+        <![CDATA[
+        INSERT INTO d_goods (
+        	goods_id ,
+        	goods_name ,
+        	goods_introduce ,
+        	content_introduce ,
+        	member_interest ,
+        	goods_jingle ,
+        	store_id ,
+        	store_name ,
+        	gc_id_1 ,
+        	gc_id_2 ,
+        	goods_price ,
+        	goods_vip0_price ,
+        	goods_vip1_price ,
+        	goods_vip2_price ,
+        	goods_vip3_price ,
+        	goods_vip4_price ,
+        	service_ratio ,
+        	goods_salenum ,
+        	goods_collect ,
+        	goods_storage ,
+        	goods_image ,
+        	goods_state ,
+        	goods_verify ,
+        	goods_addtime ,
+        	areaid_1 ,
+        	areaid_2 ,
+        	goods_commend ,
+        	goods_stcids ,
+        	evaluation_good_star ,
+        	evaluation_count ,
+        	is_book ,
+        	book_down_payment ,
+        	book_final_payment ,
+        	buy_know ,
+        	unit ,
+        	show_priority 
+        ) VALUES (
+        	#{goodsId} ,
+        	#{goodsName} ,
+        	#{goodsIntroduce} ,
+        	#{contentIntroduce} ,
+        	#{memberInterest} ,
+        	#{goodsJingle} ,
+        	#{storeId} ,
+        	#{storeName} ,
+        	#{gcId1} ,
+        	#{gcId2} ,
+        	#{goodsPrice} ,
+        	#{goodsVip0Price} ,
+        	#{goodsVip1Price} ,
+        	#{goodsVip2Price} ,
+        	#{goodsVip3Price} ,
+        	#{goodsVip4Price} ,
+        	#{serviceRatio} ,
+        	#{goodsSalenum} ,
+        	#{goodsCollect} ,
+        	#{goodsStorage} ,
+        	#{goodsImage} ,
+        	#{goodsState} ,
+        	#{goodsVerify} ,
+        	#{goodsAddtime} ,
+        	#{areaid1} ,
+        	#{areaid2} ,
+        	#{goodsCommend} ,
+        	#{goodsStcids} ,
+        	#{evaluationGoodStar} ,
+        	#{evaluationCount} ,
+        	#{isBook} ,
+        	#{bookDownPayment} ,
+        	#{bookFinalPayment} ,
+        	#{buyKnow} ,
+        	#{unit} ,
+        	#{showPriority} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_goods SET
+	        goods_name = #{goodsName} ,
+	        goods_introduce = #{goodsIntroduce} ,
+	        content_introduce = #{contentIntroduce} ,
+	        member_interest = #{memberInterest} ,
+	        goods_jingle = #{goodsJingle} ,
+	        store_id = #{storeId} ,
+	        store_name = #{storeName} ,
+	        gc_id_1 = #{gcId1} ,
+	        gc_id_2 = #{gcId2} ,
+	        goods_price = #{goodsPrice} ,
+	        goods_vip0_price = #{goodsVip0Price} ,
+	        goods_vip1_price = #{goodsVip1Price} ,
+	        goods_vip2_price = #{goodsVip2Price} ,
+	        goods_vip3_price = #{goodsVip3Price} ,
+	        goods_vip4_price = #{goodsVip4Price} ,
+	        service_ratio = #{serviceRatio} ,
+	        goods_salenum = #{goodsSalenum} ,
+	        goods_collect = #{goodsCollect} ,
+	        goods_storage = #{goodsStorage} ,
+	        goods_image = #{goodsImage} ,
+	        goods_state = #{goodsState} ,
+	        goods_verify = #{goodsVerify} ,
+	        goods_addtime = #{goodsAddtime} ,
+	        areaid_1 = #{areaid1} ,
+	        areaid_2 = #{areaid2} ,
+	        goods_commend = #{goodsCommend} ,
+	        goods_stcids = #{goodsStcids} ,
+	        evaluation_good_star = #{evaluationGoodStar} ,
+	        evaluation_count = #{evaluationCount} ,
+	        is_book = #{isBook} ,
+	        book_down_payment = #{bookDownPayment} ,
+	        book_final_payment = #{bookFinalPayment} ,
+	        buy_know = #{buyKnow} ,
+	        unit = #{unit} ,
+	        show_priority = #{showPriority} 
+        WHERE 
+	        goods_id = #{goodsId} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_goods WHERE
+        goods_id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDgoods">
+        SELECT
+        <include refid="Dgoodscolumns"/>
+        <![CDATA[
+		    FROM d_goods 
+	        WHERE 
+		        goods_id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_goods where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="Dgoodscolumns"/>
+        FROM d_goods
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDgoods">
+        SELECT
+        <include refid="Dgoodscolumns"/>
+        FROM d_goods
+    </select>
+
+
+    <select id="search" resultMap="RMDgoods">
+
+        select a.* from d_goods a left outer join d_groupbuy_class b on a.gc_id_1 = b.class_id
+        left outer join d_groupbuy_class c on a.gc_id_2 = c.class_id left outer join d_store d on a.store_id =
+        d.store_id
+        where
+        <![CDATA[
+			(b.class_name like CONCAT('%',#{goodsName},'%')) or (c.class_name like CONCAT('%',#{goodsName},'%')) or (d.store_name like CONCAT('%',#{goodsName},'%'))
+			  ]]>
+        limit #{pageInfo.begin}, #{pageInfo.end}
+
+    </select>
+
+
+    <select id="getBestEvalGoods" resultMap="RMDgoods">
+        select a.*,if( ISNULL(b.goodCount),0, b.goodCount) as goodEvaluationCount
+        from d_goods a left outer join (select count(goods_id) as goodCount,
+        goods_id from d_evaluate where grade >= 3) b on a.goods_id = b.goods_id
+        order by goodEvaluationCount desc limit 0,5
+    </select>
+
+
+    <select id="queryByCondition" resultMap="RMDgoods">
+        SELECT
+        <include refid="Dgoodscolumns"/>
+        FROM d_goods
+
+        <where>
+            <if test="@Ognl@isNotEmpty(goodsId)">
+                AND goods_id = #{goodsId}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsName)">
+                AND goods_name = #{goodsName}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsIntroduce)">
+                AND goods_introduce = #{goodsIntroduce}
+            </if>
+            <if test="@Ognl@isNotEmpty(contentIntroduce)">
+                AND content_introduce = #{contentIntroduce}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberInterest)">
+                AND member_interest = #{memberInterest}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsJingle)">
+                AND goods_jingle = #{goodsJingle}
+            </if>
+            <if test="@Ognl@isNotEmpty(storeId)">
+                AND store_id = #{storeId}
+            </if>
+            <if test="@Ognl@isNotEmpty(storeName)">
+                AND store_name = #{storeName}
+            </if>
+            <if test="@Ognl@isNotEmpty(gcId1)">
+                AND gc_id_1 = #{gcId1}
+            </if>
+            <if test="@Ognl@isNotEmpty(gcId2)">
+                AND gc_id_2 = #{gcId2}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsPrice)">
+                AND goods_price = #{goodsPrice}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsVip0Price)">
+                AND goods_vip0_price = #{goodsVip0Price}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsVip1Price)">
+                AND goods_vip1_price = #{goodsVip1Price}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsVip2Price)">
+                AND goods_vip2_price = #{goodsVip2Price}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsVip3Price)">
+                AND goods_vip3_price = #{goodsVip3Price}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsVip4Price)">
+                AND goods_vip4_price = #{goodsVip4Price}
+            </if>
+            <if test="@Ognl@isNotEmpty(serviceRatio)">
+                AND service_ratio = #{serviceRatio}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsSalenum)">
+                AND goods_salenum = #{goodsSalenum}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsCollect)">
+                AND goods_collect = #{goodsCollect}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsStorage)">
+                AND goods_storage = #{goodsStorage}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsImage)">
+                AND goods_image = #{goodsImage}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsState)">
+                AND goods_state = #{goodsState}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsVerify)">
+                AND goods_verify = #{goodsVerify}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsAddtimeBegin)">
+                AND goods_addtime >= #{goodsAddtimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsAddtimeEnd)">
+                AND goods_addtime &lt;= #{goodsAddtimeEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaid1)">
+                AND areaid_1 = #{areaid1}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaid2)">
+                AND areaid_2 = #{areaid2}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsCommend)">
+                AND goods_commend = #{goodsCommend}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsStcids)">
+                AND goods_stcids = #{goodsStcids}
+            </if>
+            <if test="@Ognl@isNotEmpty(evaluationGoodStar)">
+                AND evaluation_good_star = #{evaluationGoodStar}
+            </if>
+            <if test="@Ognl@isNotEmpty(evaluationCount)">
+                AND evaluation_count = #{evaluationCount}
+            </if>
+            <if test="@Ognl@isNotEmpty(isBook)">
+                AND is_book = #{isBook}
+            </if>
+            <if test="@Ognl@isNotEmpty(bookDownPayment)">
+                AND book_down_payment = #{bookDownPayment}
+            </if>
+            <if test="@Ognl@isNotEmpty(bookFinalPayment)">
+                AND book_final_payment = #{bookFinalPayment}
+            </if>
+            <if test="@Ognl@isNotEmpty(buyKnow)">
+                AND buy_know = #{buyKnow}
+            </if>
+            <if test="@Ognl@isNotEmpty(unit)">
+                AND unit = #{unit}
+            </if>
+            <if test="@Ognl@isNotEmpty(showPriority)">
+                AND show_priority = #{showPriority}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

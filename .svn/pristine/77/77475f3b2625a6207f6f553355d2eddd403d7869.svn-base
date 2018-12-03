@@ -1,0 +1,90 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+
+package com.royao.services.impl;
+
+
+import com.royao.mapper.DredpacketsDistributeMapper;
+import com.royao.model.Dmember;
+import com.royao.model.DredpacketsDistribute;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DredpacketsDistributeService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+
+@Service("redpacketsDistributeService")
+public class DredpacketsDistributeServiceImpl extends BaseServiceImpl<DredpacketsDistribute> implements DredpacketsDistributeService {
+	
+		@Autowired
+		private DredpacketsDistributeMapper dredpacketsDistributeMapper ;
+
+
+
+		public int save(DredpacketsDistribute dredpacketsDistribute) throws Exception {
+        return dredpacketsDistributeMapper.save(dredpacketsDistribute);
+		}
+
+		public int update(DredpacketsDistribute dredpacketsDistribute) throws Exception {
+        return dredpacketsDistributeMapper.update(dredpacketsDistribute);
+		}
+
+		public int delete(Long id) throws Exception {
+       return dredpacketsDistributeMapper.delete(id);
+		}
+
+	     public DredpacketsDistribute queryById(Long id) throws Exception {
+         return dredpacketsDistributeMapper.queryById(id);
+         }
+
+		public List<DredpacketsDistribute> queryByCondtion(Map map) throws Exception {
+        return dredpacketsDistributeMapper.queryByCondtion(map);
+		}
+
+		public List<DredpacketsDistribute> queryAll() throws Exception {
+		   return dredpacketsDistributeMapper.queryAll();
+		}
+
+
+
+    @Cacheable(value = "myCache", key = "#dmember")
+    public List queryByUser(Dmember dmember) throws Exception {
+        return dredpacketsDistributeMapper.queryByUser(dmember);
+    }
+
+	public Integer queryCountByUserId(Integer memId) throws Exception {
+		return dredpacketsDistributeMapper.queryCountByUserId(memId);
+	}
+
+	public List<DredpacketsDistribute> listWithPage(DredpacketsDistribute t) throws Exception {
+
+			return null;
+		}
+
+		public List<DredpacketsDistribute> queryByredpacketsId(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryByredpacketsId(red);
+		}
+
+		public DredpacketsDistribute queryByredIdAndMemberId(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryByredIdAndMemberId(red);
+		}
+
+		public List<DredpacketsDistribute> queryByMemberId(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryByMemberId(red);
+		}
+		
+}

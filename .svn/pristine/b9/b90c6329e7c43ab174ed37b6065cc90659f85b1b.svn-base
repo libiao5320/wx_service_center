@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DeventMapper">
+
+    <resultMap id="RMDevent" type="com.royao.model.Devent">
+        <result property="id" column="id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="areaid1" column="areaid1"/>
+        <result property="areaid2" column="areaid2"/>
+        <result property="name" column="name"/>
+        <result property="eventKey" column="event_key"/>
+        <result property="img" column="img"/>
+        <result property="profile" column="profile"/>
+        <result property="introduce" column="introduce"/>
+        <result property="quota" column="quota"/>
+        <result property="enrollNum" column="enroll_num"/>
+        <result property="enrollStartTime" column="enroll_start_time"/>
+        <result property="enrollEndTime" column="enroll_end_time"/>
+        <result property="enrollOffTime" column="enroll_off_time"/>
+        <result property="eventTime" column="event_time"/>
+        <result property="address" column="address"/>
+        <result property="longitude" column="longitude"/>
+        <result property="latitude" column="latitude"/>
+        <result property="status" column="status"/>
+        <result property="examineStatus" column="examine_status"/>
+        <result property="examineResult" column="examine_result"/>
+        <result property="entryfee" column="entryfee"/>
+        <result property="orderBy" column="order_by"/>
+        <result property="url" column="url"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        
+        <result property="isPtRed" column="is_pt_red"/>
+        <result property="isDiyText" column="is_diy_text"/>
+        <result property="checkOutTime" column="check_out_time"/>
+        
+	</resultMap>
+	
+	<resultMap type="com.royao.model.Devent" extends="RMDevent" id="RMDeventImage">
+		<association property="area1" column="areaid1" select="com.royao.mapper.DareaMapper.queryById"></association>
+		<association property="area2" column="areaid2" select="com.royao.mapper.DareaMapper.queryById"></association>
+		<collection property="imageList" column="id" select="com.royao.mapper.DeventImageMapper.queryByEventId"></collection>
+	</resultMap>
+	
+	<resultMap type="com.royao.model.Devent" extends="RMDeventImage" id="RMDeventDetail">
+		<association property="store" column="store_id" select="com.royao.mapper.DstoreMapper.queryById"></association>
+		<association property="commentCount" column="id" select="com.royao.mapper.DeventCommentMapper.countByEventId"></association>
+		
+		<association property="text" column="id" select="com.royao.mapper.DeventTextMapper.queryById"></association>
+		<collection property="commentList" column="id" select="com.royao.mapper.DeventCommentMapper.queryByEventId3"></collection>
+	</resultMap>
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,store_id,store_name,areaid1,areaid2,name,event_key,img,profile,introduce,quota,enroll_num,enroll_start_time,enroll_end_time,enroll_off_time,event_time,address,longitude,latitude,status,examine_status,examine_result,entryfee,order_by,url,create_time,create_by,
+		update_time,update_by,is_pt_red,is_diy_text,check_out_time
+	    ]]>
+    </sql>
+    
+    <sql id="condition">
+       <if test="id !=null">AND id = #{id}</if>
+       <if test="storeId !=null">AND store_id = #{storeId}</if>
+       <if test="storeName !=null">AND store_name = #{storeName}</if>
+       <if test="areaid1 !=null">AND areaid1 = #{areaid1}</if>
+       <if test="areaid2 !=null">AND areaid2 = #{areaid2}</if>
+       <if test="name !=null">AND name = #{name}</if>
+       <if test="eventKey !=null">AND event_key = #{eventKey}</if>
+       <if test="img !=null">AND img = #{img}</if>
+       <if test="profile !=null">AND profile = #{profile}</if>
+       <if test="introduce !=null">AND introduce = #{introduce}</if>
+       <if test="quota !=null">AND quota = #{quota}</if>
+       <if test="address !=null">AND address = #{address}</if>
+       <if test="longitude !=null">AND longitude = #{longitude}</if>
+       <if test="latitude !=null">AND latitude = #{latitude}</if>
+       <if test="status !=null">AND status = #{status}</if>
+       <if test="examineStatus !=null">AND examine_status = #{examineStatus}</if>
+       <if test="examineResult !=null">AND examine_result = #{examineResult}</if>
+       <if test="entryfee !=null">AND entryfee = #{entryfee}</if>
+       <if test="orderBy !=null">AND order_by = #{orderBy}</if>
+       <if test="url !=null">AND url = #{url}</if>
+       <if test="createBy !=null">AND create_by = #{createBy}</if>
+       <if test="updateBy !=null">AND update_by = #{updateBy}</if>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_event (
+        	id ,
+        	store_id,
+        	store_name,
+        	areaid1 ,
+        	areaid2 ,
+        	name ,
+        	event_key ,
+        	img ,
+        	profile ,
+        	introduce ,
+        	quota ,
+        	enroll_start_time ,
+        	enroll_end_time ,
+        	enroll_off_time ,
+        	event_time ,
+        	address ,
+        	longitude ,
+        	latitude ,
+        	status ,
+        	examine_status ,
+        	examine_result ,
+        	entryfee ,
+        	order_by ,
+        	url ,
+        	create_time ,
+        	create_by ,
+        	update_time ,
+        	update_by,
+        	is_pt_red,
+        	is_diy_text,
+        	check_out_time
+        ) VALUES (
+        	#{id} ,
+        	#{storeId} ,
+        	#{storeName} ,
+        	#{areaid1} ,
+        	#{areaid2} ,
+        	#{name} ,
+        	#{eventKey} ,
+        	#{img} ,
+        	#{profile} ,
+        	#{introduce} ,
+        	#{quota} ,
+        	#{enrollStartTime} ,
+        	#{enrollEndTime} ,
+        	#{enrollOffTime} ,
+        	#{eventTime} ,
+        	#{address} ,
+        	#{longitude} ,
+        	#{latitude} ,
+        	#{status} ,
+        	#{examineStatus} ,
+        	#{examineResult} ,
+        	#{entryfee} ,
+        	#{orderBy},
+        	#{url} ,
+        	#{createTime} ,
+        	#{createBy} ,
+        	#{updateTime} ,
+        	#{updateBy}, 
+        	#{isPtRed},
+        	#{isDiyText},
+        	#{checkOutTime} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        UPDATE d_event 
+        	<set>
+		        <if test="storeId != null">store_id = #{storeId} ,</if>
+		        <if test="storeName != null">store_name = #{storeName} ,</if>
+		        <if test="areaid1 != null">areaid1 = #{areaid1} ,</if>
+		        <if test="areaid2 != null">areaid2 = #{areaid2} ,</if>
+		        <if test="name != null and name != ''">name = #{name} ,</if>
+		        <if test="eventKey != null">event_key = #{eventKey} ,</if>
+		        <if test="img != null">img = #{img} ,</if>
+		        <if test="profile != null and profile != ''">profile = #{profile} ,</if>
+		        <if test="introduce != null">introduce = #{introduce} ,</if>
+		        <if test="quota != null and quota != ''">quota = #{quota} ,</if>
+		        <if test="enrollStartTime != null and enrollStartTime != ''">enroll_start_time = #{enrollStartTime} ,</if>
+		        <if test="enrollEndTime != null and enrollEndTime != ''">enroll_end_time = #{enrollEndTime} ,</if>
+		        <if test="enrollOffTime != null and enrollOffTime != ''">enroll_off_time = #{enrollOffTime} ,</if>
+		        <if test="eventTime != null and eventTime != ''">event_time = #{eventTime} ,</if>
+		        <if test="address != null and address != ''">address = #{address} ,</if>
+		        <if test="longitude != null">longitude = #{longitude} ,</if>
+		        <if test="latitude != null">latitude = #{latitude} ,</if>
+		        <if test="status != null and status != ''">status = #{status} ,</if>
+		        <if test="examineStatus != null and examineStatus != ''">examine_status = #{examineStatus} ,</if>
+		        <if test="examineResult != null">examine_result = #{examineResult} ,</if>
+		        <if test="entryfee != null and entryfee != ''">entryfee = #{entryfee} ,</if>
+		        <if test="orderBy != null and orderBy != ''">order_by = #{orderBy} ,</if>
+		        <if test="url != null">url = #{url} ,</if>
+		        <if test="createTime != null">create_time = #{createTime} ,</if>
+		        <if test="createBy != null">create_by = #{createBy} ,</if>
+		        <if test="updateBy != null">update_by = #{updateBy} ,</if>
+		        update_time = #{updateTime}
+		    </set>
+        WHERE 
+	        id = #{id} 
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_event WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDeventDetail">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_event 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+    
+    <select id="queryByStoreId" resultMap="RMDevent">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_event 
+	        WHERE 
+		        store_id = #{id} AND status = 'on'
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_event where 1=1
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultMap="RMDevent">
+        SELECT
+        <include refid="columns"/>
+        FROM d_event
+        where 1=1
+        ORDER BY enroll_end_time DESC
+        <if test="pageInfo != ''">
+        limit #{pageInfo.begin}, #{pageInfo.end}
+        </if>
+    </select>
+    
+    
+    <select id="pCountWithPageAndCondition" resultType="long">
+        SELECT
+       	count(1)
+        FROM d_event
+        where 1=1
+        <include refid="condition" />
+    </select>
+    <select id="pListWithPageAndCondition" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns" />
+        FROM d_event
+        where 1=1
+        <include refid="condition" />
+        <if test="pageInfo != ''">
+        limit #{pageInfo.begin}, #{pageInfo.end}
+        </if>
+    </select>
+	
+	  <select id="queryAll" resultMap="RMDeventImage">
+    	SELECT <include refid="columns" />
+	    FROM d_event 
+	  </select>
+	  
+	    <select id="queryByCondition" resultMap="RMDevent">
+    	SELECT <include refid="columns" />
+	    FROM d_event 
+		
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(storeId)">
+				AND store_id = #{storeId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(areaid1)">
+				AND areaid1 = #{areaid1}
+			</if>
+	       <if test="@Ognl@isNotEmpty(areaid2)">
+				AND areaid2 = #{areaid2}
+			</if>
+	       <if test="@Ognl@isNotEmpty(name)">
+				AND name = #{name}
+			</if>
+	       <if test="@Ognl@isNotEmpty(eventKey)">
+				AND event_key = #{eventKey}
+			</if>
+	       <if test="@Ognl@isNotEmpty(img)">
+				AND img = #{img}
+			</if>
+	       <if test="@Ognl@isNotEmpty(profile)">
+				AND profile = #{profile}
+			</if>
+	       <if test="@Ognl@isNotEmpty(introduce)">
+				AND introduce = #{introduce}
+			</if>
+	       <if test="@Ognl@isNotEmpty(quota)">
+				AND quota = #{quota}
+			</if>
+	       <if test="@Ognl@isNotEmpty(enrollStartTimeBegin)">
+				AND enroll_start_time >= #{enrollStartTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(enrollStartTimeEnd)">
+				AND enroll_start_time &lt;= #{enrollStartTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(enrollEndTimeBegin)">
+				AND enroll_end_time >= #{enrollEndTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(enrollEndTimeEnd)">
+				AND enroll_end_time &lt;= #{enrollEndTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(enrollOffTimeBegin)">
+				AND enroll_off_time >= #{enrollOffTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(enrollOffTimeEnd)">
+				AND enroll_off_time &lt;= #{enrollOffTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(eventTimeBegin)">
+				AND event_time >= #{eventTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(eventTimeEnd)">
+				AND event_time &lt;= #{eventTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(address)">
+				AND address = #{address}
+			</if>
+	       <if test="@Ognl@isNotEmpty(longitude)">
+				AND longitude = #{longitude}
+			</if>
+	       <if test="@Ognl@isNotEmpty(latitude)">
+				AND latitude = #{latitude}
+			</if>
+	       <if test="@Ognl@isNotEmpty(status)">
+				AND status = #{status}
+			</if>
+	       <if test="@Ognl@isNotEmpty(examineStatus)">
+				AND examine_status = #{examineStatus}
+			</if>
+	       <if test="@Ognl@isNotEmpty(examineResult)">
+				AND examine_result = #{examineResult}
+			</if>
+	       <if test="@Ognl@isNotEmpty(entryfee)">
+				AND entryfee = #{entryfee}
+			</if>
+	       <if test="@Ognl@isNotEmpty(orderBy)">
+				AND order_by = #{orderBy}
+			</if>
+	       <if test="@Ognl@isNotEmpty(url)">
+				AND url = #{url}
+			</if>
+	       <if test="@Ognl@isNotEmpty(createTimeBegin)">
+				AND create_time >= #{createTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+				AND create_time &lt;= #{createTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(createBy)">
+				AND create_by = #{createBy}
+			</if>
+	       <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+				AND update_time >= #{updateTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+				AND update_time &lt;= #{updateTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateBy)">
+				AND update_by = #{updateBy}
+			</if>
+		</where>
+	  </select>
+	  
+	  <update id="eventOverdue">
+	  	UPDATE d_event
+		SET `status` = 'off'
+		WHERE
+		`status` = 'on'
+		AND
+		<![CDATA[
+		enroll_off_time <= NOW();
+		]]>
+	  </update>
+	  
+	<update id="updateEnrollNumJia">
+        <![CDATA[
+        UPDATE d_event SET
+	        enroll_num =enroll_num+#{enrollNum}
+        WHERE 
+	       	id = #{id}
+    ]]>
+    </update>
+    
+    
+</mapper>
+

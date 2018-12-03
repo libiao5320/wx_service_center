@@ -1,0 +1,292 @@
+package com.royao.pctrl;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.DeventImage;
+import com.royao.model.Dredpackets;
+import com.royao.model.DwxBanner;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DareaService;
+import com.royao.services.inface.DeventImageService;
+import com.royao.services.inface.DredpacketsService;
+import com.royao.services.inface.DwxBannerService;
+import com.royao.util.JsonUtil;
+/**
+ * 微信首页设置center端
+ * @author oubinbin
+ *
+ */
+@Controller
+@RequestMapping("/PWXbannerCtrl")
+public class PWXbannerCtrl {
+	Logger logger = Logger.getLogger(this.getClass());
+	@Autowired
+	private DwxBannerService dwxBannerService;
+	@Autowired
+	private DareaService dareaService;
+	@Autowired
+	private DeventImageService deventImageService;
+	@Autowired
+	private DredpacketsService dredpacketsService;
+
+
+	/**
+	 * 
+	 * @Description:首页信息
+	 * @param @param request
+	 * @param @param response
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author oubinbin
+	 * @date 2016年1月26日
+	 */
+	@ResponseBody
+	@RequestMapping("/queryWXBanner.htm")
+	public String queryWXBanner(HttpServletRequest request, HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        
+        PageObject pageObject = new PageObject();
+        Map params = requestContent.getBody();
+        try {
+        	DwxBanner dwxBanner = JSON.parseObject(JsonUtil.map2json(params), DwxBanner.class);
+            if (null != requestContent.getBody()) {
+            	if(null != requestContent.getBody().get("pageNo")){
+					//是否存在分页信息
+            		pageObject.setPageNo(Integer.parseInt(requestContent.getBody().get("pageNo")));
+				}else{
+					pageObject.setPageNo(1);
+				}
+            	
+            	dwxBanner.setPageInfo(pageObject);
+            }
+            
+            @SuppressWarnings("rawtypes")
+			List<DwxBanner>  list = this.dwxBannerService.listWithPage(dwxBanner);
+            Integer total = dwxBannerService.listWithPageCount(dwxBanner);
+            Map<String,Object> returnMap = new HashMap<String, Object>();
+            returnMap.put("rows", list);
+            returnMap.put("total", total);
+            
+            responseContent = ResponseHandler.makeResponse(returnMap, true);
+            return JSONObject.toJSONString(responseContent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+		
+		return null;
+	}
+	/**
+	 * 上传活动报名图片
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/uploadImg.htm")
+	public String uploadImg(HttpServletRequest request, HttpServletResponse response){
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        response.setCharacterEncoding("utf-8");
+
+        DeventImage deventImage = JSON.parseObject(JsonUtil.map2json(params), DeventImage.class);
+        Map<String,Object> returnMap = new HashMap<String, Object>();
+        try {
+        	deventImage.setEventId((long) -1);
+        	deventImage.setIsEnter("N");
+        	deventImage.setCreateTime(new Date());
+            long count = this.deventImageService.save(deventImage);
+            if(count > 0){
+            	returnMap.put("state", 1);
+            }else{
+            	returnMap.put("state", -1);
+            	returnMap.put("message", "上传活动报名图片失败！");
+            }
+            responseContent = ResponseHandler.makeResponse(returnMap, true);
+        } catch (Exception e) {
+            logger.info("上传活动报名图片失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+	/**
+	 *查询一级地区和红包名称到添加页
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+    @RequestMapping("/queryDataToAddPage.htm")
+    public String queryDataToAddPage(HttpServletRequest request, HttpServletResponse response) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+            	List proviceList = dareaService.queryByDeep(1);//查一级地区
+            	List<Dredpackets> dredpackets=dredpacketsService.queryAll();//查活动红包id及名称
+                Map<String,Object> returnMap = new HashMap<String, Object>();
+                returnMap.put("proviceList", proviceList);
+                returnMap.put("dredpackets", dredpackets);
+                responseContent = ResponseHandler.makeResponse(returnMap, true);
+            }
+            
+        } catch (Exception e) {
+        	logger.info("微信首页信息获取失败", e);
+        }
+        return JSONObject.toJSONString(responseContent);
+    }
+	/**
+	 * 添加首页信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/saveWXBanner.htm")
+	public String saveWXBanner(HttpServletRequest request, HttpServletResponse response){
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        response.setCharacterEncoding("utf-8");
+
+        DwxBanner groupbuy = JSON.parseObject(JsonUtil.map2json(params), DwxBanner.class);
+        Map<String,Object> returnMap = new HashMap<String, Object>();
+        try {
+            long count = this.dwxBannerService.save(groupbuy);
+            if(count > 0){
+            	returnMap.put("state", 1);
+            }else{
+            	returnMap.put("state", -1);
+            	returnMap.put("message", "添加产品类别信息失败！");
+            }
+            responseContent = ResponseHandler.makeResponse(returnMap, true);
+        } catch (Exception e) {
+            logger.info("添加产品类别信息失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+	/**
+	 * 从查询页获取数据到修改页
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+    @RequestMapping("/queryWXBannerById.htm")
+    public String queryWXBannerById(HttpServletRequest request, HttpServletResponse response) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+            	DwxBanner DwxBanner = this.dwxBannerService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+            	SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");  
+                String startDate = df.format(DwxBanner.getStartTime());
+                String endDate = df.format(DwxBanner.getEndTime());
+            	List proviceList = dareaService.queryByDeep(1);//查一级地区
+            	List<Dredpackets> dredpackets=dredpacketsService.queryAll();//查活动红包id及名称
+                Map<String,Object> returnMap = new HashMap<String, Object>();
+                returnMap.put("startDate", startDate);
+                returnMap.put("endDate", endDate);
+                returnMap.put("DwxBanner", DwxBanner);
+                returnMap.put("proviceList", proviceList);
+                returnMap.put("dredpackets", dredpackets);
+            	if (DwxBanner != null) {
+                    responseContent = ResponseHandler.makeResponse(returnMap, true);
+                } 
+            }
+            
+        } catch (Exception e) {
+        	logger.info("微信首页信息获取失败", e);
+        }
+        return JSONObject.toJSONString(responseContent);
+    }
+	/**
+	 *  修改首页信息
+	 * @param request
+	 * @return
+	 */
+	@ResponseBody
+    @RequestMapping("/updateWXBanner.htm")
+    public String updateWXBanner(HttpServletRequest request, HttpServletResponse response){
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        response.setCharacterEncoding("utf-8");
+
+        DwxBanner DwxBanner = JSON.parseObject(JsonUtil.map2json(params), DwxBanner.class);
+        Map<String,Object> returnMap = new HashMap<String, Object>();
+        try {
+            long count = this.dwxBannerService.update(DwxBanner);
+           
+            if(count > 0){
+            	returnMap.put("state", 1);
+            }else{
+            	returnMap.put("state", -1);
+            	returnMap.put("message", "更新微信首页信息失败！");
+            }
+            responseContent = ResponseHandler.makeResponse(returnMap, true);
+        } catch (Exception e) {
+            logger.info("更新微信首页信息失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+	/**
+	 * 删除首页信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/deleteWXBanner.htm")
+	public String deleteWXBanner(HttpServletRequest request, HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+		try {
+			boolean status = false;
+			if (null != requestContent.getBody()) {
+				
+				Integer isStatus = this.dwxBannerService.delete(Long.parseLong(requestContent.getBody().get("id")));
+				
+				if(isStatus == 1){
+					status = true;
+				}else{
+					status = false;
+				}
+				responseContent = ResponseHandler.makeResponse(status, true);
+			}
+			
+		} catch (Exception e) {
+			logger.info("删除失败", e);
+		}
+		
+		return JSONObject.toJSONString(responseContent);
+	}
+}

@@ -1,0 +1,167 @@
+package com.royao.ctrl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dgoods;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DgoodsService;
+import com.royao.util.JsonUtil;
+
+/**
+ * 产品数据后端
+ * @author yangx
+ *
+ * @className 
+ * @date 2016年1月4日 下午5:31:30
+ */
+@Controller
+@RequestMapping("/goods")
+public class GoodsCenterCtrl {
+	
+	private Logger loger  = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private  DgoodsService dgoodsService;	
+	
+	
+	
+	@ResponseBody
+	@RequestMapping("/list.htm")
+	public String index(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = null;
+		try {
+			
+			loger.info("商品列表页list");
+			responseContent = new ResponseContent();
+			RequestContent  requestContent  = RequestHandler.execute(request);
+			
+			 Map params = requestContent.getBody();
+
+			PageObject pageObject = new PageObject();
+
+			if( null == params.get("pageNo") )
+			pageObject.setPageNo(1);
+			else
+			pageObject.setPageNo(Integer.valueOf("" + params.get("pageNo")));
+
+			params.put("begin",pageObject.getBegin());
+			params.put("end",pageObject.getEnd());
+			
+	        response.setCharacterEncoding("utf-8");
+	        //将json字符串 转换成 java bean
+//	        Dgoods param = JSON.parseObject(JsonUtil.map2json(params), Dgoods.class);
+
+	        PageObject pageInfo = new PageObject();
+		        try {
+		        	
+		        	if(null != requestContent.getBody()){
+						List<Dgoods> goodList= this.dgoodsService.listWithPageAndConditon(params);
+						if(goodList != null){
+							responseContent = ResponseHandler.makeResponse(goodList,true);
+						}
+					}
+		        	
+		        } catch (Exception e) {
+		            loger.info("异常："+e.getMessage());
+		        }
+		} catch (Exception e) {
+			   loger.info("异常："+e.getMessage());
+		}
+		 return JSONObject.toJSONString(responseContent);
+	}
+	
+	/**
+	 * 商品详情
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/detail.htm")
+	public String detail(HttpServletRequest request , HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+
+        loger.info("goodsId:"+requestContent.getBody().get("goodsId"));
+		try {
+			if(null != requestContent.getBody()){
+				Dgoods dgoods =null;
+				if(requestContent.getBody().get("goodsId")!=null || "".equals(requestContent.getBody().get("goodsId"))){
+					 dgoods = this.dgoodsService.queryById(Long.parseLong(requestContent.getBody().get("goodsId").toString()));
+				}else {
+					loger.info("goodsId为空串");
+					return null;
+				}
+					
+				if(dgoods != null){
+					responseContent = ResponseHandler.makeResponse(dgoods,true);
+	             }else{
+	         		loger.info("goodsId有误");
+	            	 return null;
+	             }
+			}
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			loger.error("异常："+e.getMessage());
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 更多商品详情
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/gdDetail.htm")
+	public String gdDetail(HttpServletRequest request , HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+        System.out.println("goodsId:"+requestContent.getBody().get("goodsId"));
+		try {
+			if(null != requestContent.getBody()){
+				Dgoods dgoods =null;
+				if(requestContent.getBody().get("goodsId")!=null || "".equals(requestContent.getBody().get("goodsId"))){
+					//调用重新详细数据 
+					dgoods = this.dgoodsService.queryByIdByDetail(Long.parseLong(requestContent.getBody().get("goodsId").toString()));
+				}else {
+				
+					System.out.println("goodsId为空串");
+					return null;
+				}
+					
+				if(dgoods != null){
+					responseContent = ResponseHandler.makeResponse(dgoods,true);
+	             }else{
+	                 System.out.println("goodsId有误");
+	            	 return null;
+	             }
+			}
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+}

@@ -1,0 +1,53 @@
+package com.royao.util;
+
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+/**
+ * Created by libia on 2016/1/3.
+ */
+public class PropertiesReader {
+
+    private static Logger logger =  Logger.getLogger(PropertiesReader.class);
+
+
+
+    public  static Properties getProperties(String filename) throws IOException {
+        if ( null == filename  || "".equals(filename)) {
+            return null ;
+        }
+        Properties properties = new Properties();
+        properties.load(getInputStream(filename));
+        return properties;
+    }
+
+
+    /**
+     * 加载资源文件
+     * @return
+     */
+    private static InputStream getInputStream(String filename) {
+
+        // 从当前类加载器中加载资源
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
+        if (is != null) {
+            logger.info("load message file " + filename + " from current thread class loader context");
+            return is;
+        }
+
+        logger.info("cannot load message file " + filename + " from current thread class loader context");
+
+        // 从系统类加载器中加载资源
+        is = ClassLoader.getSystemResourceAsStream(filename);
+        if (is != null) {
+            logger.info("load message file " + filename + " from system class loader context");
+            return is;
+        }
+        throw new IllegalStateException("cannot find " + filename + " anywhere");
+    }
+
+
+}

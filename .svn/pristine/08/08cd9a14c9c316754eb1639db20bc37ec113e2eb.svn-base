@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DstoreMapper">
+
+	<resultMap id="RMDstore" type="com.royao.model.Dstore">
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="gradeId" column="grade_id"/>
+        <result property="sellerName" column="seller_name"/>
+        <result property="storeLoginPhone" column="store_login_phone"/>
+        <result property="storePasswd" column="store_passwd"/>
+        <result property="storeSecret" column="store_secret"/>
+        <result property="scId" column="sc_id"/>
+        <result property="storeCompanyName" column="store_company_name"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaId" column="area_id"/>
+        <result property="areaInfo" column="area_info"/>
+        <result property="fjLandmark" column="fj_landmark"/>
+        <result property="storeAddress" column="store_address"/>
+        <result property="storeZip" column="store_zip"/>
+        <result property="storeState" column="store_state"/>
+        <result property="storeSort" column="store_sort"/>
+        <result property="storeTime" column="store_time"/>
+        <result property="storeDescribe" column="store_describe"/>
+        <result property="storeLabel" column="store_label"/>
+        <result property="pactImg" column="pact_img"/>
+        <result property="storePhone" column="store_phone"/>
+        <result property="storeZy" column="store_zy"/>
+        <result property="storeServicecredit" column="store_servicecredit"/>
+        <result property="storeCollect" column="store_collect"/>
+        <result property="storeWorkingtime" column="store_workingtime"/>
+        <result property="storeSalesGross" column="store_sales_gross"/>
+        <result property="storeSales" column="store_sales"/>
+        <result property="sort" column="sort"/>
+        <result property="remark" column="remark"/>
+        <result property="lbsX" column="lbs_x"/>
+        <result property="lbsY" column="lbs_y"/>
+        <result property="status" column="status"/>
+        <result property="evaluationStoreProbability" column="evaluation_store_probability"/>
+        <collection property="groupbuy" column="sc_id" select="com.royao.mapper.DgroupbuyClassMapper.queryById"></collection>
+	</resultMap>
+	
+	<resultMap type="com.royao.model.Dstore" id="RMDstoreDetail" extends="RMDstore">
+		<association property="evaluateCount" column="store_id" select="com.royao.mapper.DevaluateMapper.countDevaluate"></association>
+		<association property="goodsCount" column="store_id" select="com.royao.mapper.DgoodsMapper.countByStoreId"></association>
+		<association property="goodsList" column="store_id" select="com.royao.mapper.DgoodsMapper.queryByStoreId3"></association>
+		<association property="evaluateList" column="store_id" select="com.royao.mapper.DevaluateMapper.queryByStoreId3"></association>
+		<association property="eventList" column="store_id" select="com.royao.mapper.DeventMapper.queryByStoreId"></association>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="Dstorecolumns">
+	    <![CDATA[
+		store_id,
+		store_name,
+		grade_id,
+		seller_name,
+		store_login_phone,
+		store_passwd,
+		store_secret,
+		sc_id,
+		store_company_name,
+		province_id,
+		city_id,
+		area_id,
+		area_info,
+		fj_landmark,
+		store_address,
+		store_zip,
+		store_state,
+		store_sort,
+		store_time,
+		store_describe,
+		store_label,
+		pact_img,
+		store_phone,
+		store_zy,
+		store_servicecredit,
+		store_collect,
+		store_workingtime,
+		store_sales_gross,
+		store_sales,
+		sort,
+		remark,
+		lbs_x,
+		lbs_y,
+		`status`,
+		evaluation_store_probability
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="save" useGeneratedKeys="true" keyProperty="storeId">
+    <![CDATA[
+        INSERT INTO d_store (
+        	store_id ,
+        	store_name ,
+        	grade_id ,
+        	seller_name ,
+        	store_login_phone ,
+        	store_passwd ,
+        	store_secret ,
+        	sc_id ,
+        	store_company_name ,
+        	province_id ,
+        	city_id ,
+        	area_id ,
+        	area_info ,
+        	fj_landmark ,
+        	store_address ,
+        	store_zip ,
+        	store_state ,
+        	store_sort ,
+        	store_time ,
+        	store_describe ,
+        	store_label ,
+        	pact_img ,
+        	store_phone ,
+        	store_zy ,
+        	store_servicecredit ,
+        	store_collect ,
+        	store_workingtime ,
+        	store_sales_gross ,
+        	store_sales ,
+        	sort ,
+        	remark ,
+        	lbs_x ,
+        	lbs_y ,
+        	status,
+        	evaluation_store_probability
+        ) VALUES (
+        	#{storeId} ,
+        	#{storeName} ,
+        	#{gradeId} ,
+        	#{sellerName} ,
+        	#{storeLoginPhone} ,
+        	#{storePasswd} ,
+        	#{storeSecret} ,
+        	#{scId} ,
+        	#{storeCompanyName} ,
+        	#{provinceId} ,
+        	#{cityId} ,
+        	#{areaId} ,
+        	#{areaInfo} ,
+        	#{fjLandmark} ,
+        	#{storeAddress} ,
+        	#{storeZip} ,
+        	#{storeState} ,
+        	#{storeSort} ,
+        	#{storeTime} ,
+        	#{storeDescribe} ,
+        	#{storeLabel} ,
+        	#{pactImg} ,
+        	#{storePhone} ,
+        	#{storeZy} ,
+        	#{storeServicecredit} ,
+        	#{storeCollect} ,
+        	#{storeWorkingtime} ,
+        	#{storeSalesGross} ,
+        	#{storeSales} ,
+        	#{sort} ,
+        	#{remark} ,
+        	#{lbsX} ,
+        	#{lbsY} ,
+        	#{status} ,
+        	#{evaluationStoreProbability} 
+        	
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+	
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="storeId">
+    <![CDATA[
+        INSERT INTO d_store (
+        	store_id ,
+        	store_name ,
+        	grade_id ,
+        	seller_name ,
+        	store_login_phone ,
+        	store_passwd ,
+        	store_secret ,
+        	sc_id ,
+        	store_company_name ,
+        	province_id ,
+        	city_id ,
+        	area_id ,
+        	area_info ,
+        	fj_landmark ,
+        	store_address ,
+        	store_zip ,
+        	store_state ,
+        	store_sort ,
+        	store_time ,
+        	store_describe ,
+        	store_label ,
+        	pact_img ,
+        	store_phone ,
+        	store_zy ,
+        	store_servicecredit ,
+        	store_collect ,
+        	store_workingtime ,
+        	store_sales_gross ,
+        	store_sales ,
+        	sort ,
+        	remark ,
+        	lbs_x ,
+        	lbs_y ,
+        	status,
+        	evaluation_store_probability
+        ) VALUES (
+        	#{storeId} ,
+        	#{storeName} ,
+        	#{gradeId} ,
+        	#{sellerName} ,
+        	#{storeLoginPhone} ,
+        	#{storePasswd} ,
+        	#{storeSecret} ,
+        	#{scId} ,
+        	#{storeCompanyName} ,
+        	#{provinceId} ,
+        	#{cityId} ,
+        	#{areaId} ,
+        	#{areaInfo} ,
+        	#{fjLandmark} ,
+        	#{storeAddress} ,
+        	#{storeZip} ,
+        	#{storeState} ,
+        	#{storeSort} ,
+        	#{storeTime} ,
+        	#{storeDescribe} ,
+        	#{storeLabel} ,
+        	#{pactImg} ,
+        	#{storePhone} ,
+        	#{storeZy} ,
+        	#{storeServicecredit} ,
+        	#{storeCollect} ,
+        	#{storeWorkingtime} ,
+        	#{storeSalesGross} ,
+        	#{storeSales} ,
+        	#{sort} ,
+        	#{remark} ,
+        	#{lbsX} ,
+        	#{lbsY} ,
+        	#{status} ,
+        	#{evaluationStoreProbability} 
+        	
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_store SET
+	        store_name = #{storeName} ,
+	        grade_id = #{gradeId} ,
+	        seller_name = #{sellerName} ,
+	        store_login_phone = #{storeLoginPhone} ,
+	        store_passwd = #{storePasswd} ,
+	        store_secret = #{storeSecret} ,
+	        sc_id = #{scId} ,
+	        store_company_name = #{storeCompanyName} ,
+	        province_id = #{provinceId} ,
+	        city_id = #{cityId} ,
+	        area_id = #{areaId} ,
+	        area_info = #{areaInfo} ,
+	        fj_landmark = #{fjLandmark} ,
+	        store_address = #{storeAddress} ,
+	        store_zip = #{storeZip} ,
+	        store_state = #{storeState} ,
+	        store_sort = #{storeSort} ,
+	        store_time = #{storeTime} ,
+	        store_describe = #{storeDescribe} ,
+	        store_label = #{storeLabel} ,
+	        pact_img = #{pactImg} ,
+	        store_phone = #{storePhone} ,
+	        store_zy = #{storeZy} ,
+	        store_servicecredit = #{storeServicecredit} ,
+	        store_collect = #{storeCollect} ,
+	        store_workingtime = #{storeWorkingtime} ,
+	        store_sales_gross = #{storeSalesGross} ,
+	        store_sales = #{storeSales} ,
+	        sort = #{sort} ,
+	        remark = #{remark} ,
+	        lbs_x = #{lbsX} ,
+	        lbs_y = #{lbsY} ,
+	        status = #{status} 
+        WHERE 
+	        store_id = #{storeId} 
+    ]]>
+	</update>
+	
+	<update id="updateByMap" >
+        UPDATE d_store 
+		<set>
+			<if test="storeName != null and storeName != ''">store_name = #{storeName} ,</if>
+			<if test="gradeId != null">grade_id = #{gradeId} ,</if>
+			<if test="sellerName != null and sellerName != ''">seller_name = #{sellerName} ,</if>
+			<if test="storeLoginPhone != null and storeLoginPhone != ''">store_login_phone = #{storeLoginPhone} ,</if>
+			<if test="storePasswd != null and storePasswd != ''">store_passwd = #{storePasswd} ,</if>
+			<if test="storeSecret != null and storeSecret != ''">store_secret = #{storeSecret} ,</if>
+			<if test="scId != null">sc_id = #{scId} ,</if>
+			<if test="storeCompanyName != null and storeCompanyName != ''">store_company_name = #{storeCompanyName} ,</if>
+			<if test="provinceId != null">province_id = #{provinceId} ,</if>
+			<if test="cityId != null">city_id = #{cityId} ,</if>
+			<if test="areaId != null">area_id = #{areaId} ,</if>
+			<if test="areaInfo != null and areaInfo != ''">area_info = #{areaInfo} ,</if>
+			<if test="fjLandmark != null and fjLandmark != ''">fj_landmark = #{fjLandmark} ,</if>
+			<if test="storeAddress != null and storeAddress != ''">store_address = #{storeAddress} ,</if>
+			<if test="storeZip != null and storeZip != ''">store_zip = #{storeZip} ,</if>
+			<if test="storeState != null and storeState != ''">store_state = #{storeState} ,</if>
+			<if test="storeSort != null and storeSort != ''">store_sort = #{storeSort} ,</if>
+			<if test="storeTime != null">store_time = #{storeTime} ,</if>
+			<if test="storeDescribe != null and storeDescribe != ''">store_describe = #{storeDescribe} ,</if>
+			<if test="storeLabel != null and storeLabel != ''">store_label = #{storeLabel} ,</if>
+			<if test="pactImg != null and pactImg != ''">pact_img = #{pactImg} ,</if>
+			<if test="storePhone != null and storePhone != ''">store_phone = #{storePhone} ,</if>
+			<if test="storeZy != null and storeZy != ''">store_zy = #{storeZy} ,</if>
+			<if test="storeServicecredit != null and storeServicecredit != ''">store_servicecredit = #{storeServicecredit} ,</if>
+			<if test="storeCollect != null and storeCollect != ''">store_collect = #{storeCollect} ,</if>
+			<if test="storeWorkingtime != null and storeWorkingtime != ''">store_workingtime = #{storeWorkingtime} ,</if>
+			<if test="storeSalesGross != null and storeSalesGross != ''">store_sales_gross = #{storeSalesGross} ,</if>
+			<if test="storeSales != null and storeSales != ''">store_sales = #{storeSales} ,</if>
+			<if test="sort != null and sort != ''">sort = #{sort} ,</if>
+			<if test="remark != null and remark != ''">remark = #{remark} ,</if>
+			<if test="lbsX != null and lbsX != ''">lbs_x = #{lbsX} ,</if>
+			<if test="lbsY != null and lbsY != ''">lbs_y = #{lbsY} ,</if>
+			<if test="status != null and status != ''">status = #{status} ,</if>
+	    </set>
+        <where> 
+	        store_id = #{storeId} 
+   		</where> 
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_store WHERE
+        store_id = #{id} 
+    ]]>
+    
+    </delete>
+    
+    <select id="queryById" resultMap="RMDstore">
+       SELECT
+       <include refid="Dstorecolumns"/>
+       <![CDATA[
+	    FROM d_store 
+        WHERE 
+	        store_id = #{id} 
+    ]]>
+    </select>
+    
+    <select id="getNearbyStore" resultMap="RMDstore">
+
+		SELECT c.*,
+		(
+			6366000 * ACOS(
+				(
+					COS((112.98535279 * 3.1415) / 180) * COS((28.22247823 * 3.1415) / 180) * COS((c.lbs_x * 3.1415) / 180) * COS((c.lbs_y * 3.1415) / 180)
+				) + (
+					COS((112.98535279 * 3.1415) / 180) * SIN((28.22247823 * 3.1415) / 180) * COS((c.lbs_x * 3.1415) / 180) * SIN((c.lbs_y * 3.1415) / 180)
+				) + (
+					SIN((112.98535279 * 3.1415) / 180) * SIN((c.lbs_x * 3.1415) / 180)
+				)
+			)
+		) AS distance 
+	FROM
+		d_store c
+		where 1=1
+		<if test="classId != null and classId != 0">AND sc_id = #{classId}</if><!-- 当值为0时，说明为全部 -->
+		<if test="status != null and status != 0">AND status = #{status}</if>
+		<if test="storeState != null and storeState != 0">AND store_state = #{storeState}</if>
+		<if test="distanceS != null and distanceE != null and distanceE != 0">
+		
+			AND (
+					6366000 * ACOS(
+						(
+							COS((112.98535279 * 3.1415) / 180) * COS((28.22247823 * 3.1415) / 180) * COS((c.lbs_x * 3.1415) / 180) * COS((c.lbs_y * 3.1415) / 180)
+						) + (
+							COS((112.98535279 * 3.1415) / 180) * SIN((28.22247823 * 3.1415) / 180) * COS((c.lbs_x * 3.1415) / 180) * SIN((c.lbs_y * 3.1415) / 180)
+						) + (
+							SIN((112.98535279 * 3.1415) / 180) * SIN((c.lbs_x * 3.1415) / 180)
+						)
+					)
+				) <![CDATA[>= ]]>  #{distanceS} 
+			AND (
+				6366000 * ACOS(
+					(
+						COS((112.98535279 * 3.1415) / 180) * COS((28.22247823 * 3.1415) / 180) * COS((c.lbs_x * 3.1415) / 180) * COS((c.lbs_y * 3.1415) / 180)
+					) + (
+						COS((112.98535279 * 3.1415) / 180) * SIN((28.22247823 * 3.1415) / 180) * COS((c.lbs_x * 3.1415) / 180) * SIN((c.lbs_y * 3.1415) / 180)
+					) + (
+						SIN((112.98535279 * 3.1415) / 180) * SIN((c.lbs_x * 3.1415) / 180)
+					)
+				)
+			) <![CDATA[<= ]]> #{distanceE}
+		</if>
+		<if test="search != null and search != ''">AND store_name like CONCAT('%',#{search},'%')</if>
+		<if test="distanceE != null and distanceE == 0">ORDER BY evaluation_store_probability DESC</if><!-- 没有选择位置信息 ,根据好评率排序-->
+		<if test="distanceE != null and distanceE != 0">ORDER BY distance ASC</if>
+		limit #{pageInfo.begin}, #{pageInfo.end}
+	</select>
+    
+    <select id="queryDetailById" resultMap="RMDstoreDetail">
+       SELECT
+       <include refid="Dstorecolumns"/>
+       <![CDATA[
+	    FROM d_store 
+        WHERE 
+	        store_id = #{id} 
+    ]]>
+    </select>
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_store where 1=1
+
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <!-- 商家排行 -->
+	<select id="listWithPage" resultMap="RMDstore" parameterType="com.royao.model.Dstore">
+		select <include refid="Dstorecolumns"/>
+		from d_store
+		<where>
+			<if test="scId != null">and sc_id = #{scId}</if>
+			<if test="status != null and status != ''">and status = #{status}</if>
+			<if test="storeState != null and storeState != ''">and store_state = #{storeState}</if>
+			<if test="search != null and search != ''">and store_name LIKE CONCAT('%',#{search},'%')</if>
+		</where>
+		<if test="pageInfo != null">
+		limit #{pageInfo.begin}, #{pageInfo.end}
+		</if>
+	</select>
+	
+	<select id="queryAll" resultMap="RMDstore">
+	 	SELECT <include refid="Dstorecolumns" />
+	  FROM d_store 
+	</select>
+	  
+    <select id="queryByCondition" resultMap="RMDstore">
+   	SELECT <include refid="Dstorecolumns" />
+    FROM d_store 
+	
+	<where>	      				
+       <if test="@Ognl@isNotEmpty(storeId)">
+			AND store_id = #{storeId}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeName)">
+			AND store_name = #{storeName}
+		</if>
+       <if test="@Ognl@isNotEmpty(gradeId)">
+			AND grade_id = #{gradeId}
+		</if>
+       <if test="@Ognl@isNotEmpty(sellerName)">
+			AND seller_name = #{sellerName}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeLoginPhone)">
+			AND store_login_phone = #{storeLoginPhone}
+		</if>
+       <if test="@Ognl@isNotEmpty(scId)">
+			AND sc_id = #{scId}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeCompanyName)">
+			AND store_company_name = #{storeCompanyName}
+		</if>
+       <if test="@Ognl@isNotEmpty(provinceId)">
+			AND province_id = #{provinceId}
+		</if>
+       <if test="@Ognl@isNotEmpty(cityId)">
+			AND city_id = #{cityId}
+		</if>
+       <if test="@Ognl@isNotEmpty(areaId)">
+			AND area_id = #{areaId}
+		</if>
+       <if test="@Ognl@isNotEmpty(areaInfo)">
+			AND area_info = #{areaInfo}
+		</if>
+       <if test="@Ognl@isNotEmpty(fjLandmark)">
+			AND fj_landmark = #{fjLandmark}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeAddress)">
+			AND store_address = #{storeAddress}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeZip)">
+			AND store_zip = #{storeZip}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeState)">
+			AND store_state = #{storeState}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeSort)">
+			AND store_sort = #{storeSort}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeTime)">
+			AND store_time = #{storeTime}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeDescribe)">
+			AND store_describe = #{storeDescribe}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeLabel)">
+			AND store_label = #{storeLabel}
+		</if>
+       <if test="@Ognl@isNotEmpty(pactImg)">
+			AND pact_img = #{pactImg}
+		</if>
+       <if test="@Ognl@isNotEmpty(storePhone)">
+			AND store_phone = #{storePhone}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeZy)">
+			AND store_zy = #{storeZy}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeServicecredit)">
+			AND store_servicecredit = #{storeServicecredit}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeCollect)">
+			AND store_collect = #{storeCollect}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeWorkingtime)">
+			AND store_workingtime = #{storeWorkingtime}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeSalesGross)">
+			AND store_sales_gross = #{storeSalesGross}
+		</if>
+       <if test="@Ognl@isNotEmpty(storeSales)">
+			AND store_sales = #{storeSales}
+		</if>
+       <if test="@Ognl@isNotEmpty(sort)">
+			AND sort = #{sort}
+		</if>
+       <if test="@Ognl@isNotEmpty(remark)">
+			AND remark = #{remark}
+		</if>
+       <if test="@Ognl@isNotEmpty(lbsX)">
+			AND lbs_x = #{lbsX}
+		</if>
+       <if test="@Ognl@isNotEmpty(lbsY)">
+			AND lbs_y = #{lbsY}
+		</if>
+       <if test="@Ognl@isNotEmpty(status)">
+			AND status = #{status}
+		</if>
+	</where>
+  </select>
+	
+  <select id="getStoreListByName" resultType="java.util.HashMap">
+  	<![CDATA[
+	  	SELECT store_id,store_name
+	    FROM d_store where store_name like CONCAT('%',#{storeName},'%')
+	]]>  
+  </select>
+
+  <select id="getStoreByName" resultType="java.util.HashMap">
+  	<![CDATA[
+	  	SELECT store_id,store_name
+	    FROM d_store where store_name = #{storeName}
+	]]>  
+  </select>	
+
+	<select id="queryByLoginPhone" resultMap="RMDstore">
+		SELECT <include refid="Dstorecolumns" />
+	  FROM d_store 
+	  where store_login_phone = #{0}
+	</select>
+</mapper>
+

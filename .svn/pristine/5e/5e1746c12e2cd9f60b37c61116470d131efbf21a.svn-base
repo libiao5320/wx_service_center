@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DeventTextMapper">
+
+	<resultMap id="RMDeventText" type="com.royao.model.DeventText">
+        <result property="id" column="id"/>
+        <result property="text" column="text"/>
+    </resultMap>
+    
+    <select id="queryById" resultMap="RMDeventText" parameterType="java.lang.Long">
+    	select * from d_event_text
+    	where id = #{0}
+    </select>
+</mapper>

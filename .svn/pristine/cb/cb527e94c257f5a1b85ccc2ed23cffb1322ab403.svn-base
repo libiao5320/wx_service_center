@@ -1,0 +1,61 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+package com.royao.services.impl;
+
+
+import com.royao.mapper.WfoSeqMapper;
+import com.royao.model.WfoSeq;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.WfoSeqService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+
+@Service("foSeqService")
+public class WfoSeqServiceImpl extends BaseServiceImpl<WfoSeq> implements WfoSeqService {
+
+    @Autowired
+    private WfoSeqMapper wfoSeqMapper;
+
+
+    public int save(WfoSeq wfoSeq) throws Exception {
+        return wfoSeqMapper.save(wfoSeq);
+    }
+
+    public int update(WfoSeq wfoSeq) throws Exception {
+        return wfoSeqMapper.update(wfoSeq);
+    }
+
+    public int delete(Long id) throws Exception {
+        return wfoSeqMapper.delete(id);
+    }
+
+    public WfoSeq queryById(Long id) throws Exception {
+        return wfoSeqMapper.queryById(id);
+    }
+
+    public List<WfoSeq> queryByCondtion(Map map) throws Exception {
+        return wfoSeqMapper.queryByCondtion(map);
+    }
+
+    public List<WfoSeq> queryAll() throws Exception {
+        return wfoSeqMapper.queryAll();
+    }
+
+    public List<WfoSeq> listWithPage(WfoSeq t) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+}

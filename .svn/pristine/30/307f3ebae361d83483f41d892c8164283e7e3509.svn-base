@@ -1,0 +1,152 @@
+package com.royao.model;
+
+import com.royao.model.base.BaseEntity;
+
+import java.util.List;
+
+/**
+ * Created by libia on 2016/2/23.
+ */
+public class Dclear extends BaseEntity  {
+
+
+    private Long id;
+    private Long seriNo;
+    private Long storeId;
+    private String storeName;
+    private Double clearFee;
+    private Double saleFee;
+    private Integer storeConfirm;
+    private Long confirmUser;
+    private String confirmTime;
+    private String clearTime;
+    private Integer clearState;
+    private String clearRemark;
+    private Long clearUser;
+    private String createTime;
+
+
+    private String clearModel;
+
+    private List orderList;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getSeriNo() {
+        return seriNo;
+    }
+
+    public void setSeriNo(Long seriNo) {
+        this.seriNo = seriNo;
+    }
+
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
+
+    public Double getClearFee() {
+        return clearFee;
+    }
+
+    public void setClearFee(Double clearFee) {
+        this.clearFee = clearFee;
+    }
+
+    public Double getSaleFee() {
+        return saleFee;
+    }
+
+    public void setSaleFee(Double saleFee) {
+        this.saleFee = saleFee;
+    }
+
+    public Integer getStoreConfirm() {
+        return storeConfirm;
+    }
+
+    public void setStoreConfirm(Integer storeConfirm) {
+        this.storeConfirm = storeConfirm;
+    }
+
+    public Long getConfirmUser() {
+        return confirmUser;
+    }
+
+    public void setConfirmUser(Long confirmUser) {
+        this.confirmUser = confirmUser;
+    }
+
+    public String getConfirmTime() {
+        return confirmTime;
+    }
+
+    public void setConfirmTime(String confirmTime) {
+        this.confirmTime = confirmTime;
+    }
+
+    public String getClearTime() {
+        return clearTime;
+    }
+
+    public void setClearTime(String clearTime) {
+        this.clearTime = clearTime;
+    }
+
+    public Integer getClearState() {
+        return clearState;
+    }
+
+    public void setClearState(Integer clearState) {
+        this.clearState = clearState;
+    }
+
+    public String getClearRemark() {
+        return clearRemark;
+    }
+
+    public void setClearRemark(String clearRemark) {
+        this.clearRemark = clearRemark;
+    }
+
+    public Long getClearUser() {
+        return clearUser;
+    }
+
+    public void setClearUser(Long clearUser) {
+        this.clearUser = clearUser;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getClearModel() {
+        return clearModel;
+    }
+
+    public void setClearModel(String clearModel) {
+        this.clearModel = clearModel;
+    }
+}

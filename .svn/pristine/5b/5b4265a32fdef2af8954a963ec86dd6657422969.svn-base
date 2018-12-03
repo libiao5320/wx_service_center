@@ -1,0 +1,291 @@
+package com.royao.ctrl;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dmember;
+import com.royao.model.Dorder;
+import com.royao.model.Dtopman;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.*;
+import com.royao.util.JsonUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by libia on 2016/1/5.
+ */
+@Controller
+@RequestMapping(value ="/member")
+public class MemberCenterCtrl {
+
+    @Autowired
+    private DmemberService dmemberService;
+    @Autowired
+    private DorderService dorderService;
+    @Autowired
+    private DconsumptionService dconsumptionService;
+    @Autowired
+    private DredpacketsDistributeService dredpacketsDistributeService;
+    @Autowired
+    private DcollectService dcollectService;
+    @Autowired
+    private DtopmanService dtopmanService;
+
+
+    @ResponseBody
+    @RequestMapping(value = "/ucCenter.htm")
+    public String memberCenter(HttpServletRequest request) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        String wxCode = "kokokokokofffffff16";
+
+
+
+        try {
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+
+
+            Map differentTypeCountMap = dorderService.queryDifferentStatusOrderCountByUserId(dmember.getMemberId()); //用户不同状态订单数
+            Integer collectCount = dcollectService.queryCountByUserId(dmember.getMemberId());
+            Integer consumptionCount  = dconsumptionService.queryCountByUserId(dmember.getMemberId());
+            Integer redpackCount = dredpacketsDistributeService.queryCountByUserId(dmember.getMemberId());
+
+
+
+            Map m = new HashMap();
+            m.put("memberInfo", dmember);
+            m.put("differentTypeCountMap", differentTypeCountMap);
+            m.put("consumptionCount", consumptionCount);
+            m.put("redpackCount", redpackCount);
+            m.put("collectCount", collectCount);
+            responseContent = ResponseHandler.makeResponse(m, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+
+    }
+
+
+    /**
+     * 设置支付密码
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getMyInfo.htm")
+    public String myInfo(HttpServletRequest request) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        String wxCode = "kokokokokofffffff16";
+        try {
+        	//根据微信id查询会员信息
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            responseContent = ResponseHandler.makeResponse(dmember, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JSONObject.toJSONString(responseContent);
+
+    }
+    
+    
+    /**
+     * 设置支付密码
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updatePayment.htm")
+    public String updatePayment(HttpServletRequest request) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        String wxCode = "kokokokokofffffff16";
+        String  value = (String) params.get("memberPaypwd");
+        String  memberPaysecret = (String) params.get("memberPaysecret");
+        
+        try {
+        	//根据微信id查询会员信息
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            //修改会员信息
+            dmember.setMemberPaypwd(value);
+            dmember.setMemberPaysecret(memberPaysecret);
+            dmemberService.update(dmember);
+            Map m = new HashMap();
+            m.put("falg", "修改成功");
+            responseContent = ResponseHandler.makeResponse(m, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JSONObject.toJSONString(responseContent);
+
+    }
+ 
+    @ResponseBody
+    @RequestMapping(value = "/orderlist.htm" )
+    public String memberOrderList(HttpServletRequest request) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        Integer pageNo = (Integer) params.get("pageNo");
+
+        String wxCode = "kokokokokofffffff16";
+
+
+        String status = "";
+        PageObject pageObject = new PageObject();
+        pageObject.setPageNo(1);
+        if( null != params )
+            status = (String) params.get("status");
+
+        try {
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            Dorder  dorder =  new Dorder();
+            dorder.setOrderState(Integer.valueOf(status));
+            dorder.setPageInfo(pageObject);
+            List orderList  = dorderService.queryByUser(dorder); //用户订单列表
+            responseContent = ResponseHandler.makeResponse(orderList, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/collectlist.htm" )
+    public String memberCollectList(HttpServletRequest request) {
+
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        Integer pageNo = (Integer) params.get("pageNo");
+        String wxCode = "kokokokokofffffff16";
+
+        PageObject pageObject = new PageObject();
+        pageObject.setPageNo(1);
+
+
+        try {
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            dmember.setPageInfo(pageObject);
+            List collectList  = dcollectService.queryByUser(dmember); //用户收藏
+            responseContent = ResponseHandler.makeResponse(collectList, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/consumptionlist.htm" )
+    public String memberConsumptionList(HttpServletRequest request) {
+
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        Integer pageNo = (Integer) params.get("pageNo");
+        String wxCode = "kokokokokofffffff16";
+
+        PageObject pageObject = new PageObject();
+        pageObject.setPageNo(1);
+
+
+        try {
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            dmember.setPageInfo(pageObject);
+            List consumptionList  = dconsumptionService.queryByUser(dmember); //用户消费卷
+            responseContent = ResponseHandler.makeResponse(consumptionList, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/redpacklist.htm" )
+    public String memberRedPackList(HttpServletRequest request) {
+
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        Integer pageNo = (Integer) params.get("pageNo");
+        String wxCode = "kokokokokofffffff16";
+
+        PageObject pageObject = new PageObject();
+        pageObject.setPageNo(1);
+
+
+        try {
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            dmember.setPageInfo(pageObject);
+            List redpackList  = dredpacketsDistributeService.queryByUser(dmember); //用户红包
+            responseContent = ResponseHandler.makeResponse(redpackList, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+
+    public String applyRoYaoMan(HttpServletRequest request)
+    {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+        String wxCode = "kokokokokofffffff16";
+
+        Dtopman  topMan = JSON.parseObject(JsonUtil.map2json(params), Dtopman.class);
+
+        try {
+
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            topMan.setMemberId(Long.valueOf(dmember.getMemberId()));
+
+            int result = dtopmanService.save(topMan);
+
+            responseContent = ResponseHandler.makeResponse(topMan, true);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+}

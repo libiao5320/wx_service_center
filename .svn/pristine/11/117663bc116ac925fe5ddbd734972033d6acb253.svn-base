@@ -1,0 +1,184 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+
+package com.royao.services.impl;
+
+
+import com.royao.commons.enums.RedpacketsStatus;
+import com.royao.mapper.DredpacketsDistributeMapper;
+import com.royao.model.Dmember;
+import com.royao.model.Dredpackets;
+import com.royao.model.DredpacketsDistribute;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DredpacketsDistributeService;
+import com.royao.services.inface.DredpacketsService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.support.XmlWebApplicationContext;
+
+import javax.servlet.ServletContext;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+
+@Service("redpacketsDistributeService")
+public class DredpacketsDistributeServiceImpl extends BaseServiceImpl<DredpacketsDistribute> implements DredpacketsDistributeService {
+	
+		@Autowired
+		private DredpacketsDistributeMapper dredpacketsDistributeMapper ;
+		@Autowired
+		private DredpacketsService dredpacketsService;
+
+		private Long lock = 0l;
+
+
+
+		public int save(DredpacketsDistribute dredpacketsDistribute) throws Exception {
+        return dredpacketsDistributeMapper.save(dredpacketsDistribute);
+		}
+
+		public int update(DredpacketsDistribute dredpacketsDistribute) throws Exception {
+        return dredpacketsDistributeMapper.update(dredpacketsDistribute);
+		}
+
+		public int delete(Long id) throws Exception {
+       return dredpacketsDistributeMapper.delete(id);
+		}
+
+	     public DredpacketsDistribute queryById(Long id) throws Exception {
+         return dredpacketsDistributeMapper.queryById(id);
+         }
+
+		public List<DredpacketsDistribute> queryByCondtion(Map map) throws Exception {
+        return dredpacketsDistributeMapper.queryByCondtion(map);
+		}
+
+		public List<DredpacketsDistribute> queryAll() throws Exception {
+		   return dredpacketsDistributeMapper.queryAll();
+		}
+
+
+
+    @Cacheable(value = "myCache", key = "#dmember")
+    public List queryByUser(Dmember dmember) throws Exception {
+        return dredpacketsDistributeMapper.queryByUser(dmember);
+    }
+
+	public Integer queryCountByUserId(Long memId) throws Exception {
+		return dredpacketsDistributeMapper.queryCountByUserId(memId);
+	}
+
+	public List<DredpacketsDistribute> listWithPage(DredpacketsDistribute t) throws Exception {
+
+			return null;
+		}
+
+		public List<DredpacketsDistribute> queryByredpacketsId(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryByredpacketsId(red);
+		}
+
+		public List<DredpacketsDistribute> queryByredIdAndMemberId(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryByredIdAndMemberId(red);
+		}
+
+		public List<DredpacketsDistribute> queryByMemberId(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryByMemberId(red);
+		}
+
+		
+		public List<DredpacketsDistribute> queryBymemberIdAndKy(
+				DredpacketsDistribute red) {
+			return dredpacketsDistributeMapper.queryBymemberIdAndKy(red);
+		}
+
+		public DredpacketsDistribute makeRedPack(DredpacketsDistribute dredpacketsDistribute , int type  ) throws Exception {
+
+
+			Dredpackets dredpackets =  dredpacketsService.queryByType(type);
+
+			dredpacketsDistribute.setRedpacketsId(dredpackets.getId());
+			dredpacketsDistribute.setCreateTime(new Date());
+			if(dredpackets.getType() == "quota")
+				dredpacketsDistribute.setMoney(dredpackets.getSingleAmount());
+			else
+			{
+				synchronized (lock) {
+					Long amount = dredpacketsService.getRandomAmount(dredpackets);
+
+					dredpackets.setAmount( dredpackets.getAmount() - amount);
+
+					dredpacketsService.updateRedpackets(dredpackets);
+
+					dredpacketsDistribute.setMoney(amount);
+				}
+
+			}
+			dredpacketsDistribute.setRedpacketsId(dredpackets.getId());
+
+			int flag = dredpacketsDistributeMapper.save(dredpacketsDistribute);
+
+			if(flag > 0)
+			return dredpacketsDistribute;
+			else
+				return null;
+		}
+
+		public boolean shareRedPack(Long packId) throws Exception {
+			boolean result = false;
+			// 红包是否有效？
+			Integer flag = dredpacketsDistributeMapper.validPack(packId);
+			// 是否已经分享过红包 ？
+			Integer shareCount  = dredpacketsDistributeMapper.querySourceRedPackCount(packId);
+
+			// 如果是有效红包 并且没有分享过红包则获得一个分享红包;
+			if( flag > 0 && shareCount < 1) {
+				DredpacketsDistribute shareRedPack  = dredpacketsDistributeMapper.queryById(packId);
+				DredpacketsDistribute dredpacketsDistribute = new DredpacketsDistribute();
+				dredpacketsDistribute.setMemberId(shareRedPack.getMemberId());
+				dredpacketsDistribute.setCreateTime(new Date());
+				dredpacketsDistribute.setPurpose("fx");
+				dredpacketsDistribute.setStatus(RedpacketsStatus.unuse);
+				dredpacketsDistribute.setName("分享有礼，系统红包");
+				makeRedPack(dredpacketsDistribute, 3);
+				result = true;
+			}
+			return result;
+		}
+
+		public DredpacketsDistribute queryIsShare(DredpacketsDistribute red)  throws SQLException {
+			return this.dredpacketsDistributeMapper.queryIsShare(red);
+		}
+
+		public List<DredpacketsDistribute> getRedpacketsUseList(
+				DredpacketsDistribute paramRedpackets) {
+			return this.dredpacketsDistributeMapper.getRedpacketsUseList(paramRedpackets);
+		}
+
+		public long countRedpacketsUseList(DredpacketsDistribute paramRedpackets) {
+			return this.dredpacketsDistributeMapper.countRedpacketsUseList(paramRedpackets);
+		}
+
+		public Integer redPacketsOverdue() {
+			return this.dredpacketsDistributeMapper.redPacketsOverdue();
+		}
+
+
+}

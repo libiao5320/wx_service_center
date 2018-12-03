@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.TechieClearingMapper">
+
+    <resultMap id="RMTechieClearing" type="com.royao.model.TechieClearing">
+        <result property="id" column="id"/>
+        <result property="techieId" column="techie_id"/>
+        <result property="techieName" column="techie_name"/>
+        <result property="money" column="money"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="clearingName" column="clearing_name"/>
+    </resultMap>
+
+	<!--  -->
+	<select id="queryById" resultMap="RMTechieClearing">
+		select * from techie_clearing where id = #{0}
+	</select>
+   
+   
+   <!--  -->
+   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+   		insert into techie_clearing
+   		(
+   			techie_id,techie_name,money,created_time,clearing_name
+   		)
+   		values
+   		(
+   			#{techieId},#{techieName},#{money},#{createdTime},#{clearingName}
+   		)
+   </insert>
+   
+   <!--  -->
+   <update id="update">
+   	 update techie_clearing
+   	 <set>
+   	 	<if test="techieName != null and techieName !=''">techie_name = #{techieName},</if>
+   	 	<if test="money != null">money = #{money},</if>
+   	 	<if test="createdTime != null">created_time = #{createdTime},</if>
+   	 	<if test="clearingName != null and clearingName !=''">clearing_name = #{clearingName},</if>
+   	 </set>
+   	 <where>
+   	 	<if test="techieId != null">
+   	 		techie_id = #{techieId}
+   	 	</if>
+   	 </where>
+   </update>
+   
+   
+   <!--  -->
+   	<select id="queryAll" resultMap="RMTechieClearing" parameterType="com.royao.model.TechieClearing">
+   		select * from techie_clearing 
+   		<where>
+   			<if test="typeValue !=null and typeValue !=''">
+   				<if test="typeName == 'techieId'">
+   					and techie_id LIKE CONCAT(CONCAT('%',#{typeValue}),'%')
+	   			</if>
+	   			<if test="typeName == 'techieName'">
+	   				and techie_name LIKE CONCAT(CONCAT('%',#{typeValue}),'%')
+	   			</if>
+	   			<if test="typeName == 'clearingName'">
+	   				and clearing_name LIKE CONCAT(CONCAT('%',#{typeValue}),'%')
+	   			</if>
+   			</if>
+   			<if test="start != null">
+				and created_time <![CDATA[>=]]> #{start}
+			</if>
+			<if test="end != null">
+					and created_time <![CDATA[<=]]> #{start}
+			</if>
+   		</where>
+   		order by created_time DESC
+   		limit #{pageInfo.begin} , #{pageInfo.end}
+   	</select>
+   	
+   	<select id="queryAllByCount" resultType="java.lang.Long" parameterType="com.royao.model.TechieClearing">
+   		select COUNT(*) from techie_clearing 
+   		<where>
+   			<if test="typeValue !=null and typeValue !=''">
+   				<if test="typeName == 'techieId'">
+   					and techie_id LIKE CONCAT(CONCAT('%',#{typeValue}),'%')
+	   			</if>
+	   			<if test="typeName == 'techieName'">
+	   				and techie_name LIKE CONCAT(CONCAT('%',#{typeValue}),'%')
+	   			</if>
+	   			<if test="typeName == 'clearingName'">
+	   				and clearing_name LIKE CONCAT(CONCAT('%',#{typeValue}),'%')
+	   			</if>
+   			</if>
+			<if test="start != null">
+					and created_time <![CDATA[>=]]> #{start}
+			</if>
+			<if test="end != null">
+					and created_time <![CDATA[<=]]> #{start}
+			</if>
+   		</where>
+   		order by created_time DESC
+   	</select>
+</mapper>
+

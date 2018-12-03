@@ -1,0 +1,205 @@
+package com.royao.ctrl;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.commons.enums.YN;
+import com.royao.http.*;
+import com.royao.model.*;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.*;
+import com.royao.util.JsonUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by libia on 2015/12/31.
+ */
+
+
+@Controller
+@RequestMapping("/index")
+public class Index {
+
+
+    @Autowired
+    private DwxBannerService dwxBannerService;
+    @Autowired
+    private DeventImageService deventImageService;
+    @Autowired
+    private DgoodsService dgoodsService;
+    @Autowired
+    private DmemberService dmemberService ;
+    @Autowired
+    private DgroupbuyClassService dgroupbuyClassService;
+    @Autowired
+    private DtechieService dtechieService;
+
+
+    @ResponseBody
+    @RequestMapping(value = "/index.htm")
+    public String test(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+
+        String wxCode = (String) params.get("wxCode");
+
+
+        Darea darea = null;
+        try {
+            Dmember dmember = dmemberService.queryByWxCode(wxCode);
+            List<DwxBanner> bannerlist = dwxBannerService.queryHomeBanner();
+            List<DeventImage> eventImgList = deventImageService.queryHomeEventImgage();
+//            List<Dgoods> guessLoveGoods = dgoodsService.getBestEvalGoods();
+            List<DgroupbuyClass> dgroupbuyClasses = dgroupbuyClassService.queryHomeGoodsClass();
+            List<Dtechie> dtechieList = dtechieService.queryHomeBestTechie();
+            
+            Map m = new HashMap();
+            
+            DeventImage image = new DeventImage();
+            image.setIsEnter(YN.Y.toString());
+            List<DeventImage> imagelist = this.deventImageService.findList(image);//首页入口图片
+            if(imagelist != null && imagelist.size() > 0){
+            	m.put("enter", imagelist.get(0));
+            }else{
+            	m.put("enter", null);
+            }
+            
+            
+            m.put("bannerlist", bannerlist);
+            m.put("eventImgList", eventImgList);
+//            m.put("guessLoveGoods", guessLoveGoods);
+            m.put("classList", dgroupbuyClasses);
+            m.put("techieList", dtechieList);
+            responseContent = ResponseHandler.makeResponse(m, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+
+    @ResponseBody
+    @RequestMapping (value = "guessYouLove.htm")
+    public String guessYouLove( HttpServletRequest request , HttpServletResponse response)
+    {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+
+
+        Map<?, ?> params = requestContent.getBody();
+
+        String x = (String) params.get("x");
+        String y = (String) params.get("y");
+
+        PageObject pageObject = new PageObject();
+        pageObject.setPageNo(1);
+        if (null != params) {
+            Dgoods dgoods = JSONObject.parseObject(JsonUtil.map2json(params), Dgoods.class);
+            dgoods.setPageInfo(pageObject);
+            List list = null;
+            try {
+                list = dgoodsService.getBestEvalGoods(Double.valueOf(x),Double.valueOf(y));
+                response.setCharacterEncoding("utf-8");
+                if (null != list)
+                    responseContent = ResponseHandler.makeResponse(list, true);
+                else
+                    return null;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else
+            return null;
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/search.htm")
+    public String search(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+
+
+        Map<?, ?> params = requestContent.getBody();
+        PageObject pageObject = new PageObject();
+        pageObject.setPageNo(1);
+        if (null != params) {
+            Dgoods dgoods = JSONObject.parseObject(JsonUtil.map2json(params), Dgoods.class);
+            dgoods.setPageInfo(pageObject);
+            List list = null;
+            try {
+                list = dgoodsService.search(dgoods);
+
+            response.setCharacterEncoding("utf-8");
+
+
+                if (null != list)
+                    responseContent = ResponseHandler.makeResponse(list, true);
+                else
+                    return null;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else
+            return null;
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/memberInfo.htm")
+    public String memberInfo(HttpServletRequest request, HttpServletResponse response) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+
+
+        Map<?, ?> params = requestContent.getBody();
+
+        if (null == params) {
+            try {
+            Dgoods dgoods = JSONObject.parseObject(JsonUtil.map2json(params), Dgoods.class);
+            List list = dgoodsService.search(dgoods);
+
+            response.setCharacterEncoding("utf-8");
+
+
+                if (null != list)
+                    responseContent = ResponseHandler.makeResponse(list, true);
+                else
+                    return null;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else
+            return null;
+
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+}

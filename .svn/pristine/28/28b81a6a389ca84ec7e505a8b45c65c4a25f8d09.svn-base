@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DevaluateMapper">
+
+    <resultMap id="RMDevaluate" type="com.royao.model.Devaluate">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="storeId" column="store_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="grade" column="grade"/>
+        <result property="detail" column="detail"/>
+        <result property="isShow" column="is_show"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+    </resultMap>
+    
+    <resultMap type="com.royao.model.Devaluate" id="RMDevaluateImageShow" extends="RMDevaluate">
+    	<association property="member" column="member_id" select="com.royao.mapper.DmemberMapper.queryById"></association>
+    	<association property="order" column="order_id" select="com.royao.mapper.DorderMapper.queryById"></association>
+    	<collection property="imageList" column="id" select="com.royao.mapper.DevaluateImageMapper.queryByEvaluateIdShow"></collection>
+    </resultMap>
+    
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		id,member_id,goods_id,order_id,store_id,grade,detail,is_show,create_time,update_time,update_by
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_evaluate (
+        	id ,
+        	member_id ,
+        	goods_id ,
+        	order_id ,
+        	store_id,
+        	grade ,
+        	detail ,
+        	is_show ,
+        	create_time ,
+        	update_time ,
+        	update_by 
+        ) VALUES (
+        	#{id} ,
+        	#{memberId} ,
+        	#{goodsId} ,
+        	#{orderId} ,
+        	#{storeId} ,
+        	#{grade} ,
+        	#{detail} ,
+        	#{isShow} ,
+        	#{createTime} ,
+        	#{updateTime} ,
+        	#{updateBy} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_evaluate SET
+	        member_id = #{memberId} ,
+	        goods_id = #{goodsId} ,
+	        order_id = #{orderId} ,
+	        store_id = #{storeId} ,
+	        grade = #{grade} ,
+	        detail = #{detail} ,
+	        is_show = #{isShow} ,
+	        create_time = #{createTime} ,
+	        update_time = #{updateTime} ,
+	        update_by = #{updateBy} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_evaluate WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDevaluate">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_evaluate 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+    <select id="queryByStoreId3" resultMap="RMDevaluateImageShow">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_evaluate 
+	        WHERE 
+		        store_id = #{id} AND is_show='Y' ORDER BY create_time DESC LIMIT 0,3
+	    ]]>
+    </select>
+
+
+    <select id="countDevaluate" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT count(*) FROM d_evaluate where store_id = #{0} AND is_show = 'Y'
+    </select>
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_evaluate where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultMap="RMDevaluateImageShow" parameterType="com.royao.model.Devaluate">
+        SELECT
+        <include refid="columns"/>
+        FROM d_evaluate
+        where 1=1
+        <if test="storeId != null">AND store_id = #{storeId}</if>
+        <if test="isShow != null and isShow != ''">AND is_show = #{isShow}</if>
+        ORDER BY create_time DESC
+        <if test="pageInfo != null">limit #{pageInfo.begin}, #{pageInfo.end}</if>
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDevaluate">
+        SELECT
+        <include refid="columns"/>
+        FROM d_evaluate
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDevaluate">
+        SELECT
+        <include refid="columns"/>
+        FROM d_evaluate
+
+        <where>
+            <if test="@Ognl@isNotEmpty(id)">
+                AND id = #{id}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberId)">
+                AND member_id = #{memberId}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsId)">
+                AND goods_id = #{goodsId}
+            </if>
+            <if test="@Ognl@isNotEmpty(orderId)">
+                AND order_id = #{orderId}
+            </if>
+            <if test="@Ognl@isNotEmpty(storeId)">
+                AND store_id = #{storeId}
+            </if>
+            <if test="@Ognl@isNotEmpty(grade)">
+                AND grade = #{grade}
+            </if>
+            <if test="@Ognl@isNotEmpty(detail)">
+                AND detail = #{detail}
+            </if>
+            <if test="@Ognl@isNotEmpty(isShow)">
+                AND is_show = #{isShow}
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeBegin)">
+                AND create_time >= #{createTimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeEnd)">
+                AND create_time &lt;= #{createTimeEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+                AND update_time >= #{updateTimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+                AND update_time &lt;= #{updateTimeEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(updateBy)">
+                AND update_by = #{updateBy}
+            </if>
+        </where>
+    </select>
+
+	<select id="queryByGoodsIdList" resultMap="RMDevaluateImageShow">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_evaluate 
+	        WHERE 
+		        goods_id = #{good_id} 
+	    ]]>
+    </select>
+	
+	<!--  -->
+	<select id="query" resultMap="RMDevaluateImageShow" parameterType="com.royao.model.Order">
+	select * from d_evaluate
+	<where>
+		<if test="typeName != null and typeName !=''">
+			<if test="typeValue != null and typeValue !=''">
+				<if test="typeName == 'proText'">
+					and goods_id in (select goods_id from d_goods where goods_name like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+				<if test="typeName == 'orderSn'">
+					and order_id in (select order_id from d_order where order_sn like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+				<if test="typeName == 'conName'">
+					and store_id in (select store_id from d_store where store_name like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+				<if test="typeName == 'userName'">
+					and member_id in (select member_id from d_member where member_name like CONCAT(CONCAT('%',#{typeValue}),'%') or m_true_name like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+			</if>
+		</if>
+		<if test="startTime != null">
+			<if test="timeName == 'payTime'">
+				and create_time <![CDATA[>=]]> #{startTime}
+			</if>
+		</if>
+		<if test="endTime != null">
+			<if test="timeName == 'payTime'">
+				and create_time <![CDATA[<=]]> #{endTime}
+			</if>
+		</if>
+		<if test="orderState != null">
+			and grade = #{orderState}
+		</if>
+		<if test="orderBy != null and orderBy !=''">
+			and is_show = #{orderBy}
+		</if>
+	</where>
+		order by create_time DESC
+		limit #{pageInfo.begin} , #{pageInfo.end}
+	</select>
+	
+	
+	<select id="queryCount" resultType="java.lang.Long" parameterType="com.royao.model.Order">
+	select count(*) from d_evaluate
+	<where>
+		<if test="typeName != null and typeName !=''">
+			<if test="typeValue != null and typeValue !=''">
+				<if test="typeName == 'proText'">
+					and goods_id in (select goods_id from d_goods where goods_name like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+				<if test="typeName == 'orderId'">
+					and order_id in (select order_id from d_order where order_sn like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+				<if test="typeName == 'conName'">
+					and store_id in (select store_id from d_store where store_name like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+				<if test="typeName == 'userName'">
+					and member_id in (select member_id from d_member where member_name like CONCAT(CONCAT('%',#{typeValue}),'%') or m_true_name like CONCAT(CONCAT('%',#{typeValue}),'%'))
+				</if>
+			</if>
+		</if>
+		<if test="startTime != null">
+			<if test="timeName == 'payTime'">
+				and create_time <![CDATA[>=]]> #{startTime}
+			</if>
+		</if>
+		<if test="endTime != null">
+			<if test="timeName == 'payTime'">
+				and create_time <![CDATA[<=]]> #{endTime}
+			</if>
+		</if>
+		<if test="orderState != null">
+			and grade = #{orderState}
+		</if>
+		<if test="orderBy != null and orderBy !=''">
+			and is_show = #{orderBy}
+		</if>
+	</where>
+	</select>
+	
+	<!--  -->
+</mapper>
+

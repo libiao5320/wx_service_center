@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DcollectMapper">
+
+    <resultMap id="RMDcollect" type="com.royao.model.Dcollect">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="type" column="type"/>
+        <result property="commonId" column="common_id"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		id,member_id,type,common_id
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_collect (
+        	id ,
+        	member_id ,
+        	type ,
+        	common_id 
+        ) VALUES (
+        	#{id} ,
+        	#{memberId} ,
+        	#{type} ,
+        	#{commonId} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_collect SET
+	        member_id = #{memberId} ,
+	        type = #{type} ,
+	        common_id = #{commonId} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_collect WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDcollect">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_collect 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_collect where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_collect
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryByUser" resultType="com.royao.model.Dmember" resultMap="RMDcollect">
+        SELECT
+        <include refid="columns"/>
+        FROM d_collect
+        where 1=1 and member_id = #{memberId}
+        limit #{pageInfo.begin} , #{pageInfo.end}
+    </select>
+
+
+    <select id="queryCountByUserId" resultMap="java.lang.Integer">
+        SELECT
+        count(a.member_id)
+        FROM d_collect a
+        where member_id = #{value}
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDcollect">
+        SELECT
+        <include refid="columns"/>
+        FROM d_collect
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDcollect">
+        SELECT
+        <include refid="columns"/>
+        FROM d_collect
+
+        <where>
+            <if test="@Ognl@isNotEmpty(id)">
+                AND id = #{id}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberId)">
+                AND member_id = #{memberId}
+            </if>
+            <if test="@Ognl@isNotEmpty(type)">
+                AND type = #{type}
+            </if>
+            <if test="@Ognl@isNotEmpty(commonId)">
+                AND common_id = #{commonId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

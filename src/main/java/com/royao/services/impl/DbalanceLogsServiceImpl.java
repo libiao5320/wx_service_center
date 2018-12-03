@@ -1,0 +1,81 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+package com.royao.services.impl;
+
+
+import com.royao.mapper.DbalanceLogsMapper;
+import com.royao.model.DbalanceLogs;
+import com.royao.model.Order;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DbalanceLogsService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+
+@Service("DbalanceLogsService")
+public class DbalanceLogsServiceImpl extends BaseServiceImpl<DbalanceLogs> implements DbalanceLogsService {
+
+    @Autowired
+    private DbalanceLogsMapper dbalanceLogsMapper;
+
+
+    public int save(DbalanceLogs dbalanceLogs) throws Exception {
+        return dbalanceLogsMapper.save(dbalanceLogs);
+    }
+
+    public int update(DbalanceLogs dbalanceLogs) throws Exception {
+        return dbalanceLogsMapper.update(dbalanceLogs);
+    }
+
+    public int delete(Long id) throws Exception {
+        return dbalanceLogsMapper.delete(id);
+    }
+
+    public DbalanceLogs queryById(Long id) throws Exception {
+        return dbalanceLogsMapper.queryById(id);
+    }
+
+    public List<DbalanceLogs> queryByCondtion(@SuppressWarnings("rawtypes") Map map) throws Exception {
+        return dbalanceLogsMapper.queryByCondtion(map);
+    }
+
+    public List<DbalanceLogs> queryAll() throws Exception {
+        return dbalanceLogsMapper.queryAll();
+    }
+
+    public List<DbalanceLogs> listWithPage(DbalanceLogs t) throws Exception {
+        return null;
+    }
+    
+    public DbalanceLogs querySn(String sn) throws Exception{
+    	return dbalanceLogsMapper.querySn(sn);
+    }
+
+	public List<DbalanceLogs> queryUserBalancelogs(DbalanceLogs logs) throws Exception {
+		return dbalanceLogsMapper.queryUserByBalanceList(logs);
+	}
+
+	public Long countStored() throws Exception{
+		return this.dbalanceLogsMapper.countStored();
+	}
+
+	public List<DbalanceLogs> queryLogs(Order or) throws SQLException {
+		return this.dbalanceLogsMapper.queryLogs(or);
+	}
+
+	public Long queryLogsCount(Order or) throws SQLException {
+		return this.dbalanceLogsMapper.queryLogsCount(or);
+	}
+    
+}

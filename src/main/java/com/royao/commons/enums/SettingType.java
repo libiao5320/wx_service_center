@@ -1,0 +1,27 @@
+package com.royao.commons.enums;
+/**
+ * 
+ * ClassName: StoreStatus 
+ * @Description:设置类型
+ * @author oubinbin
+ * @date 2016年1月26日
+ */
+public enum SettingType {
+	CCSET {
+	public String getName() {
+	    return "储存设置";
+	    }
+	},
+	PJXSSET {
+		public String getName() {
+			return "评价系数";
+		}
+	},
+	QTSET {
+	    public String getName() {
+	        return "其他设置";
+	    }
+	};
+	
+	public abstract String getName();
+}

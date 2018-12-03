@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DevaluateImageMapper">
+
+    <resultMap id="RMDevaluateImage" type="com.royao.model.DevaluateImage">
+        <result property="id" column="id"/>
+        <result property="evaluateId" column="evaluate_id"/>
+        <result property="img" column="img"/>
+        <result property="isShow" column="is_show"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		id,evaluate_id,img,is_show,create_time
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_evaluate_image (
+        	id ,
+        	evaluate_id ,
+        	img ,
+        	is_show ,
+        	create_time 
+        ) VALUES (
+        	#{id} ,
+        	#{evaluateId} ,
+        	#{img} ,
+        	#{isShow} ,
+        	#{createTime} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_evaluate_image SET
+	        evaluate_id = #{evaluateId} ,
+	        img = #{img} ,
+	        is_show = #{isShow} ,
+	        create_time = #{createTime} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_evaluate_image WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDevaluateImage">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_evaluate_image 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_evaluate_image where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_evaluate_image
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDevaluateImage">
+        SELECT
+        <include refid="columns"/>
+        FROM d_evaluate_image
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDevaluateImage">
+        SELECT
+        <include refid="columns"/>
+        FROM d_evaluate_image
+
+        <where>
+            <if test="@Ognl@isNotEmpty(id)">
+                AND id = #{id}
+            </if>
+            <if test="@Ognl@isNotEmpty(evaluateId)">
+                AND evaluate_id = #{evaluateId}
+            </if>
+            <if test="@Ognl@isNotEmpty(img)">
+                AND img = #{img}
+            </if>
+            <if test="@Ognl@isNotEmpty(isShow)">
+                AND is_show = #{isShow}
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeBegin)">
+                AND create_time >= #{createTimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(createTimeEnd)">
+                AND create_time &lt;= #{createTimeEnd}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

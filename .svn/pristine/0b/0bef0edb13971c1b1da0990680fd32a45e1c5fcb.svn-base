@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DtechieEvaluateMapper">
+
+	<resultMap id="RMDtechieEvaluate" type="com.royao.model.DtechieEvaluate">
+        <result property="id" column="id"/>
+        <result property="techieId" column="techie_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="grade" column="grade"/>
+        <result property="detail" column="detail"/>
+        <result property="isShow" column="is_show"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="DtechieEvaluatecolumns">
+	    <![CDATA[
+		id,techie_id,member_id,goods_id,order_id,grade,detail,is_show,create_time,update_time,update_by
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO d_techie_evaluate (
+        	id ,
+        	techie_id ,
+        	member_id ,
+        	goods_id ,
+        	order_id ,
+        	grade ,
+        	detail ,
+        	is_show ,
+        	create_time ,
+        	update_time ,
+        	update_by 
+        ) VALUES (
+        	#{id} ,
+        	#{techieId} ,
+        	#{memberId} ,
+        	#{goodsId} ,
+        	#{orderId} ,
+        	#{grade} ,
+        	#{detail} ,
+        	#{isShow} ,
+        	#{createTime} ,
+        	#{updateTime} ,
+        	#{updateBy} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_techie_evaluate SET
+	        techie_id = #{techieId} ,
+	        member_id = #{memberId} ,
+	        goods_id = #{goodsId} ,
+	        order_id = #{orderId} ,
+	        grade = #{grade} ,
+	        detail = #{detail} ,
+	        is_show = #{isShow} ,
+	        create_time = #{createTime} ,
+	        update_time = #{updateTime} ,
+	        update_by = #{updateBy} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_techie_evaluate WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDtechieEvaluate">
+		SELECT <include refid="DtechieEvaluatecolumns" />
+	    <![CDATA[
+		    FROM d_techie_evaluate 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_techie_evaluate where 1=1
+
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+    	SELECT <include refid="DtechieEvaluatecolumns" />
+	    FROM d_techie_evaluate 
+		where 1=1 
+		limit #begin# , #end#
+    </select>
+	
+	
+	
+	  <select id="queryAll" resultMap="RMDtechieEvaluate">
+    	SELECT <include refid="DtechieEvaluatecolumns" />
+	    FROM d_techie_evaluate 
+	  </select>
+	  
+	    <select id="queryByCondition" resultMap="RMDtechieEvaluate">
+    	SELECT <include refid="DtechieEvaluatecolumns" />
+	    FROM d_techie_evaluate 
+		
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(techieId)">
+				AND techie_id = #{techieId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(memberId)">
+				AND member_id = #{memberId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(goodsId)">
+				AND goods_id = #{goodsId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(orderId)">
+				AND order_id = #{orderId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(grade)">
+				AND grade = #{grade}
+			</if>
+	       <if test="@Ognl@isNotEmpty(detail)">
+				AND detail = #{detail}
+			</if>
+	       <if test="@Ognl@isNotEmpty(isShow)">
+				AND is_show = #{isShow}
+			</if>
+	       <if test="@Ognl@isNotEmpty(createTimeBegin)">
+				AND create_time >= #{createTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+				AND create_time &lt;= #{createTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+				AND update_time >= #{updateTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+				AND update_time &lt;= #{updateTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateByBegin)">
+				AND update_by >= #{updateByBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateByEnd)">
+				AND update_by &lt;= #{updateByEnd}
+		   </if>
+		</where>
+	  </select>
+
+	
+</mapper>
+

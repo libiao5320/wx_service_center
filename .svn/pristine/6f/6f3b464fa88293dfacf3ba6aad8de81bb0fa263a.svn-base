@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DmemberMapper">
+
+    <resultMap id="RMDmember" type="com.royao.model.Dmember">
+        <result property="memberId" column="member_id"/>
+        <result property="vipRankId" column="vip_rank_id"/>
+        <result property="wxTokenId" column="wx_token_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="memberTruename" column="member_truename"/>
+        <result property="memberAvatar" column="member_avatar"/>
+        <result property="memberSex" column="member_sex"/>
+        <result property="memberBirthday" column="member_birthday"/>
+        <result property="memberPasswd" column="member_passwd"/>
+        <result property="memberPaypwd" column="member_paypwd"/>
+        <result property="memberEmail" column="member_email"/>
+        <result property="memberEmailBind" column="member_email_bind"/>
+        <result property="memberMobile" column="member_mobile"/>
+        <result property="memberMobileBind" column="member_mobile_bind"/>
+        <result property="memberQq" column="member_qq"/>
+        <result property="memberLoginNum" column="member_login_num"/>
+        <result property="memberTime" column="member_time"/>
+        <result property="memberLoginTime" column="member_login_time"/>
+        <result property="memberLoginIp" column="member_login_ip"/>
+        <result property="memberPoints" column="member_points"/>
+        <result property="availablePredeposit" column="available_predeposit"/>
+        <result property="freezePredeposit" column="freeze_predeposit"/>
+        <result property="availableRcBalance" column="available_rc_balance"/>
+        <result property="freezeRcBalance" column="freeze_rc_balance"/>
+        <result property="memberState" column="member_state"/>
+        <result property="memberAreaid" column="member_areaid"/>
+        <result property="memberCityid" column="member_cityid"/>
+        <result property="memberProvinceid" column="member_provinceid"/>
+        <result property="memberAreainfo" column="member_areainfo"/>
+        <result property="topManState" column="top_man_state"/>
+        <result property="secret" column="member_secret"/>
+        <result property="memberPaysecret" column="member_paysecret"/>
+        <association property="dvip" column="vip_rank_id" select="com.royao.mapper.DvipMapper.queryById" ></association>
+    </resultMap>
+
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		member_id,vip_rank_id,wx_token_id,member_name,member_truename,member_avatar,member_sex,member_birthday,
+		member_passwd,member_paypwd,member_email,member_email_bind,
+		member_mobile,member_mobile_bind,member_qq,member_login_num,member_time,
+		member_login_time,member_login_ip,member_points,available_predeposit,freeze_predeposit,
+		available_rc_balance,freeze_rc_balance,member_state,member_areaid,member_cityid,
+		member_provinceid,member_areainfo,top_man_state, member_secret, member_paysecret     
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="register" useGeneratedKeys="true" keyProperty="memberId">
+        <![CDATA[
+        INSERT INTO d_member (member_id ,wx_token_id ,member_name ,member_sex ,member_mobile,member_mobile_bind )
+        values (#{memberId},#{wxTokenId},#{memberName},#{memberSex},#{memberMobile},1)
+
+        ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="memberId">
+        <![CDATA[
+        INSERT INTO d_member (
+        	member_id ,
+        	vip_rank_id,
+        	wx_token_id ,
+        	member_name ,
+        	member_truename ,
+        	member_avatar ,
+        	member_sex ,
+        	member_birthday ,
+        	member_passwd ,
+        	member_paypwd ,
+        	member_email ,
+        	member_email_bind ,
+        	member_mobile ,
+        	member_mobile_bind ,
+        	member_qq ,
+        	member_login_num ,
+        	member_time ,
+        	member_login_time ,
+        	member_login_ip ,
+        	member_points ,
+        	available_predeposit ,
+        	freeze_predeposit ,
+        	available_rc_balance ,
+        	freeze_rc_balance ,
+        	member_state ,
+        	member_areaid ,
+        	member_cityid ,
+        	member_provinceid ,
+        	member_areainfo ,
+        	top_man_state,
+        	member_secret ,
+        	member_paysecret  
+        ) VALUES (
+        	#{memberId} ,
+        	#{vipRankId},
+        	#{wxTokenId} ,
+        	#{memberName} ,
+        	#{memberTruename} ,
+        	#{memberAvatar} ,
+        	#{memberSex} ,
+        	#{memberBirthday} ,
+        	#{memberPasswd} ,
+        	#{memberPaypwd} ,
+        	#{memberEmail} ,
+        	#{memberEmailBind} ,
+        	#{memberMobile} ,
+        	#{memberMobileBind} ,
+        	#{memberQq} ,
+        	#{memberLoginNum} ,
+        	#{memberTime} ,
+        	#{memberLoginTime} ,
+        	#{memberLoginIp} ,
+        	#{memberPoints} ,
+        	#{availablePredeposit} ,
+        	#{freezePredeposit} ,
+        	#{availableRcBalance} ,
+        	#{freezeRcBalance} ,
+        	#{memberState} ,
+        	#{memberAreaid} ,
+        	#{memberCityid} ,
+        	#{memberProvinceid} ,
+        	#{memberAreainfo} ,
+        	#{topManState} ,
+        	#{secret} ,
+        	#{memberPaysecret}  
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_member SET
+        	vip_rank_id = #{vipRankId},
+	        wx_token_id = #{wxTokenId} ,
+	        member_name = #{memberName} ,
+	        member_truename = #{memberTruename} ,
+	        member_avatar = #{memberAvatar} ,
+	        member_sex = #{memberSex} ,
+	        member_birthday = #{memberBirthday} ,
+	        member_passwd = #{memberPasswd} ,
+	        member_paypwd = #{memberPaypwd} ,
+	        member_email = #{memberEmail} ,
+	        member_email_bind = #{memberEmailBind} ,
+	        member_mobile = #{memberMobile} ,
+	        member_mobile_bind = #{memberMobileBind} ,
+	        member_qq = #{memberQq} ,
+	        member_login_num = #{memberLoginNum} ,
+	        member_time = #{memberTime} ,
+	        member_login_time = #{memberLoginTime} ,
+	        member_login_ip = #{memberLoginIp} ,
+	        member_points = #{memberPoints} ,
+	        available_predeposit = #{availablePredeposit} ,
+	        freeze_predeposit = #{freezePredeposit} ,
+	        available_rc_balance = #{availableRcBalance} ,
+	        freeze_rc_balance = #{freezeRcBalance} ,
+	        member_state = #{memberState} ,
+	        member_areaid = #{memberAreaid} ,
+	        member_cityid = #{memberCityid} ,
+	        member_provinceid = #{memberProvinceid} ,
+	        member_areainfo = #{memberAreainfo} ,
+	        top_man_state = #{topManState} ,
+	        member_secret = #{secret} ,
+	        member_paysecret = #{memberPaysecret} 
+        WHERE 
+	        member_id = #{memberId} 
+    ]]>
+    </update>
+    
+     <update id="updateDmember">
+        <![CDATA[
+        UPDATE d_member SET
+
+	        member_points = #{memberPoints} ,
+	        available_predeposit =available_predeposit - #{availablePredeposit} ,
+	        freeze_predeposit = #{freezePredeposit} ,
+	        available_rc_balance = #{availableRcBalance} ,
+	        freeze_rc_balance = #{freezeRcBalance} ,
+	        member_state = #{memberState} 
+	      
+        WHERE 
+	        member_id = #{memberId} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_member WHERE
+        member_id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDmember">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_member 
+	        WHERE 
+		        member_id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_member where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_member
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+    <select id="queryByWxCode" resultMap="RMDmember">
+        SELECT
+        <include refid="columns"/>
+        FROM d_member where wx_token_id = #{value}
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDmember">
+        SELECT
+        <include refid="columns"/>
+        FROM d_member
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDmember">
+        SELECT
+        <include refid="columns"/>
+        FROM d_member
+
+        <where>
+            <if test="@Ognl@isNotEmpty(memberId)">
+                AND member_id = #{memberId}
+            </if>
+            <if test="@Ognl@isNotEmpty(wxTokenId)">
+                AND wx_token_id = #{wxTokenId}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberName)">
+                AND member_name = #{memberName}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberTruename)">
+                AND member_truename = #{memberTruename}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberAvatar)">
+                AND member_avatar = #{memberAvatar}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberSex)">
+                AND member_sex = #{memberSex}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberBirthdayBegin)">
+                AND member_birthday >= #{memberBirthdayBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberBirthdayEnd)">
+                AND member_birthday &lt;= #{memberBirthdayEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberPasswd)">
+                AND member_passwd = #{memberPasswd}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberPaypwd)">
+                AND member_paypwd = #{memberPaypwd}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberEmail)">
+                AND member_email = #{memberEmail}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberEmailBind)">
+                AND member_email_bind = #{memberEmailBind}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberMobile)">
+                AND member_mobile = #{memberMobile}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberMobileBind)">
+                AND member_mobile_bind = #{memberMobileBind}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberQq)">
+                AND member_qq = #{memberQq}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberLoginNum)">
+                AND member_login_num = #{memberLoginNum}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberTime)">
+                AND member_time = #{memberTime}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberLoginTime)">
+                AND member_login_time = #{memberLoginTime}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberLoginIp)">
+                AND member_login_ip = #{memberLoginIp}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberPoints)">
+                AND member_points = #{memberPoints}
+            </if>
+            <if test="@Ognl@isNotEmpty(availablePredeposit)">
+                AND available_predeposit = #{availablePredeposit}
+            </if>
+            <if test="@Ognl@isNotEmpty(freezePredeposit)">
+                AND freeze_predeposit = #{freezePredeposit}
+            </if>
+            <if test="@Ognl@isNotEmpty(availableRcBalance)">
+                AND available_rc_balance = #{availableRcBalance}
+            </if>
+            <if test="@Ognl@isNotEmpty(freezeRcBalance)">
+                AND freeze_rc_balance = #{freezeRcBalance}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberState)">
+                AND member_state = #{memberState}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberAreaid)">
+                AND member_areaid = #{memberAreaid}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberCityid)">
+                AND member_cityid = #{memberCityid}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberProvinceid)">
+                AND member_provinceid = #{memberProvinceid}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberAreainfo)">
+                AND member_areainfo = #{memberAreainfo}
+            </if>
+            <if test="@Ognl@isNotEmpty(topManState)">
+                AND top_man_state = #{topManState}
+            </if>
+            
+            <if test="@Ognl@isNotEmpty(secret)">
+                AND member_secret = #{memberAreainfo}
+            </if>
+            <if test="@Ognl@isNotEmpty(memberPaysecret)">
+                AND member_paysecret = #{topManState}
+            </if>
+        
+        </where>
+    </select>
+
+
+</mapper>
+

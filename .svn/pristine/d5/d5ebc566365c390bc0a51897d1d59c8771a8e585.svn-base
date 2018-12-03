@@ -1,0 +1,862 @@
+package com.royao.ctrl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSONArray;
+import com.royao.model.*;
+import com.royao.services.inface.*;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.commons.enums.RedpacketsStatus;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.util.DateUtil;
+import com.royao.util.JsonUtil;
+import com.royao.util.MemberVipUtil;
+import com.royao.util.Validate;
+
+
+/**
+ * 订单业务处理
+ * @author yangx
+ * @className 
+ * @date 2016年1月16日下午3:43:10
+ */
+@Controller
+@RequestMapping("/order")
+public class OrderCtrl {
+
+	@Autowired
+	private DorderService dorderService;
+
+	@Autowired
+	private DmemberService dmemberService;
+	
+	@Autowired
+	private DredpacketsDistributeService redpacketsDistributeService;
+	
+	@Autowired
+	private  DbalanceLogsService dbalancelogsService;
+	
+	
+    @Autowired
+    private DeventService eventService;
+
+	@Autowired
+	private  DgoodsService dgoodsService;
+
+
+
+	
+
+	Logger logger = Logger.getLogger(this.getClass());
+	
+	@ResponseBody
+	@RequestMapping("/queryOrderByPaySn.htm")
+	public String queryOrderByPaySn(HttpServletRequest request ,HttpServletResponse response){
+		ResponseContent responseContent = null;
+		try {
+			
+			logger.info("订单详情页list");
+			responseContent = new ResponseContent();   
+			RequestContent  requestContent  = RequestHandler.execute(request);
+			
+			 Map<?, ?> params = requestContent.getBody();
+			
+	        response.setCharacterEncoding("utf-8");
+	        //将json字符串 转换成 java bean
+	        Dorder dorder = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		        try {
+		        	if(null != requestContent.getBody()){
+		        		Map<String,Object> remap=new HashMap<String, Object>();
+		        		//判断orderid 是否有值
+		        		if(null!=dorder.getOrderId() && !"".equals(dorder.getOrderId()) && 0!=dorder.getOrderId()){
+		             		remap.put("orderId", dorder.getOrderId());
+		        		}
+		        		remap.put("paySn", dorder.getPaySn());
+		        		remap.put("orderState",dorder.getOrderState());
+						
+						List<Dorder> goodList= this.dorderService.queryByCondtion(remap);
+						
+						if(goodList != null){
+							responseContent = ResponseHandler.makeResponse(goodList,true);
+						}
+					}
+		        	
+		        } catch (Exception e) {
+		        	logger.info("异常："+e.getMessage());
+		        }
+		} catch (Exception e) {
+			logger.info("异常："+e.getMessage());
+		}
+		 return JSONObject.toJSONString(responseContent);
+	}
+	
+	/**
+	 * 
+	 * @Title: createdOrder
+	 * @Description: TODO(创建活动订单)
+	 * @param @param request
+	 * @param @param response
+	 * @param @return 参数
+	 * @return String 返回类型
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping("/createdEventOrder.htm")
+	public String createdEventOrder(HttpServletRequest request, HttpServletResponse response) {
+
+		logger.info("创建活动订单数据实现类");
+		
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<?,?> params = requestContent.getBody();
+
+		Map<String, Object> m = new HashMap<String, Object>();
+		Dorder dorder = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		
+		Dmember dmember =null;
+		dorder.setMemberId(dorder.getMemberId());//会员id
+		/**查询 member信息**/
+		// 查询余额,看是否满足付款提交
+		try {
+			if (null != dorder.getMemberId()) {
+				dmember = this.dmemberService.queryById(dorder.getMemberId());//查询会员信息
+				if (null != dmember) {
+					m.put("availablePredeposit", dmember.getAvailablePredeposit());//可用预存款
+					m.put("freezePredeposit", dmember.getFreezePredeposit());//冻结预存款
+				} else {
+					m.put("status", "false");
+					m.put("message", "登陆超时,请刷新后重新登陆!");
+
+					this.logger.info("会员信息为null");
+					responseContent = ResponseHandler.makeResponse(m, false);
+					return JSONObject.toJSONString(responseContent);
+
+				}
+			} else {
+				m.put("status", "false");
+				m.put("message", "登陆超时,请刷新后重新登陆!");
+
+				this.logger.info("会员信息为null");
+				responseContent = ResponseHandler.makeResponse(m, true);
+				return JSONObject.toJSONString(responseContent);
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		/*member信息*/
+		dorder.setMemberId(dmember.getMemberId());
+		dorder.setMemberName(dmember.getMemberName());
+		
+		/************************活动类别*************************************/
+		
+		
+		Devent devent=null;
+		/*查询产品id信息*/
+		Long goodsId=dorder.getGoodsId();//获得产品id、
+		
+		  try {
+			 devent = this.eventService.queryById(goodsId);//goodsId=eventId
+			
+			if(devent==null){
+				m.put("status", "false");
+				m.put("message", "商品信息不存在!");
+
+				this.logger.info("商品信息不存在");
+				responseContent = ResponseHandler.makeResponse(m, true);
+				return JSONObject.toJSONString(responseContent);
+			}
+			
+		} catch (Exception e3) {
+			e3.printStackTrace();
+		}
+		  
+		/**给order赋值**/  
+		dorder.setDelayTime(devent.getUpdateTime());//消费券过期时间
+		dorder.setAddTime(new Date());
+		dorder.setOrderState(1); // 订单状态-未支付
+		dorder.setOrderFrom(2); // 订单来源-mobile
+		dorder.setDeleteState(0); // 订单状态 - 正常
+		
+		/**diytest 值**/
+		dorder.setmTrueName(params.get("mTrueName")+"");
+		dorder.setmDate(params.get("mDate")+"");
+		dorder.setmMobile(params.get("mMobile")+"");
+		dorder.setmAddress(params.get("mAddress")+"");
+
+		/**商品信息**/
+		Long vipPrice=devent.getEntryfee();//默认0vip
+		dorder.setOrderAmount(vipPrice);//商品vip价格
+
+		/**获得红包信息**/
+		Long rcbId=null;
+		DredpacketsDistribute dredpacketsDistribute=null;
+		//获得红包id		
+		if(StringUtils.isNotBlank(params.get("rcbId")+"")){//红包id
+			if(!"".equals(params.get("rcbId")+"")){//不等于空串
+				logger.info("查询红包ID："+params.get("rcbId"));
+				rcbId=Long.parseLong(params.get("rcbId")+"");
+				try {
+					
+					dredpacketsDistribute=redpacketsDistributeService.queryById(rcbId);
+				} catch (Exception e) {
+					logger.error("查询红包异常："+e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		/**插入订单 start**/
+		// 根据订单数量产生订单条数!
+
+		Long total_order_num = Long.parseLong(this.getOrderNum());
+		dorder.setPaySn(total_order_num); // 总订单号
+		Long good_size = dorder.getGoodsNum(); // 产品数量作为循环参数
+		 //订单类型 1普通 2预定 
+		 int isBook=3;
+		 try {
+			 /**普活动定单 开始**/
+			 if(isBook==3){
+				 logger.info("goodsId:"+goodsId+ "订单类型："+isBook);
+	//			  bookDownPayment
+				 
+					for (int i = 0; i < good_size; i++) {/**循环 start**/
+						//红包金额
+				 		Long redMoney=0L;
+						if (i == 0) {
+							// 这里做插入红包操作..
+							if(dredpacketsDistribute!=null){
+								logger.info("进行红包锁定操作:[]"+dredpacketsDistribute.getId());
+								redMoney=dredpacketsDistribute.getMoney();
+								dorder.setRcbId(dredpacketsDistribute.getId());//红包id
+								dorder.setRcbAmount(dredpacketsDistribute.getMoney());//红包面额
+					
+								/**修改红包状态**/
+								dredpacketsDistribute.setStatus(RedpacketsStatus.lockup);//已经锁定
+								redpacketsDistributeService.update(dredpacketsDistribute);//进行红包锁定操作
+							}
+						}
+						//pdAmount 实际支付预存款的金额
+						Long pdAmount=vipPrice-redMoney;
+						if(pdAmount<0){
+							pdAmount=0L;//如果总支付金额小于0 预存款金额为0分
+						}
+						dorder.setPdAmount(pdAmount);
+						dorder.setOrderId(null);//主键自增长
+						dorder.setOrderSn(Long.parseLong(this.getOrderNum())); // 随机订单号
+						dorder.setConsumptionCode(dorderService.getConsumptionCode());//10位随机数
+						dorder.setGoodsNum(1L);
+						dorder.setBookDownPayment(0L);//默认值0
+						dorder.setBookFinalPayment(0L);//默认值0
+		
+						//保存订单
+						this.dorderService.save(dorder);
+						//清空 红包数据
+						dorder.setRcbId(null);//红包id 清空
+						dorder.setRcbAmount(null);//红包面额 清空
+					}/**循环结束**/
+				 
+			 }
+			 /**普通订单 结束**/
+			/**预定单结束**/
+			 
+				m.put("status", "true");
+				m.put("total_order_num", total_order_num); // 返回给前台一个总订单号,以便支付;
+				responseContent = ResponseHandler.makeResponse(m, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				m.put("status", "false");
+				m.put("message", "系统错误,请稍后重试!");
+				try {
+					responseContent = ResponseHandler.makeResponse(m, true);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				this.logger.info("保存订单出错!");
+			}
+		/**插入订单 end**/
+
+		return JSONObject.toJSONString(responseContent);
+
+	}
+	
+	/**
+	 * 
+	 * @Title: createdOrder
+	 * @Description: TODO(创建订单)
+	 * @param @param request
+	 * @param @param response
+	 * @param @return 参数
+	 * @return String 返回类型
+	 * @throws
+	 */
+	@ResponseBody
+	@RequestMapping("/createdOrder.htm")
+	public String createdOrder(HttpServletRequest request, HttpServletResponse response) {
+
+		logger.info("创建订单数据实现类");
+		
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<?,?> params = requestContent.getBody();
+
+		Map<String, Object> m = new HashMap<String, Object>();
+		Dorder dorder = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		
+		Dmember dmember =null;
+		dorder.setMemberId(dorder.getMemberId());
+		/**查询 member信息**/
+		// 查询余额,看是否满足付款提交
+		try {
+			if (null != dorder.getMemberId()) {
+				//获取会员信息
+				dmember = this.dmemberService.queryById(dorder.getMemberId());
+				if (null != dmember) {
+					m.put("availablePredeposit", dmember.getAvailablePredeposit());//可用预存款
+					m.put("freezePredeposit", dmember.getFreezePredeposit());//冻结预存款
+				} else {
+					m.put("status", "false");
+					m.put("message", "登陆超时,请刷新后重新登陆!");
+
+					this.logger.info("会员信息为null");
+					responseContent = ResponseHandler.makeResponse(m, false);
+					return JSONObject.toJSONString(responseContent);
+
+				}
+			} else {
+				m.put("status", "false");
+				m.put("message", "登陆超时,请刷新后重新登陆!");
+
+				this.logger.info("会员信息为null");
+				responseContent = ResponseHandler.makeResponse(m, true);
+				return JSONObject.toJSONString(responseContent);
+			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
+		}
+		/*member信息*/
+		dorder.setMemberId(dmember.getMemberId());
+		dorder.setMemberName(dmember.getMemberName());
+		
+		/***************************商品流程***************************************/
+		Dgoods dgoods=null;
+		/*查询产品id信息*/
+		Long goodsId=dorder.getGoodsId();//获得产品id
+		  try {
+			 dgoods=dgoodsService.queryById(goodsId);
+			
+			if(dgoods==null){
+				m.put("status", "false");
+				m.put("message", "商品信息不存在!");
+
+				this.logger.info("商品信息不存在");
+				responseContent = ResponseHandler.makeResponse(m, true);
+				return JSONObject.toJSONString(responseContent);
+			}
+		} catch (Exception e3) {
+			e3.printStackTrace();
+		}
+		  
+		/**给order赋值**/  
+		dorder.setDelayTime(DateUtil.getDateTimeAddDateTime(new Date(), dgoods.getXfqYxqValues()));//消费券过期时间
+		dorder.setAddTime(new Date());
+		dorder.setOrderState(1); // 订单状态-未支付
+		dorder.setOrderFrom(2); // 订单来源-mobile
+		dorder.setDeleteState(0); // 订单状态 - 正常
+		
+		/**diytest 值**/
+		dorder.setmTrueName(params.get("mTrueName")+"");
+		dorder.setmDate(params.get("mDate")+"");
+		dorder.setmMobile(params.get("mMobile")+"");
+		dorder.setmAddress(params.get("mAddress")+"");
+
+		/**商品信息**/
+		Long vipPrice=MemberVipUtil.getMemberGoodsvipPrice(dgoods, dmember.getVipRankId());//默认0vip
+		dorder.setOrderAmount(vipPrice);//商品vip价格
+		/*查询红包信息*/
+		Long rcbId=null;
+		DredpacketsDistribute dredpacketsDistribute=null;
+		//获得红包id		
+		if(StringUtils.isNotBlank(params.get("rcbId")+"")){//红包id
+			if(!"".equals(params.get("rcbId")+"")){//不等于空串
+				logger.info("查询红包ID："+params.get("rcbId"));
+				rcbId=Long.parseLong(params.get("rcbId")+"");
+				try {
+					
+					dredpacketsDistribute=redpacketsDistributeService.queryById(rcbId);
+				} catch (Exception e) {
+					logger.error("查询红包异常："+e.getMessage());
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		/**插入订单 start**/
+		// 根据订单数量产生订单条数!
+
+		Long total_order_num = Long.parseLong(this.getOrderNum());//主订单号
+		dorder.setPaySn(total_order_num); // 总订单号
+		Long good_size = dorder.getGoodsNum(); // 产品数量作为循环参数
+		 //订单类型 1普通 2预定 
+		 int isBook=dgoods.getIsBook();
+		 try {
+			 /**普通定单 开始**/
+			 if(isBook==1){
+				 logger.info("goodsId:"+goodsId+ "订单类型："+isBook);
+	//			  bookDownPayment
+						for (int i = 0; i < good_size; i++) {
+							//红包金额
+					 		Long redMoney=0L;
+							if (i == 0) {
+								// 这里做插入红包操作..
+								if(dredpacketsDistribute!=null){
+									logger.info("进行红包锁定操作:[]"+dredpacketsDistribute.getId());
+									redMoney=dredpacketsDistribute.getMoney();
+									dorder.setRcbId(dredpacketsDistribute.getId());//红包id
+									dorder.setRcbAmount(dredpacketsDistribute.getMoney());//红包面额
+						
+									/**修改红包状态**/
+									dredpacketsDistribute.setStatus(RedpacketsStatus.lockup);//已经锁定
+									redpacketsDistributeService.update(dredpacketsDistribute);//进行红包锁定操作
+								}
+							}
+							//pdAmount 实际支付预存款的金额
+							Long pdAmount=vipPrice-redMoney;
+							if(pdAmount<0){
+								pdAmount=0L;//如果总支付金额小于0 预存款金额为0分
+							}
+							dorder.setPdAmount(pdAmount);
+							dorder.setOrderId(null);//主键自增长
+							dorder.setOrderSn(Long.parseLong(this.getOrderNum())); // 随机订单号
+							dorder.setConsumptionCode(dorderService.getConsumptionCode());//10位随机数
+							dorder.setGoodsNum(1L);
+							dorder.setBookDownPayment(0L);//默认值0
+							dorder.setBookFinalPayment(0L);//默认值0
+			
+							//保存订单
+							this.dorderService.save(dorder);
+							//清空 红包数据
+							dorder.setRcbId(null);//红包id 清空
+							dorder.setRcbAmount(null);//红包面额 清空
+						}
+				 
+			 }
+			 /**普通订单 结束**/
+			 else if(isBook==2){/**预定单 开始**/
+				 	
+				 Long bookdownPayment=dgoods.getBookDownPayment();//商品定金值
+				 Long bookfinalPayment=vipPrice-bookdownPayment;//商品尾金值=vip价格-定金值
+				 
+				 logger.info("goodsId:"+goodsId+ "订单类型："+isBook);
+	//			  bookDownPayment
+						for (int i = 0; i < good_size; i++) {
+							//红包金额
+					 		Long redMoney=0L;
+							if (i == 0) {
+								// 这里做插入红包操作..
+								if(dredpacketsDistribute!=null){
+									logger.info("进行红包锁定操作:[]"+dredpacketsDistribute.getId());
+									redMoney=dredpacketsDistribute.getMoney();
+									dorder.setRcbId(dredpacketsDistribute.getId());//红包id
+									dorder.setRcbAmount(dredpacketsDistribute.getMoney());//红包面额
+						
+									/**修改红包状态**/
+									dredpacketsDistribute.setStatus(RedpacketsStatus.lockup);//已经锁定
+									redpacketsDistributeService.update(dredpacketsDistribute);//进行红包锁定操作
+								}
+							}
+							//pdAmount 实际支付预存款的金额  定金-红包
+							Long pdAmount=bookdownPayment-redMoney;
+							if(pdAmount<0){
+								pdAmount=0L;//如果总支付金额小于0 预存款金额为0分
+							}
+							
+							dorder.setPdAmount(pdAmount);
+							dorder.setOrderId(null);//主键自增长
+							dorder.setOrderSn(Long.parseLong(this.getOrderNum())); // 随机订单号
+							dorder.setConsumptionCode(dorderService.getConsumptionCode());//10位随机数
+							dorder.setGoodsNum(1L);
+							dorder.setBookDownPayment(bookdownPayment);//默认值0
+							dorder.setBookFinalPayment(bookfinalPayment);//默认值0
+			
+							//保存订单
+							this.dorderService.save(dorder);
+							//清空 红包数据
+							dorder.setRcbId(null);//红包id 清空
+							dorder.setRcbAmount(null);//红包面额 清空
+						}
+			
+			 }/**预定单结束**/
+			 
+				m.put("status", "true");
+				m.put("total_order_num", total_order_num); // 返回给前台一个总订单号,以便支付;
+				responseContent = ResponseHandler.makeResponse(m, true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				m.put("status", "false");
+				m.put("message", "系统错误,请稍后重试!");
+				try {
+					responseContent = ResponseHandler.makeResponse(m, true);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				this.logger.info("保存订单出错!");
+			}
+		/**插入订单 end**/
+
+		return JSONObject.toJSONString(responseContent);
+
+	}
+
+	/**
+	 * 数据接口
+	 * @Title: getOrderNum 
+	 * @Description: TODO(支付订单)
+	 * @param @return 参数
+	 * @return String 返回类型
+	 * @throws
+	 */
+
+	@ResponseBody
+	@RequestMapping("/pay.htm")
+	public String pay(HttpServletRequest request, HttpServletResponse response) {
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		logger.info("完成支付的数据方法[] start");
+		
+		String totalNumber = "";
+		String memberId = "";
+		Long orderId=0L;//订单id
+		Map<?, ?> params = requestContent.getBody();
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (null != params) {
+			//订单id判空
+			if( params.get("orderId")!=null && !"".equals(params.get("orderId"))){
+				orderId = Long.parseLong(params.get("orderId")+"") ;
+			}
+			totalNumber = (String) params.get("totalNumber");//支付单号（关联多条订单信息）
+			memberId = (String) params.get("memberId");//会员id
+			Dmember dmember = null;
+			try {
+				/**获取会员信息**/
+				dmember = this.dmemberService.queryById(Long.parseLong(memberId));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				this.logger.info("查询会员信息出错..");
+			}
+			if (!Validate.isEmpty(totalNumber) && dmember != null) {
+				try {
+					map.put("paySn", totalNumber);//支付订单单号（关联多条订单信息）
+					map.put("memberId", memberId);//会员id号
+					//订单id不为0 则 加上订单id条件
+					if(orderId!=0){
+						map.put("orderId", orderId);//订单id号
+					}
+					
+					List<Dorder> list = this.dorderService.queryByCondtion(map);
+					if(null != list && list.size()>0){
+						
+					
+					Long pdAmount=0L;
+					Long frozenAmount=0L;
+					Long goodsSalenum=0L;//实际销售数量
+					Long goodsId=0L;//商品id
+ 					//汇总订单总支付金额
+					for(int i = 0;i<list.size();i++){
+						//实际支付的金额= 支付总预存款金额-总尾款数
+						pdAmount=pdAmount+list.get(i).getPdAmount();
+						frozenAmount=frozenAmount+list.get(i).getBookFinalPayment();//尾款
+						
+						goodsSalenum=goodsSalenum+list.get(i).getGoodsNum();//实际销售数量
+						goodsId=list.get(0).getGoodsId();
+					}
+					map.put("pdAmount",pdAmount);//实际支付预存款金额
+					map.put("paySn", totalNumber);//支付订单号
+					
+						/**判断账户金额是否大于或者大于需要扣款的金额**/
+						if (dmember.getAvailablePredeposit() >= (pdAmount+frozenAmount)) {
+							/**完成扣款计算**/
+							dmember.setAvailablePredeposit(pdAmount); // 扣款余额
+							
+							Map<String,Object> accountMap=new HashMap<String, Object>();
+							
+						     /**
+						     * memberId 会员id
+						     * pdAmount 扣款总额
+							 * sn  交易单号
+							 * explain流水说明
+							 * **/
+							accountMap.put("memberId", dmember.getMemberId());
+							accountMap.put("pdAmount", pdAmount);
+							accountMap.put("paySn", totalNumber);
+							accountMap.put("explain","购物消费");
+							accountMap.put("frozenAmount",frozenAmount);//冻结总金额
+							
+							
+							/**修改会员账户金额 and 流水记录**/
+						 	dmemberService.setJianAccountUtil(1,accountMap);//普通付款
+							
+							/**根据主订单号  修改订单状态 /2未消费 **/ 
+						 	this.dorderService.setOrderStatus
+							(2, Long.parseLong(totalNumber),DateUtil.getDateFormatter(),"",orderId,0L);
+							
+							/**获取红包 id 修改红包状态**/
+							//汇总订单总支付金额
+							for(int i = 0;i<list.size();i++){
+								String fly=dorderService.commonRedOrder(list.get(i));
+								logger.info(list.get(i).getOrderId()+"修改红包："+fly);
+							}
+							/**更新商品表信息**/
+							//goodsSalenum
+							Dgoods dgoods=new Dgoods();
+							dgoods.setGoodsSalenum(Integer.parseInt(goodsSalenum+""));//销售数量
+							dgoods.setGoodsId(Integer.parseInt(goodsId+""));//商品id
+							
+							boolean goods=dgoodsService.updateGoodsSalenumJia(dgoods);
+							logger.info("goods:"+goods);
+							
+							map.put("status", "true");
+						} else {
+							map.isEmpty();
+							map.put("status", "false");
+							map.put("message", "余额不足,请先充值后付款!");
+						}
+
+					}else{
+						map.isEmpty();
+						map.put("status", "false");
+						map.put("message", "无订单记录");
+					}
+					responseContent = ResponseHandler.makeResponse(map, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	/**
+	 * 数据接口
+	 * @Title: getOrderNum 
+	 * @Description: TODO(支付订单)
+	 * @param @return 参数
+	 * @return String 返回类型
+	 * @throws
+	 */
+
+	@ResponseBody
+	@RequestMapping("/payBookFinalPayment.htm")
+	public String payBookFinalPayment(HttpServletRequest request, HttpServletResponse response) {
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		logger.info("完成付余款支付的数据方法[] start");
+		
+		String totalNumber = "";
+		String memberId = "";
+		Long orderId=0L;//订单id
+		Map<?, ?> params = requestContent.getBody();
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (null != params) {
+			//订单id判空
+			if( params.get("orderId")!=null && !"".equals(params.get("orderId"))){
+				orderId = Long.parseLong(params.get("orderId")+"") ;
+			}
+			totalNumber = (String) params.get("totalNumber");//支付单号（关联多条订单信息）
+			memberId = (String) params.get("memberId");//会员id
+			Dmember dmember = null;
+			try {
+				/**获取会员信息**/
+				dmember = this.dmemberService.queryById(Long.parseLong(memberId));
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				this.logger.info("查询会员信息出错..");
+			}
+			
+			if (!Validate.isEmpty(totalNumber) && dmember != null) {
+				try {
+					map.put("paySn", totalNumber);//支付订单单号（关联多条订单信息）
+					map.put("memberId", memberId);//会员id号
+					map.put("orderId", orderId);//订单id号
+					List<Dorder> list = this.dorderService.queryByCondtion(map);
+					if(null != list && list.size()>0){
+						
+					Long pdAmount=list.get(0).getPdAmount();//实际支付金额
+					Long frozenAmount=list.get(0).getBookFinalPayment();//尾款
+					
+					Long freezePredeposit=dmember.getFreezePredeposit();//用户冻结金额
+
+					map.put("pdAmount",pdAmount);//实际支付预存款金额
+					map.put("paySn", totalNumber);//支付订单号
+					
+					/**判断账户冻结金额是否大于或者大于需要扣款的尾款金额**/
+						if (freezePredeposit >= frozenAmount) {
+							/**完成扣款计算**/
+							dmember.setFreezePredeposit(frozenAmount);// 扣款尾款余额
+							
+							Map<String,Object> accountMap=new HashMap<String, Object>();
+							
+						     /**
+						     * memberId 会员id
+						     * pdAmount 扣款总额
+							 * sn  交易单号
+							 * explain流水说明
+							 * **/
+							accountMap.put("memberId", dmember.getMemberId());//用户id
+							accountMap.put("pdAmount", frozenAmount);//实际支付金额=付尾款金额
+							accountMap.put("paySn", totalNumber);//主订单号
+							accountMap.put("explain","支付余款");//
+							accountMap.put("frozenAmount",frozenAmount);//付尾款金额
+							
+							/**修改会员账户金额 and 流水记录**/
+						 	dmemberService.setJianAccountUtil(2,accountMap);//付余款
+							
+							/**根据主订单号  修改订单状态 /4 已付余款待评价 **/ 
+						 	this.dorderService.setOrderStatus
+							(4, Long.parseLong(totalNumber),DateUtil.getDateFormatter(),"",orderId,frozenAmount);//frozenAmount 尾款金额
+							
+							map.put("status", "true");
+						} else {
+							map.isEmpty();
+							map.put("status", "false");
+							map.put("message", "余额不足,请先充值后付款!");
+						}
+
+					}else{
+						map.isEmpty();
+						map.put("status", "false");
+						map.put("message", "无订单记录");
+					}
+					responseContent = ResponseHandler.makeResponse(map, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+
+	public String getOrderNum() {
+		int r1 = (int) (Math.random() * (10));// 产生2个0-9的随机数
+		int r2 = (int) (Math.random() * (10));
+		long now = System.currentTimeMillis();// 一个13位的时间戳
+		String paymentID = String.valueOf(r1) + String.valueOf(r2) + String.valueOf(now);// 订单ID
+		return paymentID;
+
+	}
+
+
+	@ResponseBody
+	 @RequestMapping("/comment.htm")
+	 public String comment(HttpServletRequest request, HttpServletResponse response){
+
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+
+		try {
+			if (null != requestContent.getBody()) {
+				Map m  = requestContent.getBody() ;
+
+
+				JSONObject commInfo  = JSONObject.parseObject((String) m.get("commentInfo"));
+				JSONArray  l = null;
+				List  imgList = null;
+				if( null !=  m.get("imgList") && !m.get("imgList").equals("")) {
+					l = JSONArray.parseArray((String) m.get("imgList"));
+					imgList = l.subList(0, l.size());
+				}
+
+				Devaluate devaluate  = JSON.parseObject(JsonUtil.map2json(commInfo), Devaluate.class);
+
+				logger.info( " =========================== Comment OrderID " + devaluate.getOrderId());
+				Dorder order = this.dorderService.queryById(devaluate.getOrderId());
+
+
+				logger.info(" =========================== Comment Order " + order.toString());
+
+
+				devaluate.setGoodsId(Long.valueOf(order.getGoods().getGoodsId()));
+				devaluate.setStoreId(Long.valueOf(order.getStoreId()));
+				devaluate.setCreateTime(DateUtil.current());
+				devaluate.setIsShow("Y");
+
+
+				boolean flag = dorderService.comment(devaluate, imgList);
+
+				if (order != null) {
+					responseContent = ResponseHandler.makeResponse(flag, true);
+				} else {
+					return null;
+				}
+			}
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			logger.info("获取订单详情失败！", e);
+		}
+
+		return JSONObject.toJSONString(responseContent);
+	}
+
+
+	@ResponseBody
+	@RequestMapping("/complain.htm")
+	public String complain(HttpServletRequest request, HttpServletResponse response){
+
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+
+		try {
+			if (null != requestContent.getBody()) {
+				Map m  = requestContent.getBody() ;
+
+
+
+
+				Dcomplain dcomplain  = JSON.parseObject(JsonUtil.map2json(m), Dcomplain.class);
+
+				logger.info(" =========================== complain OrderID " + dcomplain.getOrderId());
+
+
+
+
+				dcomplain.setCreateTime(DateUtil.current());
+				dcomplain.setStatus("handling");
+
+
+				boolean flag = dorderService.complain(dcomplain);
+				responseContent = ResponseHandler.makeResponse(flag, true);
+
+				} else {
+					return null;
+				}
+
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			logger.info("获取订单详情失败！", e);
+		}
+
+		return JSONObject.toJSONString(responseContent);
+	}
+}

@@ -1,0 +1,16 @@
+package com.royao.commons.enums;
+
+public enum YN {
+    Y {
+        public String getName() {
+            return "是";
+        }
+    },
+    N {
+        public String getName() {
+            return "否";
+        }
+    };
+
+    public abstract String getName();
+}

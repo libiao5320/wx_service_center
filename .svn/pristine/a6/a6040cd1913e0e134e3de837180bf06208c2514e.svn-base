@@ -1,0 +1,352 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+
+
+import com.royao.model.base.BaseEntity;
+
+import java.util.*;
+
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class Devent extends BaseEntity implements java.io.Serializable{
+	private static final long serialVersionUID = 5454155825314635342L;
+	
+	//alias
+	public static final String TABLE_ALIAS = "Devent";
+	public static final String ALIAS_ID = "id";
+	public static final String ALIAS_STORE_ID = "承办方ID";
+	public static final String ALIAS_AREAID1 = "地区ID1";
+	public static final String ALIAS_AREAID2 = "地区ID2";
+	public static final String ALIAS_NAME = "活动名称";
+	public static final String ALIAS_IMG = "活动缩略图";
+	public static final String ALIAS_PROFILE = "活动简介";
+	public static final String ALIAS_QUOTA = "限额人数";
+	public static final String ALIAS_ENROLL_START_TIME = "报名开始时间";
+	public static final String ALIAS_ENROLL_END_TIME = "报名结束时间";
+	public static final String ALIAS_ENROLL_OFF_TIME = "报名下架时间";
+	public static final String ALIAS_EVENT_TIME = "eventTime";
+	public static final String ALIAS_ADDRESS = "活动地点";
+	public static final String ALIAS_LONGITUDE = "活动地点的具体经度信息";
+	public static final String ALIAS_LATITUDE = "活动地点的具体纬度信息";
+	public static final String ALIAS_STATUS = "活动状态，on-上架，off-下架";
+	public static final String ALIAS_EXAMINE_STATUS = "审核状态，pass-通过，unpass-未通过，passing-待审核";
+	public static final String ALIAS_EXAMINE_RESULT = "审核结果，一般在未通过审核的时候用";
+	public static final String ALIAS_ENTRYFEE = "报名费";
+	public static final String ALIAS_ORDER_BY = "排序，值越小越靠前";
+	public static final String ALIAS_URL = "自定义跳转页";
+	public static final String ALIAS_CREATE_TIME = "活动创建时间";
+	public static final String ALIAS_CREATE_BY = "创建人";
+	public static final String ALIAS_UPDATE_TIME = "活动更新时间";
+	public static final String ALIAS_UPDATE_BY = "活动更新人";
+	
+
+	
+	//可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+	//columns START
+	
+	private Long id;
+
+	private Long storeId;
+	
+	private Dstore store;
+
+	private Long areaid1;
+	
+	private Darea area1;
+	
+	private Long areaid2;
+	
+	private Darea area2;
+
+	private String name;
+
+	private String img;
+
+	private String profile;
+	
+	private Integer quota;
+
+	private Date enrollStartTime;
+
+	private Date enrollEndTime;
+
+	private Date enrollOffTime;
+
+	private Date eventTime;
+
+	private String address;
+
+	private String longitude;
+
+	private String latitude;
+
+	private String status;
+
+	private String examineStatus;
+
+	private String examineResult;
+	
+	private Long entryfee;
+
+	private Integer orderBy;
+
+	private String url;
+	
+	private Date createTime;
+
+	private String createBy;
+	
+	private Date updateTime;
+
+	private String updateBy;
+	//columns END
+
+	private List<DeventImage> imageList;
+	
+	public List<DeventImage> getImageList() {
+		return imageList;
+	}
+
+	public void setImageList(List<DeventImage> imageList) {
+		this.imageList = imageList;
+	}
+
+	public Devent(){
+	}
+
+	public Devent(
+		Long id
+	){
+		this.id = id;
+	}
+
+	public void setId(Long value) {
+		this.id = value;
+	}
+	
+	public Long getId() {
+		return this.id;
+	}
+	public void setStoreId(Long value) {
+		this.storeId = value;
+	}
+	
+	public Long getStoreId() {
+		return this.storeId;
+	}
+	
+	public Long getAreaid1() {
+		return areaid1;
+	}
+
+	public void setAreaid1(Long areaid1) {
+		this.areaid1 = areaid1;
+	}
+
+	public Long getAreaid2() {
+		return areaid2;
+	}
+
+	public Dstore getStore() {
+		return store;
+	}
+
+	public void setStore(Dstore store) {
+		this.store = store;
+	}
+
+	public Darea getArea1() {
+		return area1;
+	}
+
+	public void setArea1(Darea area1) {
+		this.area1 = area1;
+	}
+
+	public Darea getArea2() {
+		return area2;
+	}
+
+	public void setArea2(Darea area2) {
+		this.area2 = area2;
+	}
+
+	public void setAreaid2(Long areaid2) {
+		this.areaid2 = areaid2;
+	}
+
+	public void setName(String value) {
+		this.name = value;
+	}
+	
+	public String getName() {
+		return this.name;
+	}
+	public void setImg(String value) {
+		this.img = value;
+	}
+	
+	public String getImg() {
+		return this.img;
+	}
+	public void setProfile(String value) {
+		this.profile = value;
+	}
+	
+	public String getProfile() {
+		return this.profile;
+	}
+	public void setQuota(Integer value) {
+		this.quota = value;
+	}
+	
+	public Integer getQuota() {
+		return this.quota;
+	}
+
+	
+	public void setEnrollStartTime(Date value) {
+		this.enrollStartTime = value;
+	}
+	
+	public Date getEnrollStartTime() {
+		return this.enrollStartTime;
+	}
+
+	
+	public void setEnrollEndTime(Date value) {
+		this.enrollEndTime = value;
+	}
+	
+	public Date getEnrollEndTime() {
+		return this.enrollEndTime;
+	}
+
+	
+	public void setEnrollOffTime(Date value) {
+		this.enrollOffTime = value;
+	}
+	
+	public Date getEnrollOffTime() {
+		return this.enrollOffTime;
+	}
+
+	
+	public void setEventTime(Date value) {
+		this.eventTime = value;
+	}
+	
+	public Date getEventTime() {
+		return this.eventTime;
+	}
+	public void setAddress(String value) {
+		this.address = value;
+	}
+	
+	public String getAddress() {
+		return this.address;
+	}
+	public void setLongitude(String value) {
+		this.longitude = value;
+	}
+	
+	public String getLongitude() {
+		return this.longitude;
+	}
+	public void setLatitude(String value) {
+		this.latitude = value;
+	}
+	
+	public String getLatitude() {
+		return this.latitude;
+	}
+	public void setStatus(String value) {
+		this.status = value;
+	}
+	
+	public String getStatus() {
+		return this.status;
+	}
+	public void setExamineStatus(String value) {
+		this.examineStatus = value;
+	}
+	
+	public String getExamineStatus() {
+		return this.examineStatus;
+	}
+	public void setExamineResult(String value) {
+		this.examineResult = value;
+	}
+	
+	public String getExamineResult() {
+		return this.examineResult;
+	}
+	public void setEntryfee(Long value) {
+		this.entryfee = value;
+	}
+	
+	public Long getEntryfee() {
+		return this.entryfee;
+	}
+	public void setOrderBy(Integer value) {
+		this.orderBy = value;
+	}
+	
+	public Integer getOrderBy() {
+		return this.orderBy;
+	}
+	public void setUrl(String value) {
+		this.url = value;
+	}
+	
+	public String getUrl() {
+		return this.url;
+	}
+
+	
+	public void setCreateTime(Date value) {
+		this.createTime = value;
+	}
+	
+	public Date getCreateTime() {
+		return this.createTime;
+	}
+	public void setCreateBy(String value) {
+		this.createBy = value;
+	}
+	
+	public String getCreateBy() {
+		return this.createBy;
+	}
+
+	public void setUpdateTime(Date value) {
+		this.updateTime = value;
+	}
+	
+	public Date getUpdateTime() {
+		return this.updateTime;
+	}
+	public void setUpdateBy(String value) {
+		this.updateBy = value;
+	}
+	
+	public String getUpdateBy() {
+		return this.updateBy;
+	}
+
+
+}
+

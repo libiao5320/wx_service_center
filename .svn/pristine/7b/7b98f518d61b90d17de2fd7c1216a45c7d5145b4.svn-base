@@ -1,0 +1,105 @@
+package com.royao.ctrl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.royao.services.inface.DredpacketsDistributeService;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dredpackets;
+import com.royao.services.inface.DredpacketsService;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.support.XmlWebApplicationContext;
+
+/**
+ * ClassName: RedpacketsCenterCtrl
+ *
+ * @author Liu Pinghui
+ * @Description: 红包
+ * @date 2016年1月5日
+ */
+@Controller
+@RequestMapping("/redpackets")
+public class RedpacketsCenterCtrl {
+
+	Logger logger = Logger.getLogger(this.getClass());
+	
+    @Autowired
+    private DredpacketsService redpacketsService;
+
+    @Autowired
+    private DredpacketsDistributeService dredpacketsDistributeService;
+
+    /**
+     * @param @param  request
+     * @param @param  response
+     * @param @return
+     * @return String
+     * @throws
+     * @Description: 根据红包ID获取红包信息
+     * @author Liu Pinghui
+     * @date 2016年1月5日
+     */
+    @ResponseBody
+    @RequestMapping("/getById.htm")
+    public String getById(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+                Dredpackets redpackets = this.redpacketsService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+                if (redpackets != null) {
+                    responseContent = ResponseHandler.makeResponse(redpackets, true);
+                }
+            }
+        } catch (Exception e) {
+        	logger.info("获取红包信息失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+    @ResponseBody
+    @RequestMapping (value = "/shareRedPack.htm")
+    public String  shareRedPack (HttpServletRequest request)
+    {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+
+        Long packId = 0l;
+        try {
+            if (null != requestContent.getBody()) {
+                if( null != requestContent.getBody() && null != requestContent.getBody().get("packId") && !"".equals(requestContent.getBody().get("packId")))
+                 packId = Long.parseLong(requestContent.getBody().get("packId"));
+                 boolean flag = this.dredpacketsDistributeService.shareRedPack(packId);
+                 responseContent = ResponseHandler.makeResponse(flag, true);
+
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+
+
+
+
+
+}

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DsystemSetMapper">
+
+	<resultMap id="RMDsystemSet" type="com.royao.model.DsystemSet">
+        <result property="id" column="id"/>
+        <result property="sname" column="s_name"/>
+        <result property="skey" column="s_key"/>
+        <result property="svalue" column="s_value"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="remark" column="remark"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="DsystemSetcolumns">
+	    <![CDATA[
+		id,s_name,s_key,s_value,create_time,create_by,update_time,update_by,remark
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO d_system_set (
+        	id ,
+        	s_name ,
+        	s_key ,
+        	s_value ,
+        	create_time ,
+        	create_by ,
+        	update_time ,
+        	update_by ,
+        	remark 
+        ) VALUES (
+        	#{id} ,
+        	#{sname} ,
+        	#{skey} ,
+        	#{svalue} ,
+        	#{createTime} ,
+        	#{createBy} ,
+        	#{updateTime} ,
+        	#{updateBy} ,
+        	#{remark} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_system_set SET
+	        s_name = #{sname} ,
+	        s_key = #{skey} ,
+	        s_value = #{svalue} ,
+	        create_time = #{createTime} ,
+	        create_by = #{createBy} ,
+	        update_time = #{updateTime} ,
+	        update_by = #{updateBy} ,
+	        remark = #{remark} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_system_set WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDsystemSet">
+		SELECT <include refid="DsystemSetcolumns" />
+	    <![CDATA[
+		    FROM d_system_set 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+	<!--  -->
+	<select id="queryByKey" resultMap="RMDsystemSet" parameterType="java.lang.Object">
+		select <include refid="DsystemSetcolumns"/>
+		<![CDATA[
+			FROM d_system_set
+			where 
+			 s_key = #{0}
+		]]>
+	</select>
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_system_set where 1=1
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultMap="RMDsystemSet">
+    	SELECT <include refid="DsystemSetcolumns" />
+	    FROM d_system_set 
+		where 1=1 
+		limit #begin# , #end#
+    </select>
+	
+	  <select id="queryAll" resultMap="RMDsystemSet">
+	   	SELECT <include refid="DsystemSetcolumns" />
+	    FROM d_system_set 
+	  </select>
+	  
+	  <select id="queryByCondition" resultMap="RMDsystemSet">
+	   	SELECT <include refid="DsystemSetcolumns" />
+	    FROM d_system_set 
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(sname)">
+				AND s_name = #{sname}
+			</if>
+	       <if test="@Ognl@isNotEmpty(skey)">
+				AND s_key = #{skey}
+			</if>
+	       <if test="@Ognl@isNotEmpty(svalue)">
+				AND s_value = #{svalue}
+			</if>
+	       <if test="@Ognl@isNotEmpty(createTimeBegin)">
+				AND create_time >= #{createTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+				AND create_time &lt;= #{createTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(createBy)">
+				AND create_by = #{createBy}
+			</if>
+	       <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+				AND update_time >= #{updateTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+				AND update_time &lt;= #{updateTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateByBegin)">
+				AND update_by >= #{updateByBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateByEnd)">
+				AND update_by &lt;= #{updateByEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(remark)">
+				AND remark = #{remark}
+			</if>
+		</where>
+	  </select>
+
+	
+</mapper>
+

@@ -1,0 +1,5 @@
+version=1.0.0
+jdbc.driverClass=com.mysql.jdbc.Driver
+jdbc.url= jdbc:mysql://120.26.200.129:3306/beiduo?useUnicode=true&amp;characterEncoding=utf-8
+jdbc.username = zqy2
+jdbc.password =

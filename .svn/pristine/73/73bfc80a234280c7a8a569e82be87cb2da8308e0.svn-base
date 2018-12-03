@@ -1,0 +1,787 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DorderMapper">
+
+	<resultMap id="RMDorder" type="com.royao.model.Dorder">
+        <result property="orderId" column="order_id"/>
+        <result property="orderSn" column="order_sn"/>
+        <result property="paySn" column="pay_sn"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsNum" column="goods_num"/>
+        <result property="addTime" column="add_time"/>
+        <result property="paymentCode" column="payment_code"/>
+        <result property="paymentTime" column="payment_time"/>
+        <result property="finnshedTime" column="finnshed_time"/>
+        <result property="orderAmount" column="order_amount"/>
+        
+         <result property="pdAmount" column="pd_amount"/>
+        <result property="couponId" column="coupon_id"/>
+        <result property="couponAmount" column="coupon_amount"/>
+        <result property="rcbId" column="rcb_id"/>
+        <result property="rcbAmount" column="rcb_amount"/>
+        <result property="goodsLitpic" column="goods_litpic"/>
+        <result property="orderState" column="order_state"/>
+        <result property="lockState" column="lock_state"/>
+        <result property="deleteState" column="delete_state"/>
+        <result property="refundAmount" column="refund_amount"/>
+        <result property="refundTime" column="refund_time"/>
+        <result property="delayTime" column="delay_time"/>
+        <result property="orderFrom" column="order_from"/>
+        <result property="orderType" column="order_type"/>
+        <result property="remark" column="remark"/>
+        <result property="bookDownPayment" column="book_down_payment"/>
+        <result property="bookFinalPayment" column="book_final_payment"/>
+        <result property="qrCode" column="qr_code"/>
+        <result property="verifyConsumptionTime" column="verify_consumption_time"/>
+        <result property="verifyConsumptionPerson" column="verify_consumption_person"/>
+        
+        <result property="mTrueName" column="m_true_name"/>
+        <result property="mMobile" column="m_mobile"/>
+        <result property="mDate" column="m_date"/>
+        <result property="mAddress" column="m_address"/>
+        
+        <result property="consumptionCode" column="consumption_code"/>
+        <result property="complaintTime" column="complaint_time"/>
+        
+	</resultMap>
+	
+	<resultMap type="com.royao.model.Dorder" id="RMDorderDetail" extends="RMDorder">
+		<association property="goods" column="goods_id" select="com.royao.mapper.DgoodsMapper.queryById"></association>
+	</resultMap>
+	
+	<resultMap type="com.royao.model.Dorder" id="RMDorderEvaluate" extends="RMDorder">
+		<association property="evaluate" column="{storeId=store_id,orderId=order_id}" select="com.royao.mapper.DevaluateMapper.queryByStoreIdAndOrderId"></association>
+	</resultMap>
+	
+	
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		order_id,order_sn,pay_sn,store_id,store_name,member_id,member_name,goods_id,goods_name,goods_num,add_time,payment_code,payment_time,finnshed_time,order_amount,pd_amount,coupon_id,coupon_amount,rcb_id,rcb_amount,goods_litpic,order_state,lock_state,delete_state,refund_amount,delay_time,order_from,order_type
+		,remark,book_down_payment,book_final_payment,m_true_name,m_mobile,m_date,m_address,consumption_code,refund_time,complaint_time,verify_consumption_time
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="save" useGeneratedKeys="true" keyProperty="orderId">
+    <![CDATA[
+        INSERT INTO d_order (
+        	order_id ,
+        	order_sn ,
+        	pay_sn ,
+        	store_id ,
+        	store_name ,
+        	member_id ,
+        	member_name ,
+        	goods_id ,
+        	goods_name ,
+        	goods_num ,
+        	add_time ,
+        	consumption_code ,
+        	payment_code ,
+        	payment_time ,
+        	finnshed_time ,
+        	order_amount ,
+        	pd_amount,
+        	coupon_id ,
+        	coupon_amount ,
+        	rcb_id ,
+        	rcb_amount ,
+        	goods_litpic ,
+        	order_state ,
+        	lock_state ,
+        	delete_state ,
+        	refund_amount ,
+        	refund_time ,
+        	delay_time ,
+        	order_from ,
+        	order_type ,
+        	remark ,
+        	book_down_payment,
+        	book_final_payment,
+        	m_true_name,
+        	m_mobile,
+        	m_date,
+        	m_address,
+        	complaint_time
+        ) VALUES (
+        	#{orderId} ,
+        	#{orderSn} ,
+        	#{paySn} ,
+        	#{storeId} ,
+        	#{storeName} ,
+        	#{memberId} ,
+        	#{memberName} ,
+        	#{goodsId} ,
+        	#{goodsName} ,
+        	#{goodsNum} ,
+        	#{addTime} ,
+        	#{consumptionCode} ,
+        	#{paymentCode} ,
+        	#{paymentTime} ,
+        	#{finnshedTime} ,
+        	#{orderAmount} ,
+        	#{pdAmount} ,
+        	#{couponId} ,
+        	#{couponAmount} ,
+        	#{rcbId} ,
+        	#{rcbAmount} ,
+        	#{goodsLitpic} ,
+        	#{orderState} ,
+        	#{lockState} ,
+        	#{deleteState} ,
+        	#{refundAmount} ,
+        	#{refundTime} ,
+        	#{delayTime} ,
+        	#{orderFrom} ,
+        	#{orderType} ,
+        	#{remark} ,
+        	#{bookDownPayment},
+        	#{bookFinalPayment},
+        	#{mTrueName},
+        	#{mMobile},
+        	#{mDate},
+        	#{mAddress},
+        	#{complaintTime}
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+        UPDATE d_order
+        	<set>
+	        order_sn = #{orderSn} ,
+	        pay_sn = #{paySn} ,
+	        store_id = #{storeId} ,
+	        store_name = #{storeName} ,
+	        member_id = #{memberId} ,
+	        member_name = #{memberName} ,
+	        goods_id = #{goodsId} ,
+	        goods_name = #{goodsName} ,
+	        goods_num = #{goodsNum} ,
+	        add_time = #{addTime} ,
+	        consumption_code = #{consumptionCode} ,
+	        payment_code = #{paymentCode} ,
+	        payment_time = #{paymentTime} ,
+	        finnshed_time = #{finnshedTime} ,
+	        order_amount = #{orderAmount} ,
+	        pd_amount = #{pdAmount} ,
+	        coupon_id = #{couponId} ,
+	        coupon_amount = #{couponAmount} ,
+	        rcb_id = #{rcbId} ,
+	        rcb_amount = #{rcbAmount} ,
+	        goods_litpic = #{goodsLitpic} ,
+	        order_state = #{orderState} ,
+	        lock_state = #{lockState} ,
+	        delete_state = #{deleteState} ,
+	        refund_amount = #{refundAmount} ,
+	        refund_time = #{refundTime} ,
+	        delay_time = #{delayTime} ,
+	        order_from = #{orderFrom} ,
+	        order_type = #{orderType} ,
+	        remark = #{remark} ,
+	        book_final_payment = #{bookFinalPayment} , 
+	        book_down_payment = #{bookDownPayment} ,
+	        qr_code = #{qrCode} ,
+	        verify_consumption_time = #{verifyConsumptionTime} ,
+	        verify_consumption_person = #{verifyConsumptionPerson} ,
+	        complaint_time = #{complaintTime}
+	        </set>
+    	 WHERE 
+	        order_id = #{orderId}
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_order WHERE
+        order_id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDorderDetail">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM d_order 
+	        WHERE 
+		        order_id = #{id} 
+	    ]]>
+	</select>
+	
+    <select id="queryByIdTob" resultMap="RMDorderEvaluate">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM d_order 
+	        WHERE 
+		        order_id = #{id} 
+	    ]]>
+	</select>
+	
+	<!-- 消费券根据商品id和过期时间分组 -->
+	<select id="getByGoodsdelaytime" resultMap="RMDorder" parameterType="com.royao.model.Dorder">
+		select delay_time,count(*) as store_id,goods_id,goods_name,goods_litpic
+		from d_order
+		<where>
+		and delete_state = 0 and lock_state = 0 or lock_state is null
+		<if test="memberId != null">
+		and member_id = #{memberId}
+		</if>
+			<![CDATA[
+		and order_state <> 1 and order_state <> 6
+		 ]]>
+		group by DATE_FORMAT(delay_time,'%Y%m%d'),goods_id
+		order by DATE_FORMAT(delay_time,'%Y%m%d') DESC
+		limit #{pageInfo.begin} , #{pageInfo.end}
+  		</where>
+	</select>
+	
+	<select id="queryByPaySn" resultMap="RMDorder">
+    	SELECT <include refid="columns" />
+	    FROM d_order 
+		
+		<where>	      				
+	       <if test="paySn !=null">
+				AND pay_sn = #{paySn}
+			</if>
+	       <if test="orderState !=null">
+				AND order_state = #{orderState}
+			</if>
+		</where>
+	  </select>
+	
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultMap="RMDorder">
+    	SELECT <include refid="columns" />
+	    FROM d_order 
+		where 1=1 
+		<if test="storeId != null"> AND store_id = #{storeId}</if>
+		<if test="orderState != null"> AND order_state = #{orderState}</if>
+        <if test="mMobile != null and mMobile != ''"> AND m_mobile like CONCAT('%',#{mMobile},'%')</if>
+		<if test="pageInfo != null">
+        limit #{pageInfo.begin}, #{pageInfo.end}
+        </if>
+    </select>
+	<select id="listWithPageCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM d_order where 1=1
+		<if test="storeId != null"> AND store_id = #{storeId}</if>
+		<if test="orderState != null"> AND order_state = #{orderState}</if>
+        <if test="mMobile != null and mMobile != ''"> AND m_mobile like CONCAT('%',#{mMobile},'%')</if>
+    </select>
+	
+	
+	  <select id="queryAll" resultMap="RMDorder">
+    	SELECT <include refid="columns" />
+	    FROM d_order 
+	  </select>
+	  
+	    <select id="queryByCondtion" resultMap="RMDorder">
+    	SELECT <include refid="columns" />
+	    FROM d_order 
+		
+		<where>	      				
+	       <if test="orderId !=null and orderId !='' and orderId!=0 ">
+				AND order_id = #{orderId}
+			</if>
+	       <if test="consumptionCode !=null and consumptionCode !='' and consumptionCode != 0 ">
+				AND consumption_code = #{consumptionCode}
+			</if>
+	       <if test="orderSn !=null">
+				AND order_sn = #{orderSn}
+			</if>
+	       <if test="paySn !=null">
+				AND pay_sn = #{paySn}
+			</if>
+	       <if test="storeId !=null">
+				AND store_id = #{storeId}
+			</if>
+	       <if test="storeName !=null and  storeName !=''">
+				AND store_name = #{storeName}
+			</if>
+	       <if test="memberId !=null">
+				AND member_id = #{memberId}
+			</if>
+	       <if test="memberName !=null and  memberName !=''">
+				AND member_name = #{memberName}
+			</if>
+	       <if test="goodsId !=null">
+				AND goods_id = #{goodsId}
+			</if>
+	       <if test="orderState !=null">
+				AND order_state = #{orderState}
+			</if>
+	       <if test="lockState !=null">
+				AND lock_state = #{lockState}
+			</if>
+	       <if test="deleteState !=null">
+				AND delete_state = #{deleteState}
+			</if>
+	       <if test="delayTimeBegin !=null">
+				AND delay_time >= #{delayTimeBegin}
+		   </if>
+		   <if test="delayTimeEnd !=null">
+				AND delay_time &lt;= #{delayTimeEnd}
+		   </if>
+	       <if test="orderType !=null">
+				AND order_type = #{orderType}
+			</if>
+		</where>
+	  </select>
+
+	<select id="queryByUser" resultMap="RMDorder">
+		SELECT
+		<include refid="columns"/>
+		FROM d_order
+		where 1=1 
+		<if test="memberId !=null">
+		    and member_id = #{memberId}
+		</if>
+		<if test="orderState!=null and  orderState != 0">
+			and order_state = #{orderState}
+		</if>
+		order by add_time desc
+		limit #{pageInfo.begin} , #{pageInfo.end}
+	</select>
+	
+	
+	<!--  -->
+	<select id="getByTimeId" resultMap="RMDorder" resultType="com.royao.model.Dorder">
+		select order_id,consumption_code,delay_time,goods_name,goods_litpic from d_order
+		<where>
+		and delete_state = 0 and lock_state = 0 or lock_state is null 
+		<if test="memberId !=null">
+		    and member_id = #{memberId}
+		</if>
+		<if test="goodsId != null">
+			and goods_id = #{goodsId}
+		</if>
+		<if test="delayTime != null">
+			and DATE_FORMAT(delay_time,'%Y%m%d') = DATE_FORMAT(#{delayTime},'%Y%m%d')
+		</if>
+		<![CDATA[
+			and order_state <> 1 and order_state <> 6
+		 ]]> 
+		</where>
+		order by delay_time ASC 
+		limit #{pageInfo.begin} , #{pageInfo.end}
+	</select>
+	
+	
+	
+	<select id="queryOrderCountByUserId" resultType="java.lang.Integer">
+		SELECT
+		count(a.member_id)
+		FROM d_order a
+		where member_id = #{value}
+	</select>
+	<select id="getCountByConsumptionCode" resultType="com.royao.model.Dorder">
+		SELECT
+		order_id
+		FROM d_order 
+		where consumption_code=#{0}
+	</select>
+
+	<select id="queryDifferentStatusOrderCountByUserId" resultType="java.util.HashMap">
+
+		select count(aa.member_id) as total ,if(ISNULL(a.unspend),0,a.unspend) as unspend, if(ISNULL(b.unpay),0,b.unpay) as unpay ,if(ISNULL(c.payed),0,c.payed) as payed ,if(ISNULL(d.comment),0,d.comment) as comment,if(ISNULL(e.recived),0,e.recived) as recived from (select member_id from  d_order ) aa left outer join  ( select member_id ,count(member_id) as unspend from d_order where order_state = 2 and member_id =  #{value} ) a  on aa.member_id = a.member_id
+left outer join ( select member_id ,count(member_id) as unpay from d_order where order_state = 1 and member_id =  #{value} ) b  on   aa.member_id = b.member_id left outer join ( select member_id ,count(member_id) as payed from d_order where (order_state = 20) and member_id =  #{value} ) c on  aa.member_id = c.member_id
+left outer join ( select member_id ,count(member_id) as comment from d_order where (order_state = 4 or order_state = 3) and member_id =  #{value} ) d on  aa.member_id = d.member_id left outer join ( select member_id ,count(member_id) as recived from d_order where (order_state in (7,8,9)) and member_id =  #{value} ) e on  aa.member_id = e.member_id
+where  aa.member_id =  #{value};
+
+
+	</select>
+
+
+	<select id="queryMostClass" resultType="java.util.HashMap">
+		SELECT g.gc_id_2,o.goods_id ,c.class_name,c.class_img  FROM
+		(SELECT goods_id,COUNT( goods_id) from d_order 
+		WHERE member_id=#{value} GROUP BY goods_id ORDER BY COUNT( goods_id) DESC LIMIT 6 ) o
+		INNER JOIN d_goods g  ON o.goods_id=g.goods_id
+		LEFT JOIN d_groupbuy_class c ON g.gc_id_2=c.class_id
+		GROUP BY g.gc_id_2
+	</select>
+	
+	<!-- 杨星根据条件修改订单状态 -->
+	<update id="setOrderStatus" >
+	    UPDATE  d_order set  
+	    order_state = #{orderState},
+	    payment_time=#{paymentTime}
+	    <if test=" pdAmount!=null and  pdAmount!='' and pdAmount!=0 ">
+	    ,pd_amount=pd_amount+#{pdAmount}
+	    </if>
+	    where pay_sn =#{paySn}
+	    <if test=" orderId!=null and  orderId!='' and orderId!=0 ">
+	    	and order_id=#{orderId}
+	    </if>
+	</update>
+	
+	<!--杨鑫，根据条件查询订单  -->
+	<select id="queryAllOrderBy" resultMap="RMDorder" parameterType="com.royao.model.Order">
+		select * from d_order
+		<where>
+			<if test="typeName != null and typeName !=''">
+				<if test="typeValue != null and typeValue !=''">
+					<if test="typeName == 'proText'">
+						and goods_name like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+					<if test="typeName == 'orderId'">
+						and order_sn like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+					<if test="typeName == 'conName'">
+						and store_name like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+					<if test="typeName == 'userName'">
+						and member_name like CONCAT(CONCAT('%',#{typeValue}),'%') or m_true_name like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+				</if>
+			</if>
+			<if test="timeName != null and timeName != ''">
+				<if test="startTime != null">
+					<if test="timeName == 'payTime'">
+						and payment_time <![CDATA[>=]]> #{startTime}
+					</if>
+					<if test="timeName == 'finTime'">
+						and finnshed_time <![CDATA[>=]]> #{startTime}
+					</if>
+				</if>
+				<if test="endTime != null">
+					<if test="timeName == 'payTime'">
+						and payment_time <![CDATA[<=]]> #{endTime}
+					</if>
+					<if test="timeName == 'finTime'">
+						and finnshed_time <![CDATA[<=]]> #{endTime}
+					</if>
+				</if>
+			</if>
+			<if test="orderState != null">
+				and order_state = #{orderState}
+			</if>
+		</where>
+		<if test="orderBy != null and orderBy !=''">
+			<if test="orderBy == 'payTime'">
+				order by add_time DESC
+			</if>
+			<if test="orderBy == 'finTime'">
+				order by finnshed_time DESC
+			</if>
+		</if>
+		limit #{pageInfo.begin} , #{pageInfo.end}
+	</select>
+	
+	<!--杨鑫，根据条件查询订单  -->
+	<select id="queryAllOrderByCount" resultType="java.lang.Long" parameterType="com.royao.model.Order">
+		select count(*) from d_order
+		<where>
+			<if test="typeName != null and typeName !=''">
+				<if test="typeValue != null and typeValue !=''">
+					<if test="typeName == 'proText'">
+						and goods_name like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+					<if test="typeName == 'orderId'">
+						and order_sn like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+					<if test="typeName == 'conName'">
+						and store_name like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+					<if test="typeName == 'userName'">
+						and member_name like CONCAT(CONCAT('%',#{typeValue}),'%') or m_true_name like CONCAT(CONCAT('%',#{typeValue}),'%')
+					</if>
+				</if>
+			</if>
+			<if test="timeName != null and timeName != ''">
+				<if test="startTime != null">
+					<if test="timeName == 'payTime'">
+						and payment_time <![CDATA[>=]]> #{startTime}
+					</if>
+					<if test="timeName == 'finTime'">
+						and finnshed_time <![CDATA[>=]]> #{startTime}
+					</if>
+				</if>
+				<if test="endTime != null">
+					<if test="timeName == 'payTime'">
+						and payment_time <![CDATA[<=]]> #{endTime}
+					</if>
+					<if test="timeName == 'finTime'">
+						and finnshed_time <![CDATA[<=]]> #{endTime}
+					</if>
+				</if>
+			</if>
+			<if test="orderState != null">
+				and order_state = #{orderState}
+			</if>
+		</where>
+	</select>
+
+	
+	
+	
+	
+	
+	<!--王亚，根据条件查询  -->
+	<select id="DqueryAllOrderBy" resultMap="RMDorder" parameterType="com.royao.model.Order">
+		select * from d_order
+		<where>
+			<!-- 根据产品名称 -->
+			<if test="goodsName != null">
+				and goods_name like CONCAT(CONCAT('%',#{goodsName}),'%')
+			</if>
+			<!-- 根据订单ID查询 -->
+			<if test="orderId != null">
+				and order_id like CONCAT(CONCAT('%',#{orderId}),'%')
+			</if>
+			<!-- 根据商家查询 -->
+			<if test="storeName != null">
+				and store_name like CONCAT(CONCAT('%',#{storeName}),'%')
+			</if>
+			<!-- 根据顾客查询 -->
+			<if test="memberName != null">
+				and member_name like CONCAT(CONCAT('%',#{memberName}),'%') or m_true_name like CONCAT(CONCAT('%',#{memberName}),'%')
+			</if>
+			<if test="orderState != null">
+				and order_state = #{orderState}
+			</if>
+		</where>
+		limit #{pageInfo.begin} , #{pageInfo.end}
+	
+	
+	</select>
+	<!--王亚，根据条件查询订单  -->
+	<select id="DqueryAllOrderByCount" resultType="java.lang.Long" parameterType="com.royao.model.Order">
+		select count(*) from d_order
+		<where>
+			<!-- 根据产品名称 -->
+			<if test="goodsName != null">
+				and goods_name like CONCAT(CONCAT('%',#{goodsName}),'%')
+			</if>
+			<!-- 根据订单ID查询 -->
+			<if test="orderId != null">
+				and order_id like CONCAT(CONCAT('%',#{orderId}),'%')
+			</if>
+			<!-- 根据商家查询 -->
+			<if test="storeName != null">
+				and store_name like CONCAT(CONCAT('%',#{storeName}),'%')
+			</if>
+			<!-- 根据顾客查询 -->
+			<if test="memberName != null">
+				and member_Name like CONCAT(CONCAT('%',#{memberName}),'%') or m_true_name like CONCAT(CONCAT('%',#{memberName}),'%')
+			</if>
+			<if test="orderState != null">
+				and order_state = #{orderState}
+			</if>
+		</where>
+	</select>
+
+
+
+
+
+
+
+
+<!--王亚，退款申请根据条件查询订单  -->
+	<select id="TqueryAllOrderBy" resultMap="RMDorder" parameterType="com.royao.model.Order">
+		select  r.order_id,o.member_name,o.goods_name,o.add_time,o.pd_amount,r.create_time,r.reason,r.status from d_refund r
+		left JOIN d_order o
+		on r.order_id=o.order_id
+			
+				
+		<where>
+			<!-- 根据产品名称 -->
+			<if test=" goodsName != null">
+						and goods_name like CONCAT(CONCAT('%',#{goodsName}),'%')
+					</if>
+					<!-- 订单编号 -->
+					<if test="orderSn != null">
+						and order_sn like CONCAT(CONCAT('%',#{orderSn}),'%')
+					</if>
+					<!-- 优惠码 -->
+					<if test="couponId != null">
+						and coupon_id like CONCAT(CONCAT('%',#{couponId}),'%')
+					</if>
+					<!-- 顾客姓名 -->
+					<if test="memberName != null">
+						and member_name like CONCAT(CONCAT('%',#{memberName}),'%') or m_true_name like CONCAT(CONCAT('%',#{memberName}),'%')
+					</if>
+					<if test="finnshedTime == 'finTime'">
+						and finnshed_time <![CDATA[>=]]> #{finnshedTime}
+					</if>
+			<!-- <if test="timeName != null and timeName != ''">
+				<if test="startTime != null">
+					<if test="timeName == 'create_time'">
+						and payment_time <![CDATA[>=]]> #{startTime}
+					</if>
+					<if test="timeName == 'finTime'">
+						and finnshed_time <![CDATA[>=]]> #{startTime}
+					</if>
+				</if>
+				<if test="endTime != null">
+					<if test="paymrnttime != null">
+						and payment_time <![CDATA[<=]]> #{endTime}
+					</if>
+					<if test="createtime != null">
+						and create_time <![CDATA[<=]]> #{endTime}
+					</if>
+				</if>
+			</if> -->
+			<if test="orderState != null">
+				and order_state = #{orderState}
+			</if>
+			</where>
+		
+		<!-- <if test="orderBy != null and orderBy !=''">
+			<if test="orderBy != null">
+				order by add_time DESC
+			</if>
+			<if test="orderBy == 'finTime'">
+				order by finnshed_time DESC
+			</if>
+		</if> -->
+		
+		
+		
+		limit #{pageInfo.begin} , #{pageInfo.end}
+	
+	</select>
+	<!--王亚，退款申请根据条件查询订单  -->
+	<select id="TqueryAllOrderByCount" resultType="java.lang.Long" parameterType="com.royao.model.Order">
+				select  count(1)
+				 from d_refund r
+				left JOIN d_order o
+				on r.order_id=o.order_id
+		<where>
+			
+					<if test=" goodsName != null">
+						and goods_name like CONCAT(CONCAT('%',#{goodsName}),'%')
+					</if>
+					<if test="orderSn  != null">
+						and order_sn like CONCAT(CONCAT('%',#{orderSn}),'%')
+					</if>
+					<if test="couponId != null">
+						and coupon_id like CONCAT(CONCAT('%',#{coupon_id}),'%')
+					</if>
+					<if test="memberName != null">
+						and member_name like CONCAT(CONCAT('%',#{memberName}),'%') or m_true_name like CONCAT(CONCAT('%',#{memberName}),'%')
+					</if>
+	
+			<!-- <if test="timeName != null and timeName != ''">
+				<if test="startTime != null">
+					<if test="paymenttime != null">
+						and payment_time <![CDATA[>=]]> #{startTime}
+					</if>
+					<if test="finnshed != null">
+						and finnshed_time <![CDATA[>=]]> #{startTime}
+					</if>
+				</if>
+				<if test="endTime != null">
+					<if test="paymenTime!= null">
+						and payment_time <![CDATA[<=]]> #{endTime}
+					</if>
+					<if test=" createTime != null">
+						and create_time <![CDATA[<=]]> #{endTime}
+					</if>
+				</if>
+			</if> -->
+			<if test="orderState != null and orderState != ''">
+				and order_state = #{orderState}
+			</if>
+		</where>
+	</select>
+	
+	<!--王亚，处理退款申请 -->
+	<select id="RqueryAllOrderByCount" resultType="java.util.HashMap"  parameterType="com.royao.model.Order">
+		SELECT r.order_id,
+				o.goods_name,
+				o.store_name,
+				o.member_name,
+				o.payment_time,
+				o.order_state,
+				r.create_time,
+				r.update_time,
+				r.reason,
+				r.status
+			FROM 
+				d_refund r 
+		LEFT JOIN
+				d_order o
+
+			ON
+				r.order_id =o.order_id
+	</select>
+
+
+
+	<select id="queryClearOrder" resultMap="RMDorder"  >
+
+		select b.* from d_clear_order a left outer join d_order b on a.order_id = b.order_id
+
+	</select>
+
+	<update id="updateOrderStateByOrderId"  >
+		update d_order set order_state = #{orderState} where order_id = #{orderId}
+	</update>
+
+
+
+	<update id="updateSettlementState"  >
+		update d_order set settlement_state = #{settlementState} where order_id = #{orderId}
+	</update>
+
+	<update id="orderOverdue" parameterType="java.lang.Integer">
+		UPDATE d_order SET order_state = '6'
+		WHERE 
+		<![CDATA[
+			(select hour(timediff(add_time, NOW())) > #{0})
+			and order_state = '1'
+		]]>
+	</update>
+	
+	<select id="orderByClearPage" resultMap="RMDorderDetail" parameterType="java.util.HashMap">
+		SELECT 
+		o.*
+		FROM
+		d_order o, 
+		d_clear_order c
+		WHERE
+		o.order_id = c.order_id 
+		<if test="id != null">AND c.clear_id = #{id}</if>
+		<if test="storeId != null">AND o.store_id = #{storeId}</if>
+		ORDER BY o.add_time DESC
+		<if test="pageInfo != null">
+        limit #{pageInfo.begin}, #{pageInfo.end}
+        </if>
+	</select>
+	<select id="orderByClearPageCount" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		SELECT 
+		COUNT(*)
+		FROM
+		d_order o, 
+		d_clear_order c
+		WHERE
+		o.order_id = c.order_id 
+		<if test="id != null">AND c.clear_id = #{id}</if>
+		<if test="storeId != null">AND o.store_id = #{storeId}</if>
+	</select>
+</mapper>
+
+
+
+

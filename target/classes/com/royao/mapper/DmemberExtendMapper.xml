@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DmemberExtendMapper">
+
+    <resultMap id="RMDmemberExtend" type="com.royao.model.DmemberExtend">
+        <result property="memberId" column="member_id"/>
+        <result property="eventIsKnow" column="event_is_know"/>
+    </resultMap>
+    
+     <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		member_id,event_is_know
+	    ]]>
+    </sql>
+    
+    <select id="queryById" resultMap="RMDmemberExtend" parameterType="java.lang.Long">
+    	select
+    	<include refid="columns"/>
+    	from d_member_extend
+    	where member_id = #{0}
+    </select>
+    
+    <insert id="save" useGeneratedKeys="true" keyProperty="member_id">
+        <![CDATA[
+        INSERT INTO d_member_extend (
+        	member_id, event_is_know
+        ) VALUES (
+        	#{memberId} ,
+        	#{eventIsKnow}
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+</mapper>

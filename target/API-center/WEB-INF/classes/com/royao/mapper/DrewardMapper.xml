@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DrewardMapper">
+
+    <resultMap id="RMDreward" type="com.royao.model.Dreward">
+        <result property="id" column="id"/>
+        <result property="techieId" column="techie_id"/>
+        <result property="techieName" column="techie_name"/>
+        <result property="memberId" column="member_id"/>
+        <result property="memberName" column="member_name"/>
+        <result property="money" column="money"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="rewardStatus" column="reward_status"/>
+        <result property="isClearing" column="is_clearing"/>
+        <result property="clearingName" column="clearing_name"/>
+        <result property="clearingTime" column="clearing_time"/>
+    </resultMap>
+
+	<!--  -->
+	<select id="queryById" resultMap="RMDreward">
+		select * from d_reward where id = #{0}
+	</select>
+   
+   
+   <!--  -->
+   <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+   		insert into d_reward
+   		(
+   			techie_id,techie_name,member_id,member_name,money,created_time,reward_status,is_clearing,clearing_name,clearing_time
+   		)
+   		values
+   		(
+   			#{techieId},#{techieName},#{memberId},#{memberName},#{money},#{createdTime},#{rewardStatus},#{isClearing},#{clearingName},#{clearingTime}
+   		)
+   </insert>
+   
+   <!--  -->
+   <update id="update">
+   	 update d_reward
+   	 <set>
+   	 	<if test="techieName != null and techieName !=''">techie_name = #{techieName},</if>
+   	 	<if test="memberId != null">member_id = #{memberId},</if>
+   	 	<if test="memberName != null and memberName !=''">member_name = #{memberName},</if>
+   	 	<if test="money != null">money = #{money},</if>
+   	 	<if test="createdTime != null">created_time = #{createdTime},</if>
+   	 	<if test="rewardStatus != null">reward_status = #{rewardStatus},</if>
+   	 	<if test="isClearing != null">is_clearing = #{isClearing},</if>
+   	 	<if test="clearingName != null and clearingName !=''">clearing_name = #{clearingName},</if>
+   	 	<if test="clearingTime != null">clearing_time = #{clearingTime},</if>
+   	 </set>
+   	 <where>
+   	 	<if test="techieId != null">
+   	 		techie_id = #{techieId}
+   	 	</if>
+   	 </where>
+   </update>
+   
+   
+   <!--  -->
+   	<select id="queryAll" resultMap="RMDreward" parameterType="com.royao.model.Dreward">
+   		select * from d_reward 
+   		<where>
+   			<if test="techieId != null">
+   				and techie_id = #{techieId}
+   			</if>
+   			<if test="rewardStatus != null">
+   				and reward_status = #{rewardStatus}
+   			</if>
+   			<if test="isClearing != null">
+   				and is_clearing = #{isClearing}
+   			</if>
+			<if test="start != null">
+				<if test="typeName == 'created_time'">
+					and created_time <![CDATA[>=]]> #{start}
+				</if>
+				<if test="typeName == 'clearing_time'">
+					and clearing_time <![CDATA[>=]]> #{start}
+				</if>
+			</if>
+			<if test="end != null">
+				<if test="typeName == 'created_time'">
+					and created_time <![CDATA[<=]]> #{start}
+				</if>
+				<if test="typeName == 'clearing_time'">
+					and clearing_time <![CDATA[<=]]> #{start}
+				</if>
+			</if>
+   		</where>
+   		order by created_time DESC
+   		limit #{pageInfo.begin} , #{pageInfo.end}
+   	</select>
+   	
+   	<select id="queryAllByCount" resultType="java.lang.Long" parameterType="com.royao.model.Dreward">
+   		select COUNT(*) from d_reward 
+   		<where>
+   			<if test="techieId != null">
+   				and techie_id = #{techieId}
+   			</if>
+   			<if test="rewardStatus != null">
+   				and reward_status = #{rewardStatus}
+   			</if>
+   			<if test="isClearing != null">
+   				and is_clearing = #{isClearing}
+   			</if>
+   			<if test="start != null">
+				<if test="typeName == 'created_time'">
+					and created_time <![CDATA[>=]]> #{start}
+				</if>
+				<if test="typeName == 'clearing_time'">
+					and clearing_time <![CDATA[>=]]> #{start}
+				</if>
+			</if>
+			<if test="end != null">
+				<if test="typeName == 'created_time'">
+					and created_time <![CDATA[<=]]> #{start}
+				</if>
+				<if test="typeName == 'clearing_time'">
+					and clearing_time <![CDATA[<=]]> #{start}
+				</if>
+			</if>
+   		</where>
+   		order by created_time DESC
+   	</select>
+</mapper>
+

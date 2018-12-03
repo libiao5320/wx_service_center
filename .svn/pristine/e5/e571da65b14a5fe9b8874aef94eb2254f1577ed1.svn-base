@@ -1,0 +1,10 @@
+package com.royao.services.inface;
+
+import com.royao.model.DstoreText;
+
+
+public interface DstoreTextService{
+
+	DstoreText queryById(Long id)  throws Exception ;
+
+}

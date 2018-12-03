@@ -1,0 +1,476 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2016
+ */
+
+package com.royao.model;
+
+import java.util.List;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.royao.commons.enums.YN;
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class Dtechie extends BaseEntity implements java.io.Serializable{
+	private static final long serialVersionUID = 5454155825314635342L;
+	
+	//alias
+	public static final String TABLE_ALIAS = "Dtechie";
+	public static final String ALIAS_TECHIE_ID = "主键id";
+	public static final String ALIAS_TECHIE_NAME = "用户名称";
+	public static final String ALIAS_TRUE_NAME = "真实姓名";
+	public static final String ALIAS_PASSWD = "用户密码";
+	public static final String ALIAS_ID_CARD_NO = "身份证号码";
+	public static final String ALIAS_ACCOUNT_AMOUNT = "账户金额";
+	public static final String ALIAS_WJS_AMOUNT = "未结算金额";
+	public static final String ALIAS_YJS_AMOUNT = "已结算金额";
+	public static final String ALIAS_SEX = "性别，m-男，w-女，c-保密";
+	public static final String ALIAS_UNIT = "单位";
+	public static final String ALIAS_AREA_INFO = "地区信息";
+	public static final String ALIAS_STORE_ADDRESS = "详细地址";
+	public static final String ALIAS_PROVINCE_ID = "省id";
+	public static final String ALIAS_CITY_ID = "市id";
+	public static final String ALIAS_AREA_ID = "区id";
+	public static final String ALIAS_QQ = "qq";
+	public static final String ALIAS_IMG = "形象照片";
+	public static final String ALIAS_IISJOB = "在职状态";
+	public static final String ALIAS_TITLE = "职称";
+	public static final String ALIAS_RZ_POSITION = "任职岗位";
+	public static final String ALIAS_GOOD_AT = "擅长";
+	public static final String ALIAS_STORE_ID = "挂靠店铺id";
+	public static final String ALIAS_DS_TOTAL_NUM = "打赏总数量";
+	public static final String ALIAS_DS_TOTAL_AMOUNT = "打赏总金额";
+	public static final String ALIAS_TECHIE_CLASS_ID = "技师类别id";
+	public static final String ALIAS_OCCUPATION = "职业";
+	public static final String ALIAS_EVALUATION_GOOD_PROBABILITY = "服务好评率";
+	public static final String ALIAS_TECHIE_INTRODUCE = "技师简介";
+	public static final String ALIAS_EVALUATE_SUM = "评价总数";
+	public static final String ALIAS_STATE = "状态 0未激活 1正常";
+	public static final String ALIAS_ADD_TIME = "添加时间";
+	public static final String ALIAS_VRL_ACCT = "容联子账号";
+	public static final String ALIAS_VRL_ACCTPASS = "容联子账号密码";
+	public static final String ALIAS_VRL_VOIP = "容联VoIP账号";
+	public static final String ALIAS_VRL_VOIPPASS = "容联VoIP账号密码";
+	
+	//可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+	//columns START
+	
+	private java.lang.Long techieId;
+	
+	private java.lang.String techieName;
+	
+	private java.lang.String trueName;
+	
+	private java.lang.String passwd;
+	
+	private java.lang.String idCardNo;
+	
+	private java.lang.Long accountAmount;
+	
+	private java.lang.Long wjsAmount;
+	
+	private java.lang.Long yjsAmount;
+	
+	private java.lang.String sex;
+	
+	private java.lang.String unit;
+	
+	private java.lang.String areaInfo;
+	
+	private java.lang.String storeAddress;
+	
+	private java.lang.Long provinceId;
+	
+	private java.lang.Long cityId;
+	
+	private java.lang.Long areaId;
+	
+	private String fjLandmark;	
+	
+	private Darea area;
+	
+	private java.lang.String qq;
+	
+	private java.lang.String img;
+	
+	private YN iisjob;
+	
+	private java.lang.String title;
+	
+	private Long titleScId;
+	
+	private java.lang.String rzPosition;
+	
+	private java.lang.String goodAt;
+	
+	private java.lang.Long storeId;
+	
+	private java.lang.Long dsTotalNum;
+	
+	private java.lang.Long dsTotalAmount;
+	
+	private java.lang.Long techieClassId;
+	
+	private java.lang.String occupation;
+	
+	private java.lang.Long evaluationGoodProbability;
+	
+	private java.lang.String techieIntroduce;
+	
+	private java.lang.Long evaluateSum;
+	
+	private java.lang.Integer state;
+	
+	private java.util.Date addTime;
+	
+	private java.lang.String vrlAcct;
+	
+	private java.lang.String vrlAcctpass;
+	
+	private java.lang.String vrlVoip;
+	
+	private java.lang.String vrlVoippass;
+	//columns END
+	
+	private Dstore store;//店铺信息
+	
+	private DgroupbuyClass dgroupbuyClass;//技师类别
+	
+	private List<DtechieGoods> techieGoodsList;
+	
+	private List<DtechieEvaluate> techieEvaList;//健康师评论列表
+	
+	private Integer countEva;//评论总数
+	
+	public List<DtechieEvaluate> getTechieEvaList() {
+		return techieEvaList;
+	}
+
+	public void setTechieEvaList(List<DtechieEvaluate> techieEvaList) {
+		this.techieEvaList = techieEvaList;
+	}
+
+	public Integer getCountEva() {
+		return countEva;
+	}
+
+	public void setCountEva(Integer countEva) {
+		this.countEva = countEva;
+	}
+
+	public Dstore getStore() {
+		return store;
+	}
+
+	public void setStore(Dstore store) {
+		this.store = store;
+	}
+
+	public List<DtechieGoods> getTechieGoodsList() {
+		return techieGoodsList;
+	}
+
+	public void setTechieGoodsList(List<DtechieGoods> techieGoodsList) {
+		this.techieGoodsList = techieGoodsList;
+	}
+
+	public Darea getArea() {
+		return area;
+	}
+
+	public void setArea(Darea area) {
+		this.area = area;
+	}
+
+	public Dtechie(){
+	}
+
+	public Dtechie(
+		java.lang.Long techieId
+	){
+		this.techieId = techieId;
+	}
+	
+	
+	
+	public DgroupbuyClass getDgroupbuyClass() {
+		return dgroupbuyClass;
+	}
+	
+	public void setDgroupbuyClass(DgroupbuyClass dgroupbuyClass) {
+		this.dgroupbuyClass = dgroupbuyClass;
+	}
+
+	public String getFjLandmark() {
+		return fjLandmark;
+	}
+
+	public void setFjLandmark(String fjLandmark) {
+		this.fjLandmark = fjLandmark;
+	}
+
+	public void setTechieId(java.lang.Long value) {
+		this.techieId = value;
+	}
+	
+	public java.lang.Long getTechieId() {
+		return this.techieId;
+	}
+	public void setTechieName(java.lang.String value) {
+		this.techieName = value;
+	}
+	
+	public java.lang.String getTechieName() {
+		return this.techieName;
+	}
+	public void setTrueName(java.lang.String value) {
+		this.trueName = value;
+	}
+	
+	public java.lang.String getTrueName() {
+		return this.trueName;
+	}
+	public void setPasswd(java.lang.String value) {
+		this.passwd = value;
+	}
+	
+	public java.lang.String getPasswd() {
+		return this.passwd;
+	}
+	public void setIdCardNo(java.lang.String value) {
+		this.idCardNo = value;
+	}
+	
+	public java.lang.String getIdCardNo() {
+		return this.idCardNo;
+	}
+	public void setAccountAmount(java.lang.Long value) {
+		this.accountAmount = value;
+	}
+	
+	public java.lang.Long getAccountAmount() {
+		return this.accountAmount;
+	}
+	public void setWjsAmount(java.lang.Long value) {
+		this.wjsAmount = value;
+	}
+	
+	public java.lang.Long getWjsAmount() {
+		return this.wjsAmount;
+	}
+	public void setYjsAmount(java.lang.Long value) {
+		this.yjsAmount = value;
+	}
+	
+	public java.lang.Long getYjsAmount() {
+		return this.yjsAmount;
+	}
+	public void setSex(java.lang.String value) {
+		this.sex = value;
+	}
+	
+	public java.lang.String getSex() {
+		return this.sex;
+	}
+	public void setUnit(java.lang.String value) {
+		this.unit = value;
+	}
+	
+	public java.lang.String getUnit() {
+		return this.unit;
+	}
+	public void setAreaInfo(java.lang.String value) {
+		this.areaInfo = value;
+	}
+	
+	public java.lang.String getAreaInfo() {
+		return this.areaInfo;
+	}
+	public void setStoreAddress(java.lang.String value) {
+		this.storeAddress = value;
+	}
+	
+	public java.lang.String getStoreAddress() {
+		return this.storeAddress;
+	}
+	public void setProvinceId(java.lang.Long value) {
+		this.provinceId = value;
+	}
+	
+	public java.lang.Long getProvinceId() {
+		return this.provinceId;
+	}
+	public void setCityId(java.lang.Long value) {
+		this.cityId = value;
+	}
+	
+	public java.lang.Long getCityId() {
+		return this.cityId;
+	}
+	public void setAreaId(java.lang.Long value) {
+		this.areaId = value;
+	}
+	
+	public java.lang.Long getAreaId() {
+		return this.areaId;
+	}
+	public void setQq(java.lang.String value) {
+		this.qq = value;
+	}
+	
+	public java.lang.String getQq() {
+		return this.qq;
+	}
+	public void setImg(java.lang.String value) {
+		this.img = value;
+	}
+	
+	public java.lang.String getImg() {
+		return this.img;
+	}
+	public void setIisjob(YN value) {
+		this.iisjob = value;
+	}
+	
+	public YN getIisjob() {
+		return this.iisjob;
+	}
+	public void setTitle(java.lang.String value) {
+		this.title = value;
+	}
+	
+	public java.lang.String getTitle() {
+		return this.title;
+	}
+	public Long getTitleScId() {
+		return titleScId;
+	}
+
+	public void setTitleScId(Long titleScId) {
+		this.titleScId = titleScId;
+	}
+
+	public void setRzPosition(java.lang.String value) {
+		this.rzPosition = value;
+	}
+	
+	public java.lang.String getRzPosition() {
+		return this.rzPosition;
+	}
+	public void setGoodAt(java.lang.String value) {
+		this.goodAt = value;
+	}
+	
+	public java.lang.String getGoodAt() {
+		return this.goodAt;
+	}
+	public void setStoreId(java.lang.Long value) {
+		this.storeId = value;
+	}
+	
+	public java.lang.Long getStoreId() {
+		return this.storeId;
+	}
+	public void setDsTotalNum(java.lang.Long value) {
+		this.dsTotalNum = value;
+	}
+	
+	public java.lang.Long getDsTotalNum() {
+		return this.dsTotalNum;
+	}
+	public void setDsTotalAmount(java.lang.Long value) {
+		this.dsTotalAmount = value;
+	}
+	
+	public java.lang.Long getDsTotalAmount() {
+		return this.dsTotalAmount;
+	}
+	public void setTechieClassId(java.lang.Long value) {
+		this.techieClassId = value;
+	}
+	
+	public java.lang.Long getTechieClassId() {
+		return this.techieClassId;
+	}
+	public void setOccupation(java.lang.String value) {
+		this.occupation = value;
+	}
+	
+	public java.lang.String getOccupation() {
+		return this.occupation;
+	}
+	public void setEvaluationGoodProbability(java.lang.Long value) {
+		this.evaluationGoodProbability = value;
+	}
+	
+	public java.lang.Long getEvaluationGoodProbability() {
+		return this.evaluationGoodProbability;
+	}
+	public void setTechieIntroduce(java.lang.String value) {
+		this.techieIntroduce = value;
+	}
+	
+	public java.lang.String getTechieIntroduce() {
+		return this.techieIntroduce;
+	}
+	public void setEvaluateSum(java.lang.Long value) {
+		this.evaluateSum = value;
+	}
+	
+	public java.lang.Long getEvaluateSum() {
+		return this.evaluateSum;
+	}
+	public void setState(java.lang.Integer value) {
+		this.state = value;
+	}
+	
+	public java.lang.Integer getState() {
+		return this.state;
+	}
+	
+	public void setAddTime(java.util.Date value) {
+		this.addTime = value;
+	}
+	
+	public java.util.Date getAddTime() {
+		return this.addTime;
+	}
+	public void setVrlAcct(java.lang.String value) {
+		this.vrlAcct = value;
+	}
+	
+	public java.lang.String getVrlAcct() {
+		return this.vrlAcct;
+	}
+	public void setVrlAcctpass(java.lang.String value) {
+		this.vrlAcctpass = value;
+	}
+	
+	public java.lang.String getVrlAcctpass() {
+		return this.vrlAcctpass;
+	}
+	public void setVrlVoip(java.lang.String value) {
+		this.vrlVoip = value;
+	}
+	
+	public java.lang.String getVrlVoip() {
+		return this.vrlVoip;
+	}
+	public void setVrlVoippass(java.lang.String value) {
+		this.vrlVoippass = value;
+	}
+	
+	public java.lang.String getVrlVoippass() {
+		return this.vrlVoippass;
+	}
+}
+

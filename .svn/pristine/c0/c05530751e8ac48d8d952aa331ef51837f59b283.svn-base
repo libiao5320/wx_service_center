@@ -1,0 +1,98 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class DgroupbuyClass extends BaseEntity implements java.io.Serializable {
+    private static final long serialVersionUID = 5454155825314635342L;
+
+    //alias
+    public static final String TABLE_ALIAS = "DgroupbuyClass";
+    public static final String ALIAS_CLASS_ID = "类别id";
+    public static final String ALIAS_CLASS_NAME = "类别名称";
+    public static final String ALIAS_CLASS_PARENT_ID = "父类别编号";
+    public static final String ALIAS_SORT = "排序";
+    public static final String ALIAS_DEEP = "深度";
+
+    //date formats
+
+    //可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+    //columns START
+
+    private Long classId;
+
+    private String className;
+
+    private Integer classParentId;
+
+    private Integer sort;
+
+    private Integer deep;
+    //columns END
+
+    public DgroupbuyClass() {
+    }
+
+    public DgroupbuyClass(
+            Long classId
+    ) {
+        this.classId = classId;
+    }
+
+    public void setClassId(Long value) {
+        this.classId = value;
+    }
+
+    public Long getClassId() {
+        return this.classId;
+    }
+
+    public void setClassName(String value) {
+        this.className = value;
+    }
+
+    public String getClassName() {
+        return this.className;
+    }
+
+    public void setClassParentId(Integer value) {
+        this.classParentId = value;
+    }
+
+    public Integer getClassParentId() {
+        return this.classParentId;
+    }
+
+    public void setSort(Integer value) {
+        this.sort = value;
+    }
+
+    public Integer getSort() {
+        return this.sort;
+    }
+
+    public void setDeep(Integer value) {
+        this.deep = value;
+    }
+
+    public Integer getDeep() {
+        return this.deep;
+    }
+
+
+}
+

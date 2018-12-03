@@ -1,0 +1,21 @@
+package com.royao.services.inface;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import com.royao.model.Dkiting;
+import com.royao.services.base.BaseService;
+
+public interface DkitingService extends BaseService<Dkiting>{
+
+	Integer plistWithPageCount(Dkiting kiting) throws Exception;
+
+	List<Dkiting> plistWithPage(Dkiting kiting) throws Exception;
+
+	public Integer queryClearCount( Map map ) throws  Exception;
+	public List<Map> queryClear( Map map ) throws  Exception;
+
+	public List<Map> queryClearDetailByStoreId(Map map )throws Exception;
+
+}

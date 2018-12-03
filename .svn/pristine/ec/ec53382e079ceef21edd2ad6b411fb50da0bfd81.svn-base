@@ -1,0 +1,90 @@
+package com.royao.pctrl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Devent;
+import com.royao.model.Dgoods;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DgoodsService;
+import com.royao.services.inface.DredpacketsDistributeService;
+import com.royao.services.inface.DredpacketsService;
+import com.royao.util.JsonUtil;
+
+/**
+ * P端 产品数据API请求接口
+ * @author jk
+ * @Description
+ * @date 2016年1月21日
+ */
+@Controller
+@RequestMapping("/p/goods")
+public class PGoodsCtrl {
+	private Logger loger  = Logger.getLogger(this.getClass());
+	@Autowired
+	private  DgoodsService dgoodsService;	
+	
+	@Autowired
+	private DredpacketsService redpacketsService;
+	
+	@Autowired
+	private DredpacketsDistributeService redpacketsDistributeService;
+	
+	
+	@ResponseBody
+    @RequestMapping("/listQuery.htm")
+    public String listQuery(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        
+        try {
+        	Map params = requestContent.getBody();
+            PageObject pageInfo = new PageObject();
+            response.setCharacterEncoding("utf-8");
+        	if(null != requestContent.getBody()){
+        		if( null == params.get("pageNo") ){
+        			pageInfo.setPageNo(1);
+        		}else{
+        			pageInfo.setPageNo(1);
+        		}
+        		
+        	}
+        	params.put("begin",pageInfo.getBegin());
+			params.put("end",pageInfo.getEnd());
+        	
+        	List<Dgoods> goodList= this.dgoodsService.listWithPageAndConditon(params);
+            
+            int total = this.dgoodsService.queryAll().size();
+            Map<String,Object> returnMap = new HashMap<String, Object>();
+            returnMap.put("rows", goodList);
+            returnMap.put("total", total);
+            
+            if (goodList != null && goodList.size() > 0) {
+            	responseContent = ResponseHandler.makeResponse(returnMap,true);
+            } 
+        } catch (Exception e) {
+        	loger.info("ajax请求活动列表失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+}

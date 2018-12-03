@@ -1,0 +1,157 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+
+import com.royao.model.base.BaseEntity;
+
+
+import java.util.*;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class Devaluate extends BaseEntity implements java.io.Serializable {
+    private static final long serialVersionUID = 5454155825314635342L;
+
+    //alias
+    public static final String TABLE_ALIAS = "Devaluate";
+    public static final String ALIAS_ID = "id";
+    public static final String ALIAS_MEMBER_ID = "用户ID";
+    public static final String ALIAS_GOODS_ID = "商品ＩＤ";
+    public static final String ALIAS_ORDER_ID = "订单ID";
+    public static final String ALIAS_GRADE = "评价等级";
+    public static final String ALIAS_DETAIL = "评价详情";
+    public static final String ALIAS_IS_SHOW = "是否显示，Y-显示，N-不显示";
+    public static final String ALIAS_CREATE_TIME = "评价时间";
+    public static final String ALIAS_UPDATE_TIME = "updateTime";
+    public static final String ALIAS_UPDATE_BY = "updateBy";
+
+
+    //可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+    //columns START
+
+    private Long id;
+
+    private Long memberId;
+
+    private Long goodsId;
+
+    private Long orderId;
+
+    private Integer grade;
+
+    private String detail;
+
+    private String isShow;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    private String updateBy;
+    //columns END
+
+    public Devaluate() {
+    }
+
+    public Devaluate(
+            Long id
+    ) {
+        this.id = id;
+    }
+
+    public void setId(Long value) {
+        this.id = value;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public void setMemberId(Long value) {
+        this.memberId = value;
+    }
+
+    public Long getMemberId() {
+        return this.memberId;
+    }
+
+    public void setGoodsId(Long value) {
+        this.goodsId = value;
+    }
+
+    public Long getGoodsId() {
+        return this.goodsId;
+    }
+
+    public void setOrderId(Long value) {
+        this.orderId = value;
+    }
+
+    public Long getOrderId() {
+        return this.orderId;
+    }
+
+    public void setGrade(Integer value) {
+        this.grade = value;
+    }
+
+    public Integer getGrade() {
+        return this.grade;
+    }
+
+    public void setDetail(String value) {
+        this.detail = value;
+    }
+
+    public String getDetail() {
+        return this.detail;
+    }
+
+    public void setIsShow(String value) {
+        this.isShow = value;
+    }
+
+    public String getIsShow() {
+        return this.isShow;
+    }
+
+
+    public void setCreateTime(Date value) {
+        this.createTime = value;
+    }
+
+    public Date getCreateTime() {
+        return this.createTime;
+    }
+
+
+    public void setUpdateTime(Date value) {
+        this.updateTime = value;
+    }
+
+    public Date getUpdateTime() {
+        return this.updateTime;
+    }
+
+    public void setUpdateBy(String value) {
+        this.updateBy = value;
+    }
+
+    public String getUpdateBy() {
+        return this.updateBy;
+    }
+
+
+}
+

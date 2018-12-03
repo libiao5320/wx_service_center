@@ -1,0 +1,77 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+package com.royao.services.impl;
+
+
+import com.royao.mapper.DcomplainMapper;
+import com.royao.model.Dcomplain;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DcomplainService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+
+@Service("complainService")
+public class DcomplainServiceImpl extends BaseServiceImpl<Dcomplain> implements DcomplainService {
+
+    @Autowired
+    private DcomplainMapper dcomplainMapper;
+
+
+    public int save(Dcomplain dcomplain) throws Exception {
+        return dcomplainMapper.save(dcomplain);
+    }
+
+    public int update(Dcomplain dcomplain) throws Exception {
+        return dcomplainMapper.update(dcomplain);
+    }
+
+    public int delete(Long id) throws Exception {
+        return dcomplainMapper.delete(id);
+    }
+
+    public Dcomplain queryById(Long id) throws Exception {
+        return dcomplainMapper.queryById(id);
+    }
+
+    public List<Dcomplain> queryByCondtion(Map map) throws Exception {
+        return dcomplainMapper.queryByCondtion(map);
+    }
+
+    public List<Dcomplain> queryAll() throws Exception {
+        return dcomplainMapper.queryAll();
+    }
+
+    public List<Dcomplain> listWithPage(Dcomplain t) throws Exception {
+        
+        return null;
+    }
+
+	public List<Dcomplain> listWithPageAndCondition(
+			Map params) {
+		return dcomplainMapper.listWithPageAndCondition(params);
+	}
+
+	public int countWithCondition(Map params) {
+		return dcomplainMapper.countWithCondition(params);
+	}
+
+	public int bcountWithCondition(Map params) {
+		return dcomplainMapper.bcountWithCondition(params);
+	}
+
+	public List<Map> blistWithPageAndCondition(Map params) {
+		return dcomplainMapper.blistWithPageAndCondition(params);
+	}
+
+}

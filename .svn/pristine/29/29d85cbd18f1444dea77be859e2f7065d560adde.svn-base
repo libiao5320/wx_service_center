@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DtechieMapper">
+
+	<resultMap id="RMDtechie" type="com.royao.model.Dtechie">
+        <result property="techieId" column="techie_id"/>
+        <result property="techieName" column="techie_name"/>
+        <result property="trueName" column="true_name"/>
+        <result property="passwd" column="passwd"/>
+        <result property="idCardNo" column="id_card_no"/>
+        <result property="accountAmount" column="account_amount"/>
+        <result property="wjsAmount" column="wjs_amount"/>
+        <result property="yjsAmount" column="yjs_amount"/>
+        <result property="sex" column="sex"/>
+        <result property="unit" column="unit"/>
+        <result property="areaInfo" column="area_info"/>
+        <result property="storeAddress" column="store_address"/>
+        <result property="provinceId" column="province_id"/>
+        <result property="cityId" column="city_id"/>
+        <result property="areaId" column="area_id"/>
+        <result property="qq" column="qq"/>
+        <result property="img" column="img"/>
+        <result property="iisjob" column="i_isjob"/>
+        <result property="title" column="title"/>
+        <result property="rzPosition" column="rz_position"/>
+        <result property="goodAt" column="good_at"/>
+        <result property="storeId" column="store_id"/>
+        <result property="dsTotalNum" column="ds_total_num"/>
+        <result property="dsTotalAmount" column="ds_total_amount"/>
+        <result property="techieClassId" column="techie_class_id"/>
+        <result property="occupation" column="occupation"/>
+        <result property="evaluationGoodProbability" column="evaluation_good_probability"/>
+        <result property="techieIntroduce" column="techie_introduce"/>
+        <result property="evaluateSum" column="evaluate_sum"/>
+        <result property="state" column="state"/>
+        <result property="addTime" column="add_time"/>
+        <result property="vrlAcct" column="v_rl_acct"/>
+        <result property="vrlAcctpass" column="v_rl_acctpass"/>
+        <result property="vrlVoip" column="v_rl_voip"/>
+        <result property="vrlVoippass" column="v_rl_voippass"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="Dtechiecolumns">
+	    <![CDATA[
+		techie_id,techie_name,true_name,passwd,id_card_no,account_amount,wjs_amount,yjs_amount,sex,unit,area_info,store_address,province_id,city_id,area_id,qq,img,i_isjob,title,rz_position,good_at,store_id,ds_total_num,ds_total_amount,techie_class_id,occupation,evaluation_good_probability,techie_introduce,evaluate_sum,state,add_time,v_rl_acct,v_rl_acctpass,v_rl_voip,v_rl_voippass
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="techieId">
+    <![CDATA[
+        INSERT INTO d_techie (
+        	techie_id ,
+        	techie_name ,
+        	true_name ,
+        	passwd ,
+        	id_card_no ,
+        	account_amount ,
+        	wjs_amount ,
+        	yjs_amount ,
+        	sex ,
+        	unit ,
+        	area_info ,
+        	store_address ,
+        	province_id ,
+        	city_id ,
+        	area_id ,
+        	qq ,
+        	img ,
+        	i_isjob ,
+        	title ,
+        	rz_position ,
+        	good_at ,
+        	store_id ,
+        	ds_total_num ,
+        	ds_total_amount ,
+        	techie_class_id ,
+        	occupation ,
+        	evaluation_good_probability ,
+        	techie_introduce ,
+        	evaluate_sum ,
+        	state ,
+        	add_time ,
+        	v_rl_acct ,
+        	v_rl_acctpass ,
+        	v_rl_voip ,
+        	v_rl_voippass 
+        ) VALUES (
+        	#{techieId} ,
+        	#{techieName} ,
+        	#{trueName} ,
+        	#{passwd} ,
+        	#{idCardNo} ,
+        	#{accountAmount} ,
+        	#{wjsAmount} ,
+        	#{yjsAmount} ,
+        	#{sex} ,
+        	#{unit} ,
+        	#{areaInfo} ,
+        	#{storeAddress} ,
+        	#{provinceId} ,
+        	#{cityId} ,
+        	#{areaId} ,
+        	#{qq} ,
+        	#{img} ,
+        	#{iisjob} ,
+        	#{title} ,
+        	#{rzPosition} ,
+        	#{goodAt} ,
+        	#{storeId} ,
+        	#{dsTotalNum} ,
+        	#{dsTotalAmount} ,
+        	#{techieClassId} ,
+        	#{occupation} ,
+        	#{evaluationGoodProbability} ,
+        	#{techieIntroduce} ,
+        	#{evaluateSum} ,
+        	#{state} ,
+        	#{addTime} ,
+        	#{vrlAcct} ,
+        	#{vrlAcctpass} ,
+        	#{vrlVoip} ,
+        	#{vrlVoippass} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_techie SET
+	        techie_name = #{techieName} ,
+	        true_name = #{trueName} ,
+	        passwd = #{passwd} ,
+	        id_card_no = #{idCardNo} ,
+	        account_amount = #{accountAmount} ,
+	        wjs_amount = #{wjsAmount} ,
+	        yjs_amount = #{yjsAmount} ,
+	        sex = #{sex} ,
+	        unit = #{unit} ,
+	        area_info = #{areaInfo} ,
+	        store_address = #{storeAddress} ,
+	        province_id = #{provinceId} ,
+	        city_id = #{cityId} ,
+	        area_id = #{areaId} ,
+	        qq = #{qq} ,
+	        img = #{img} ,
+	        i_isjob = #{iisjob} ,
+	        title = #{title} ,
+	        rz_position = #{rzPosition} ,
+	        good_at = #{goodAt} ,
+	        store_id = #{storeId} ,
+	        ds_total_num = #{dsTotalNum} ,
+	        ds_total_amount = #{dsTotalAmount} ,
+	        techie_class_id = #{techieClassId} ,
+	        occupation = #{occupation} ,
+	        evaluation_good_probability = #{evaluationGoodProbability} ,
+	        techie_introduce = #{techieIntroduce} ,
+	        evaluate_sum = #{evaluateSum} ,
+	        state = #{state} ,
+	        add_time = #{addTime} ,
+	        v_rl_acct = #{vrlAcct} ,
+	        v_rl_acctpass = #{vrlAcctpass} ,
+	        v_rl_voip = #{vrlVoip} ,
+	        v_rl_voippass = #{vrlVoippass} 
+        WHERE 
+	        techie_id = #{techieId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_techie WHERE
+        techie_id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDtechie">
+		SELECT <include refid="Dtechiecolumns" />
+	    <![CDATA[
+		    FROM d_techie 
+	        WHERE 
+		        techie_id = #{id} 
+	    ]]>
+	</select>
+	
+
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_techie where 1=1
+
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+    	SELECT <include refid="Dtechiecolumns" />
+	    FROM d_techie 
+		where 1=1 
+		limit #begin# , #end#
+    </select>
+	
+	
+	
+	  <select id="queryAll" resultMap="RMDtechie">
+    	SELECT <include refid="Dtechiecolumns" />
+	    FROM d_techie 
+	  </select>
+	  
+	    <select id="queryByCondition" resultMap="RMDtechie">
+    	SELECT <include refid="Dtechiecolumns" />
+	    FROM d_techie 
+		
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(techieId)">
+				AND techie_id = #{techieId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(techieName)">
+				AND techie_name = #{techieName}
+			</if>
+	       <if test="@Ognl@isNotEmpty(trueName)">
+				AND true_name = #{trueName}
+			</if>
+	       <if test="@Ognl@isNotEmpty(passwd)">
+				AND passwd = #{passwd}
+			</if>
+	       <if test="@Ognl@isNotEmpty(idCardNo)">
+				AND id_card_no = #{idCardNo}
+			</if>
+	       <if test="@Ognl@isNotEmpty(accountAmount)">
+				AND account_amount = #{accountAmount}
+			</if>
+	       <if test="@Ognl@isNotEmpty(wjsAmount)">
+				AND wjs_amount = #{wjsAmount}
+			</if>
+	       <if test="@Ognl@isNotEmpty(yjsAmount)">
+				AND yjs_amount = #{yjsAmount}
+			</if>
+	       <if test="@Ognl@isNotEmpty(sex)">
+				AND sex = #{sex}
+			</if>
+	       <if test="@Ognl@isNotEmpty(unit)">
+				AND unit = #{unit}
+			</if>
+	       <if test="@Ognl@isNotEmpty(areaInfo)">
+				AND area_info = #{areaInfo}
+			</if>
+	       <if test="@Ognl@isNotEmpty(storeAddress)">
+				AND store_address = #{storeAddress}
+			</if>
+	       <if test="@Ognl@isNotEmpty(provinceId)">
+				AND province_id = #{provinceId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(cityId)">
+				AND city_id = #{cityId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(areaId)">
+				AND area_id = #{areaId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(qq)">
+				AND qq = #{qq}
+			</if>
+	       <if test="@Ognl@isNotEmpty(img)">
+				AND img = #{img}
+			</if>
+	       <if test="@Ognl@isNotEmpty(iisjob)">
+				AND i_isjob = #{iisjob}
+			</if>
+	       <if test="@Ognl@isNotEmpty(title)">
+				AND title = #{title}
+			</if>
+	       <if test="@Ognl@isNotEmpty(rzPosition)">
+				AND rz_position = #{rzPosition}
+			</if>
+	       <if test="@Ognl@isNotEmpty(goodAt)">
+				AND good_at = #{goodAt}
+			</if>
+	       <if test="@Ognl@isNotEmpty(storeId)">
+				AND store_id = #{storeId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(dsTotalNum)">
+				AND ds_total_num = #{dsTotalNum}
+			</if>
+	       <if test="@Ognl@isNotEmpty(dsTotalAmount)">
+				AND ds_total_amount = #{dsTotalAmount}
+			</if>
+	       <if test="@Ognl@isNotEmpty(techieClassId)">
+				AND techie_class_id = #{techieClassId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(occupation)">
+				AND occupation = #{occupation}
+			</if>
+	       <if test="@Ognl@isNotEmpty(evaluationGoodProbability)">
+				AND evaluation_good_probability = #{evaluationGoodProbability}
+			</if>
+	       <if test="@Ognl@isNotEmpty(techieIntroduce)">
+				AND techie_introduce = #{techieIntroduce}
+			</if>
+	       <if test="@Ognl@isNotEmpty(evaluateSum)">
+				AND evaluate_sum = #{evaluateSum}
+			</if>
+	       <if test="@Ognl@isNotEmpty(state)">
+				AND state = #{state}
+			</if>
+	       <if test="@Ognl@isNotEmpty(addTimeBegin)">
+				AND add_time >= #{addTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(addTimeEnd)">
+				AND add_time &lt;= #{addTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(vrlAcct)">
+				AND v_rl_acct = #{vrlAcct}
+			</if>
+	       <if test="@Ognl@isNotEmpty(vrlAcctpass)">
+				AND v_rl_acctpass = #{vrlAcctpass}
+			</if>
+	       <if test="@Ognl@isNotEmpty(vrlVoip)">
+				AND v_rl_voip = #{vrlVoip}
+			</if>
+	       <if test="@Ognl@isNotEmpty(vrlVoippass)">
+				AND v_rl_voippass = #{vrlVoippass}
+			</if>
+		</where>
+	  </select>
+
+	
+</mapper>
+

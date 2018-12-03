@@ -1,0 +1,170 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+
+
+import com.royao.model.base.BaseEntity;
+
+import java.util.*;
+
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class DbalanceLogs extends BaseEntity implements java.io.Serializable{
+	private static final long serialVersionUID = 5454155825314635342L;
+	
+	//alias
+	public static final String TABLE_ALIAS = "DbalanceLogs";
+	public static final String ALIAS_ID = "id";
+	public static final String ALIAS_MEMBER_ID = "会员id";
+	public static final String ALIAS_SN = "平台交易流水号";
+	public static final String ALIAS_AMOUNT = "金额";
+	public static final String ALIAS_BALANCE = "预存款余额";
+	public static final String ALIAS_EXPLAIN = "说明";
+	public static final String ALIAS_METHOD = "支付方式xf消费,wxpay微信支付";
+	public static final String ALIAS_STATE = "1未支付 2支付成功";
+	public static final String ALIAS_CURRENT_BALANCE = "currentBalance";
+	public static final String ALIAS_TRADE_NO = "支付平台订单号";
+	public static final String ALIAS_ADD_TIME = "变动时间";
+	public static final String ALIAS_ADD_BY = "添加人";
+	
+
+	
+	//可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+	//columns START
+	
+	private Long id;
+
+	private Long memberId;
+
+	private String sn;
+
+	private Long amount;
+	
+	private Long balance;
+
+	private String explain;
+
+	private String method;
+
+	private Integer state;
+	
+	private Long currentBalance;
+
+	private String tradeNo;
+
+	private Date addTime;
+
+	private String addBy;
+	//columns END
+
+	public DbalanceLogs(){
+	}
+
+	public DbalanceLogs(
+		Long id
+	){
+		this.id = id;
+	}
+
+	public void setId(Long value) {
+		this.id = value;
+	}
+	
+	public Long getId() {
+		return this.id;
+	}
+	public void setMemberId(Long value) {
+		this.memberId = value;
+	}
+	
+	public Long getMemberId() {
+		return this.memberId;
+	}
+	public void setSn(String value) {
+		this.sn = value;
+	}
+	
+	public String getSn() {
+		return this.sn;
+	}
+	public void setAmount(Long value) {
+		this.amount = value;
+	}
+	
+	public Long getAmount() {
+		return this.amount;
+	}
+	public void setBalance(Long value) {
+		this.balance = value;
+	}
+	
+	public Long getBalance() {
+		return this.balance;
+	}
+	public void setExplain(String value) {
+		this.explain = value;
+	}
+	
+	public String getExplain() {
+		return this.explain;
+	}
+	public void setMethod(String value) {
+		this.method = value;
+	}
+	
+	public String getMethod() {
+		return this.method;
+	}
+	public void setState(Integer value) {
+		this.state = value;
+	}
+	
+	public Integer getState() {
+		return this.state;
+	}
+	public void setCurrentBalance(Long value) {
+		this.currentBalance = value;
+	}
+	
+	public Long getCurrentBalance() {
+		return this.currentBalance;
+	}
+	public void setTradeNo(String value) {
+		this.tradeNo = value;
+	}
+	
+	public String getTradeNo() {
+		return this.tradeNo;
+	}
+
+	
+	public void setAddTime(Date value) {
+		this.addTime = value;
+	}
+	
+	public Date getAddTime() {
+		return this.addTime;
+	}
+	public void setAddBy(String value) {
+		this.addBy = value;
+	}
+	
+	public String getAddBy() {
+		return this.addBy;
+	}
+
+
+}
+

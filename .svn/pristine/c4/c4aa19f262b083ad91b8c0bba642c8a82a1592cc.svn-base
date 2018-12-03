@@ -1,0 +1,9 @@
+package com.royao.mapper;
+
+import com.royao.model.DstoreText;
+
+public interface DstoreTextMapper {
+
+	DstoreText queryById(Long id);
+
+}

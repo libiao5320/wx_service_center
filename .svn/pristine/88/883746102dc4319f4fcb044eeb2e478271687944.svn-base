@@ -1,0 +1,57 @@
+
+
+
+package com.royao.services.impl;
+
+
+import com.royao.mapper.DtechieMapper;
+import com.royao.model.Dtechie;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DtechieService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service("dtechieService")
+public class DtechieServiceImpl extends BaseServiceImpl<Dtechie> implements DtechieService {
+	
+		@Autowired
+		private DtechieMapper dtechieMapper;
+
+
+
+		public int save(Dtechie dtechie) throws Exception {
+        return dtechieMapper.save(dtechie);
+		}
+
+		public int update(Dtechie dtechie) throws Exception {
+        return dtechieMapper.update(dtechie);
+		}
+
+		public int delete(Long id) throws Exception {
+       return dtechieMapper.delete(id);
+		}
+
+	     public Dtechie queryById(Long id) throws Exception {
+         return dtechieMapper.queryById(id);
+         }
+
+		public List<Dtechie> queryByCondtion(Map map) throws Exception {
+        return dtechieMapper.queryByCondtion(map);
+		}
+
+		public List<Dtechie> queryAll() throws Exception {
+		   return dtechieMapper.queryAll();
+		}
+
+		public List<Dtechie> listWithPage(Dtechie dtechie) throws Exception {
+		return null;
+		}
+
+
+	public List queryHomeBestTechie() throws Exception {
+		return dtechieMapper.queryHomeBestTechie();
+	}
+}

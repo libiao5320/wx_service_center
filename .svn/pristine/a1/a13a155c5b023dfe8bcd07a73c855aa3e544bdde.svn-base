@@ -1,0 +1,102 @@
+package com.royao.ctrl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import cc.yiwang.commons.utils.DateUtil;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dmember;
+import com.royao.model.DrechargeCard;
+import com.royao.services.inface.DmemberService;
+import com.royao.services.inface.DrechargeCardService;
+
+
+@Controller
+@RequestMapping("/ryvip")
+public class RYVipCtrl {
+		
+	
+			@Autowired
+			private DrechargeCardService cardService;
+			
+			@Autowired
+			private DmemberService userService;
+			
+			
+			@ResponseBody
+			@RequestMapping("/cardpay.htm")
+			public String card_pay(HttpServletRequest request,HttpServletResponse response){
+				ResponseContent res = new ResponseContent();
+		        RequestContent req = RequestHandler.execute(request);
+		        Map<String,Object> map = new HashMap<String, Object>();
+		        Map<String,String> params = req.getBody();
+		        
+		        String msg="CONNECT_FAIL";
+		        if(null != params && params.size() > 0){
+		        		String cards = params.get("card").toString();
+		        		String userId = params.get("userId").toString();
+		        		try {
+							DrechargeCard card = this.cardService.queryCard(cards);
+							
+							if(null != card){
+								if("Y".equals(card.getStatus())){
+									msg="CARD_USED";
+								}else{
+									try{
+										Dmember user = this.userService.queryById(Long.parseLong(userId));
+										long card_money = card.getMoney();
+										long user_money = user.getAvailablePredeposit();
+										
+										card.setStatus("Y");
+										card.setUpdateBy(user.getMemberName());
+										card.setUpdateTime(DateUtil.current());
+										
+										user.setAvailablePredeposit(card_money+user_money);
+										try{
+											this.cardService.update(card);
+											try{
+												this.userService.update(user);
+												msg="SUCCESS";
+											}catch(Exception e){
+												msg = "UPDATE_USER_FAIL";
+											}
+										} catch (Exception e) {
+											e.printStackTrace();
+											msg="UPDATE_CARD_FAIL";
+										}
+									}catch (Exception e) {
+										e.printStackTrace();
+										msg="QUERY_USER_FAIL";
+									}
+								}
+								
+							}else{
+								msg="CARD_NOT_EXIST";
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							msg = "QUERY_CARD_FAIL";
+						}
+		        }
+		        map.put("msg", msg);
+		        try {
+					res = ResponseHandler.makeResponse(map, true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+		        return JSONObject.toJSONString(res);
+			}
+}

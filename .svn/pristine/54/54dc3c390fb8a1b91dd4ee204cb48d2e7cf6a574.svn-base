@@ -1,0 +1,171 @@
+package com.royao.ctrl;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dgoods;
+import com.royao.model.Dmember;
+import com.royao.model.Dorder;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DconsumptionService;
+import com.royao.services.inface.DgoodsService;
+import com.royao.services.inface.DmemberService;
+import com.royao.services.inface.DorderService;
+import com.royao.util.DateUtil;
+import com.royao.util.JsonUtil;
+
+
+@Controller
+@RequestMapping("/consumption")
+public class DconsumptionCtrl {
+		
+			
+		@Autowired
+		private DconsumptionService  ptionService;
+		
+		@Autowired
+		private DorderService orderService;
+		
+		@Autowired
+		private DgoodsService  goodsService;
+		
+		@Autowired
+		private DmemberService userService;
+		
+		/**
+		 * @return
+		 */
+		/**
+		 * @param request
+		 * @return
+		 */
+		@ResponseBody
+		@RequestMapping("/list.htm")
+		public String list(HttpServletRequest request,HttpServletResponse response){
+			List<Map<String,Object>>  result = new ArrayList<Map<String,Object>>();
+			ResponseContent responseContent = new ResponseContent();
+	        RequestContent requestContent = RequestHandler.execute(request);
+			
+	        Map<?, ?> params = requestContent.getBody();
+	        PageObject pageObject = new PageObject();
+	        if(null != params && params.size()>0){
+	        	String page = params.get("page").toString();
+	        	pageObject.setPageNo(Integer.parseInt(page));
+	        	params.remove("page");
+	        	String wxCode =  "";
+	        	if(null != params.get("wxCode")){
+	        		wxCode = params.get("wxCode").toString();
+	        	}
+	        	try {
+					Dmember user  = this.userService.queryByWxCode(wxCode);
+
+		        	pageObject.setPageSize(10);
+		        	Dorder or = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		        	or.setMemberId(user.getMemberId());
+		        	
+		        	or.setPageInfo(pageObject);
+					try {
+						List<Dorder> ption = this.orderService.getByGoodsdelaytime(or);
+						
+						for (Dorder order : ption) {
+							Map<String,Object> map = new HashMap<String, Object>();
+							map.put("tion_time",DateUtil.formatDates(order.getDelayTime()));
+							map.put("goodsId", order.getGoodsId());
+							try {
+								Dgoods  goods = this.goodsService.queryById(order.getGoodsId());
+								map.put("goods_name", goods.getGoodsName());
+								map.put("goods_img", goods.getGoodsImage());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							result.add(map);
+						}
+			        	try {
+							responseContent = ResponseHandler.makeResponse(result, true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
+	        }
+			return JSONObject.toJSONString(responseContent);
+		}
+		
+		
+		@ResponseBody
+		@RequestMapping("/detail.htm")
+		public String detail(HttpServletRequest request,HttpServletResponse response){
+			List<Map<String,Object>>  result = new ArrayList<Map<String,Object>>();
+			ResponseContent responseContent = new ResponseContent();
+	        RequestContent requestContent = RequestHandler.execute(request);
+	        
+	        Map<?, ?> params = requestContent.getBody();
+	        
+	        PageObject pageObject = new PageObject();
+	        if(null != params && params.size()>0){
+	        	String page = params.get("page").toString();
+	        	pageObject.setPageNo(Integer.parseInt(page));
+	        	params.remove("page");
+	        	pageObject.setPageSize(5);
+	        	String wxCode = "kokokokokofffffff16";
+	        	if(null != params.get("wxCode")){
+	        		wxCode = params.get("wxCode").toString();
+	        	}
+	        	try {
+					Dmember user = this.userService.queryByWxCode(wxCode);
+					Dorder or = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		        	or.setMemberId(user.getMemberId());
+					or.setPageInfo(pageObject);
+		        	
+		        	try {
+						List<Dorder> t_list = this.orderService.getByTimeId(or);
+						for (Dorder order : t_list) {
+							Map<String,Object> map = new HashMap<String, Object>();
+							map.put("no", order.getConsumptionCode());
+							map.put("tion_time", DateUtil.formatDates(order.getDelayTime()));
+							map.put("id", order.getOrderId());
+							try {
+								Dgoods  goods = this.goodsService.queryById(order.getGoodsId());
+								map.put("goods_name", goods.getGoodsName());
+								map.put("goods_img", goods.getGoodsImage());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							result.add(map);
+						}
+			        	try {
+							responseContent = ResponseHandler.makeResponse(result, true);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+	        }
+	        return JSONObject.toJSONString(responseContent);
+		}
+}

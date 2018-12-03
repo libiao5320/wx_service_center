@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DrefundMapper">
+
+	<resultMap id="RMDrefund" type="com.royao.model.Drefund">
+        <result property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="reason" column="reason"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,order_id,member_id,reason,status,remark,create_time,update_time,update_by
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <![CDATA[
+        INSERT INTO d_refund (
+        	id ,
+        	order_id ,
+        	member_id ,
+        	reason ,
+        	status ,
+        	remark ,
+        	create_time ,
+        	update_time ,
+        	update_by 
+        ) VALUES (
+        	#{id} ,
+        	#{orderId} ,
+        	#{memberId} ,
+        	#{reason} ,
+        	#{status} ,
+        	#{remark} ,
+        	#{createTime} ,
+        	#{updateTime} ,
+        	#{updateBy} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE d_refund SET
+	        order_id = #{orderId} ,
+	        member_id = #{memberId} ,
+	        reason = #{reason} ,
+	        status = #{status} ,
+	        remark = #{remark} ,
+	        create_time = #{createTime} ,
+	        update_time = #{updateTime} ,
+	        update_by = #{updateBy} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM d_refund WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMDrefund">
+		SELECT <include refid="columns" />
+	    <![CDATA[
+		    FROM d_refund 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+	</select>
+	
+
+		
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_refund where 1=1
+
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+    	SELECT <include refid="columns" />
+	    FROM d_refund 
+		where 1=1 
+		limit #begin# , #end#
+    </select>
+	
+	
+	
+	  <select id="queryAll" resultMap="RMDrefund">
+    	SELECT <include refid="columns" />
+	    FROM d_refund 
+	  </select>
+	  
+	    <select id="queryByCondition" resultMap="RMDrefund">
+    	SELECT <include refid="columns" />
+	    FROM d_refund 
+		
+		<where>	      				
+	       <if test="@Ognl@isNotEmpty(id)">
+				AND id = #{id}
+			</if>
+	       <if test="@Ognl@isNotEmpty(orderId)">
+				AND order_id = #{orderId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(memberId)">
+				AND member_id = #{memberId}
+			</if>
+	       <if test="@Ognl@isNotEmpty(reason)">
+				AND reason = #{reason}
+			</if>
+	       <if test="@Ognl@isNotEmpty(status)">
+				AND status = #{status}
+			</if>
+	       <if test="@Ognl@isNotEmpty(remark)">
+				AND remark = #{remark}
+			</if>
+	       <if test="@Ognl@isNotEmpty(createTimeBegin)">
+				AND create_time >= #{createTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(createTimeEnd)">
+				AND create_time &lt;= #{createTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateTimeBegin)">
+				AND update_time >= #{updateTimeBegin}
+		   </if>
+		   <if test="@Ognl@isNotEmpty(updateTimeEnd)">
+				AND update_time &lt;= #{updateTimeEnd}
+		   </if>
+	       <if test="@Ognl@isNotEmpty(updateBy)">
+				AND update_by = #{updateBy}
+			</if>
+		</where>
+	  </select>
+
+	
+</mapper>
+

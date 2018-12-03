@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.ConsultMapper">
+
+	<resultMap id="RMTuserConsult" type="com.royao.model.TuserConsult">
+        <result property="vconsultId" column="v_consult_id"/>
+        <result property="vdoctorId" column="v_doctor_id"/>
+        <result property="iconsultWay" column="i_consult_way"/>
+        <result property="dcreateTime" column="d_create_time"/>
+        <result property="vcontent" column="v_content"/>
+        <result property="ireplyNum" column="i_reply_num"/>
+        <result property="dbegTime" column="d_beg_time"/>
+        <result property="dendTime" column="d_end_time"/>
+        <result property="istatus" column="i_status"/>
+        <result property="istatusTime" column="i_status_time"/>
+        <result property="iresult" column="i_result"/>
+        <result property="vreason" column="v_reason"/>
+        <result property="iauditStatus" column="i_audit_status"/>
+        <result property="vuserid" column="v_userid"/>
+        <result property="vproductId" column="v_product_id"/>
+        <result property="vauditDemo" column="v_audit_demo"/>
+        <result property="vauditTime" column="v_audit_time"/>
+        <result property="vcallId" column="v_call_id"/>
+        <result property="vcallStaff" column="v_call_staff"/>
+        <result property="istatusStaff" column="i_status_staff"/>
+        <result property="dstatusStaff" column="d_status_staff"/>
+        <result property="isFriend" column="is_friend"/>
+        <result property="iresultContent" column="i_result_content"/>
+        <result property="creatorType" column="creator_type"/>
+        <result property="fromSys" column="from_sys"/>
+        <result property="patientSex" column="patient_sex"/>
+        <result property="patientAge" column="patient_age"/>
+        <result property="receiveTime" column="receive_time"/>
+        <result property="reviewTime" column="review_time"/>
+        <result property="reviewCheck" column="review_check"/>
+        <result property="userReplyTime" column="user_reply_time"/>
+        <result property="doctorReplyTime" column="doctor_reply_time"/>
+        <association property="tconsultAttas" javaType="com.royao.model.TconsultAttas">
+	    	<result property="vattachId" column="v_attach_id"/>
+	        <result property="vconsultId" column="v_consult_id"/>
+	        <result property="vfile" column="v_file"/>
+	        <result property="iisDocment" column="i_is_docment"/>
+	        <result property="dupDate" column="d_up_date"/>
+	        <result property="istatus" column="i_status"/>
+	        <result property="vuserid" column="v_userid"/>
+	        <result property="vdesc" column="v_desc"/>
+	        <result property="vtype" column="v_type"/>
+	    </association>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="ConsultColumns">
+	    <![CDATA[
+		v_consult_id,v_doctor_id,i_consult_way,d_create_time,v_content,i_reply_num,d_beg_time,d_end_time,i_status,i_status_time,i_result,v_reason,i_audit_status,v_userid,v_product_id,v_audit_demo,v_audit_time,v_call_id,v_call_staff,i_status_staff,d_status_staff,is_friend,i_result_content,creator_type,from_sys,patient_sex,patient_age,receive_time,review_time,review_check,user_reply_time,doctor_reply_time
+	    ]]>
+	</sql>
+
+	<!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+	<insert id="save" useGeneratedKeys="true" keyProperty="vconsultId">
+    <![CDATA[
+        INSERT INTO t_user_consult (
+        	v_consult_id ,
+        	v_doctor_id ,
+        	i_consult_way ,
+        	d_create_time ,
+        	v_content ,
+        	i_reply_num ,
+        	d_beg_time ,
+        	d_end_time ,
+        	i_status ,
+        	i_status_time ,
+        	i_result ,
+        	v_reason ,
+        	i_audit_status ,
+        	v_userid ,
+        	v_product_id ,
+        	v_audit_demo ,
+        	v_audit_time ,
+        	v_call_id ,
+        	v_call_staff ,
+        	i_status_staff ,
+        	d_status_staff ,
+        	is_friend ,
+        	i_result_content ,
+        	creator_type ,
+        	from_sys ,
+        	patient_sex ,
+        	patient_age ,
+        	receive_time ,
+        	review_time ,
+        	review_check ,
+        	user_reply_time ,
+        	doctor_reply_time 
+        ) VALUES (
+        	#{vconsultId} ,
+        	#{vdoctorId} ,
+        	#{iconsultWay} ,
+        	#{dcreateTime} ,
+        	#{vcontent} ,
+        	#{ireplyNum} ,
+        	#{dbegTime} ,
+        	#{dendTime} ,
+        	#{istatus} ,
+        	#{istatusTime} ,
+        	#{iresult} ,
+        	#{vreason} ,
+        	#{iauditStatus} ,
+        	#{vuserid} ,
+        	#{vproductId} ,
+        	#{vauditDemo} ,
+        	#{vauditTime} ,
+        	#{vcallId} ,
+        	#{vcallStaff} ,
+        	#{istatusStaff} ,
+        	#{dstatusStaff} ,
+        	#{isFriend} ,
+        	#{iresultContent} ,
+        	#{creatorType} ,
+        	#{fromSys} ,
+        	#{patientSex} ,
+        	#{patientAge} ,
+        	#{receiveTime} ,
+        	#{reviewTime} ,
+        	#{reviewCheck} ,
+        	#{userReplyTime} ,
+        	#{doctorReplyTime} 
+        )
+    ]]>
+		<!--	
+			oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL 
+			DB2: order="BEFORE"" values nextval for sequenceName
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+			SELECT sequenceName.nextval AS ID FROM DUAL 
+        </selectKey>
+		-->
+	</insert>
+    
+	<update id="update" >
+    <![CDATA[
+        UPDATE t_user_consult SET
+	        v_doctor_id = #{vdoctorId} ,
+	        i_consult_way = #{iconsultWay} ,
+	        d_create_time = #{dcreateTime} ,
+	        v_content = #{vcontent} ,
+	        i_reply_num = #{ireplyNum} ,
+	        d_beg_time = #{dbegTime} ,
+	        d_end_time = #{dendTime} ,
+	        i_status = #{istatus} ,
+	        i_status_time = #{istatusTime} ,
+	        i_result = #{iresult} ,
+	        v_reason = #{vreason} ,
+	        i_audit_status = #{iauditStatus} ,
+	        v_userid = #{vuserid} ,
+	        v_product_id = #{vproductId} ,
+	        v_audit_demo = #{vauditDemo} ,
+	        v_audit_time = #{vauditTime} ,
+	        v_call_id = #{vcallId} ,
+	        v_call_staff = #{vcallStaff} ,
+	        i_status_staff = #{istatusStaff} ,
+	        d_status_staff = #{dstatusStaff} ,
+	        is_friend = #{isFriend} ,
+	        i_result_content = #{iresultContent} ,
+	        creator_type = #{creatorType} ,
+	        from_sys = #{fromSys} ,
+	        patient_sex = #{patientSex} ,
+	        patient_age = #{patientAge} ,
+	        receive_time = #{receiveTime} ,
+	        review_time = #{reviewTime} ,
+	        review_check = #{reviewCheck} ,
+	        user_reply_time = #{userReplyTime} ,
+	        doctor_reply_time = #{doctorReplyTime} 
+        WHERE 
+	        v_consult_id = #{vconsultId} 
+    ]]>
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM t_user_consult WHERE
+        v_consult_id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="queryById" resultMap="RMTuserConsult">
+		SELECT <include refid="ConsultColumns" />
+	    <![CDATA[
+		    FROM t_user_consult 
+	        WHERE 
+		        v_consult_id = #{id} 
+	    ]]>
+	</select>
+	
+	<select id="listWithPageBy" resultMap="RMTuserConsult" parameterType="java.util.HashMap">
+        SELECT a.*,b.v_file,b.i_is_docment,b.v_desc
+        FROM t_user_consult a LEFT JOIN t_consult_attas b
+        ON a.v_consult_id = b.v_consult_id
+        WHERE a.v_doctor_id is not null
+        <if test="iStatus != null and  iStatus != '' ">
+        	AND a.i_status in 
+        	<foreach item="item" index="index" collection="iStatus" open="(" separator="," close=")">
+            #{item}
+            </foreach>
+        </if>
+        <if test="vdoctorId != null and  vdoctorId != '' ">AND a.v_doctor_id = #{vdoctorId}</if>
+        <if test="vuserid != null and  vuserid != '' ">AND a.v_userid = #{vuserid}</if>
+        ORDER BY a.i_status_time DESC
+        limit #{begin},#{end}
+    </select>
+
+
+	
+</mapper>
+

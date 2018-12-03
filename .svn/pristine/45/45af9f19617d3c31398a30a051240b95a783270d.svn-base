@@ -1,0 +1,82 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+
+package com.royao.services.impl;
+
+
+import com.royao.mapper.DeventMapper;
+import com.royao.model.Devent;
+import com.royao.services.base.impl.BaseServiceImpl;
+import com.royao.services.inface.DeventService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+@Service("eventService")
+public class DeventServiceImpl extends BaseServiceImpl<Devent> implements DeventService {
+
+    @Autowired
+    private DeventMapper deventMapper;
+
+
+    public int save(Devent devent) throws Exception {
+        return deventMapper.save(devent);
+    }
+
+    public int update(Devent devent) throws Exception {
+        return deventMapper.update(devent);
+    }
+
+    public int delete(Long id) throws Exception {
+        return deventMapper.delete(id);
+    }
+
+    public Devent queryById(Long id) throws Exception {
+        return deventMapper.queryById(id);
+    }
+
+    public List<Devent> queryByCondtion(Map map) throws Exception {
+        return deventMapper.queryByCondtion(map);
+    }
+
+    public List<Devent> queryAll() throws Exception {
+        return deventMapper.queryAll();
+    }
+
+    public List<Devent> listWithPage(Devent event) throws Exception {
+        return deventMapper.listWithPage(event);
+    }
+
+	public List<Devent> pListWithPageAndCondition(Devent paramEvent) {
+		return deventMapper.pListWithPageAndCondition(paramEvent);
+	}
+
+	public long pCountWithPageAndCondition(Devent paramEvent) {
+		return deventMapper.pCountWithPageAndCondition(paramEvent);
+	}
+
+	public Integer eventOverdue() {
+		return this.deventMapper.eventOverdue();
+	}
+
+	public boolean updateEnrollNumJia(Devent devent) {
+		try {
+			deventMapper.updateEnrollNumJia(devent);
+			return true;
+		} catch (Exception e) {
+			logger.error("修改活动信息异常： "+e.getMessage());
+		}
+		return false;
+		
+	}
+
+
+}

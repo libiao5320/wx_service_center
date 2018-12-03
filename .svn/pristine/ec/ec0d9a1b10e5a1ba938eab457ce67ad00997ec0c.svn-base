@@ -1,0 +1,341 @@
+package com.royao.pctrl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Devent;
+import com.royao.model.DgroupbuyClass;
+import com.royao.model.Dredpackets;
+import com.royao.model.DredpacketsDistribute;
+import com.royao.model.DredpacketsGroupbuy;
+import com.royao.model.DredpacketsStore;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DgroupbuyClassService;
+import com.royao.services.inface.DredpacketsDistributeService;
+import com.royao.services.inface.DredpacketsService;
+import com.royao.util.JsonUtil;
+
+
+@Controller
+@RequestMapping("/p/redpackets")
+public class PRedpacketsCtrl {
+	Logger logger = Logger.getLogger(this.getClass());
+	@Autowired
+    private DredpacketsService dRedpacketsService;
+	@Autowired
+    private DredpacketsDistributeService dredpacketsDistributeService;
+	@Autowired
+	private DgroupbuyClassService groupbuyClassService;
+	/**
+     * @param @return
+     * @return String
+     * @throws
+     * @Description:条件查询活动红包
+     * @author Liu Li
+     * @date 2016年1月23日
+     */
+    @ResponseBody
+    @RequestMapping("/query.htm")
+    public String query(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+
+        response.setCharacterEncoding("utf-8");
+
+        Dredpackets paramRedpackets = JSON.parseObject(JsonUtil.map2json(params), Dredpackets.class);
+        PageObject pageInfo = new PageObject();
+
+        try {
+        	
+        	if(null != requestContent.getBody()){
+        		if(StringUtils.isNotBlank(requestContent.getBody().get("pageNo"))){
+        			pageInfo.setPageNo(Integer.parseInt(requestContent.getBody().get("pageNo")));
+        		}else{
+        			pageInfo.setPageNo(1);
+        		}
+        		
+        	}else{
+        		pageInfo.setPageNo(1);
+        	}
+        	paramRedpackets.setPageInfo(pageInfo);
+        	
+        	List<Dredpackets> list = this.dRedpacketsService.pListWithPageAndCondition(paramRedpackets);
+        	long total = this.dRedpacketsService.pCountWithPageAndCondition(paramRedpackets);
+        	
+            Map<String,Object> returnMap = new HashMap<String, Object>();
+            returnMap.put("rows", list);
+            returnMap.put("total", total);
+            
+            if (list != null && list.size() > 0) {
+                responseContent = ResponseHandler.makeResponse(returnMap, true);
+            } 
+        } catch (Exception e) {
+            logger.info("ajax请求活动列表失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+    
+    /**
+     * 通过id删除红包
+     * @param request
+     * @param response
+     * @return
+     * @author Liu Li
+     * @date 2016年1月23日
+     */
+    @ResponseBody
+    @RequestMapping("/deleteRedpacketsById.htm")
+    public String deleteRedpacketsById(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+
+        response.setCharacterEncoding("utf-8");
+
+        Devent paramEvent = JSON.parseObject(JsonUtil.map2json(params), Devent.class);
+        
+        long id = paramEvent.getId();
+
+        Map<String,Object> returnMap = new HashMap<String, Object>();
+        try {
+            long count = this.dRedpacketsService.delete(id);
+           
+            if(count > 0){
+            	returnMap.put("state", 1);
+            }else{
+            	returnMap.put("state", -1);
+            	returnMap.put("message", "删除红包失败！");
+            }
+            responseContent = ResponseHandler.makeResponse(returnMap, true);
+        } catch (Exception e) {
+            logger.info("删除红包失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+    
+    /**
+     * 
+     * @Description: 获取红包详情
+     * @param @param request
+     * @param @param response
+     * @param @return   
+     * @return String  
+     * @throws
+     * @author Liu Li
+     * @date 2016年1月21日
+     */
+    @ResponseBody
+    @RequestMapping("/detail.htm")
+    public String detail(HttpServletRequest request, HttpServletResponse response) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+                Dredpackets dRedpackets = this.dRedpacketsService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+                Map map = new HashMap<String, Object>();
+                map.put("redpackets", dRedpackets);
+                
+                List<DgroupbuyClass> groupClassList = this.groupbuyClassService.queryGoodClassOne();
+                List<DgroupbuyClass> returnList = new ArrayList<DgroupbuyClass>();
+                for(int i=0;i<groupClassList.size();i++){
+                	DgroupbuyClass groupClass = groupClassList.get(i);
+                	List<DgroupbuyClass> childList = this.groupbuyClassService.getGroupbuyByParentId(groupClass.getClassId());
+                	groupClass.setGroupbuyList(childList);
+                	returnList.add(groupClass);
+                }
+                map.put("groupList", returnList);
+                
+                List<Map> ds = this.dRedpacketsService.queryStoreByRedpacketsId(dRedpackets.getId());
+                map.put("store", ds.get(0));
+                
+                
+                
+                if (dRedpackets != null) {
+                    responseContent = ResponseHandler.makeResponse(map, true);
+                } 
+            }
+            
+        } catch (Exception e) {
+        	logger.info("红包详情获取失败", e);
+        }
+        return JSONObject.toJSONString(responseContent);
+    }
+    
+    
+    
+    /**
+     * @param @return
+     * @return String
+     * @throws
+     * @Description:查询红包领取详情
+     * @author Liu Li
+     * @date 2016年1月25日
+     */
+    @ResponseBody
+    @RequestMapping("/detailList.htm")
+    public String detailList(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+
+        response.setCharacterEncoding("utf-8");
+
+        DredpacketsDistribute paramRedpackets = JSON.parseObject(JsonUtil.map2json(params), DredpacketsDistribute.class);
+        PageObject pageInfo = new PageObject();
+
+        try {
+        	
+        	if(null != requestContent.getBody()){
+        		if(StringUtils.isNotBlank(requestContent.getBody().get("pageNo"))){
+        			pageInfo.setPageNo(Integer.parseInt(requestContent.getBody().get("pageNo")));
+        		}else{
+        			pageInfo.setPageNo(1);
+        		}
+        		
+        	}else{
+        		pageInfo.setPageNo(1);
+        	}
+        	paramRedpackets.setPageInfo(pageInfo);
+        	
+        	List<Map> list = this.dredpacketsDistributeService.getRedpacketsUseList(paramRedpackets);
+        	long total = this.dredpacketsDistributeService.countRedpacketsUseList(paramRedpackets);
+        	
+            Map<String,Object> returnMap = new HashMap<String, Object>();
+            returnMap.put("rows", list);
+            returnMap.put("total", total);
+            
+            if (list != null && list.size() > 0) {
+                responseContent = ResponseHandler.makeResponse(returnMap, true);
+            } 
+        } catch (Exception e) {
+            logger.info("ajax请求活动列表失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+    
+    /**
+     * 
+     * @Description: 获取类别
+     * @param @param request
+     * @param @param response
+     * @param @return   
+     * @return String  
+     * @throws
+     * @author Liu Li
+     * @date 2016年1月25日
+     */
+    @ResponseBody
+    @RequestMapping("/getGroupClass.htm")
+    public String getGroupClass(HttpServletRequest request, HttpServletResponse response) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+                List<DgroupbuyClass> groupClassList = this.groupbuyClassService.queryGoodClassOne();
+                List<DgroupbuyClass> returnList = new ArrayList<DgroupbuyClass>();
+                for(int i=0;i<groupClassList.size();i++){
+                	DgroupbuyClass groupClass = groupClassList.get(i);
+                	List<DgroupbuyClass> childList = this.groupbuyClassService.getGroupbuyByParentId(groupClass.getClassId());
+                	groupClass.setGroupbuyList(childList);
+                	returnList.add(groupClass);
+                }
+                
+                if (returnList != null && returnList.size() > 0) {
+                    responseContent = ResponseHandler.makeResponse(returnList, true);
+                } 
+            }
+            
+        } catch (Exception e) {
+        	logger.info("红包详情获取失败", e);
+        }
+        return JSONObject.toJSONString(responseContent);
+    }
+    
+    /**
+     * 添加活动
+     * @param request
+     * @param response
+     * @return
+     * @author Liu Li
+     * @date 2016年1月22日
+     */
+    @ResponseBody
+    @RequestMapping("/saveRedpackets.htm")
+    public String insertEvent(HttpServletRequest request, HttpServletResponse response) {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        response.setCharacterEncoding("utf-8");
+
+        Dredpackets redpackets = JSON.parseObject(JsonUtil.map2json(params), Dredpackets.class);
+        redpackets.setPurpose("hd");
+        redpackets.setReceive(0);
+        redpackets.setAlreadyUsed(0);
+        redpackets.setCreateTime(new Date());
+        redpackets.setCreateBy("1");
+        redpackets.setSingleAmount(redpackets.getAmount()/redpackets.getQuantity());
+        
+        Map<String,Object> returnMap = new HashMap<String, Object>();
+        try {
+            long count = this.dRedpacketsService.save(redpackets);
+            if(count > 0){
+            	DredpacketsStore redpacketsStore = new DredpacketsStore();
+                if(params.get("storeId") != null){
+                	Long storeId = Long.parseLong((String) params.get("storeId"));
+                    redpacketsStore.setStoreId(storeId);
+                    redpacketsStore.setRedpacketsId(redpackets.getId());
+                    dRedpacketsService.saveRedpacketsStore(redpacketsStore);
+                }
+                if(params.get("groupClass") != null && !"".equals((String) params.get("groupClass"))){
+                	String groupClasstr = (String) params.get("groupClass");
+                	String[] groupClassArr = groupClasstr.split(",");
+                	for(int i=0;i<groupClassArr.length;i++){
+                		DredpacketsGroupbuy dg = new DredpacketsGroupbuy();
+                		dg.setGroupbuyId(Long.parseLong(groupClassArr[i]));
+                		dg.setRedpacketsId(redpackets.getId());
+                		dRedpacketsService.saveRedpacketsGroupClass(dg);
+                	}
+                }
+            	returnMap.put("state", 1);
+            }else{
+            	returnMap.put("state", -1);
+            	returnMap.put("message", "添加活动失败！");
+            }
+            responseContent = ResponseHandler.makeResponse(returnMap, true);
+        } catch (Exception e) {
+            logger.info("添加活动失败", e);
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+}

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DkitingMapper">
+
+    <resultMap id="RMDkiting" type="com.royao.model.Dkiting">
+        <result property="id" column="id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="money" column="money"/>
+        <result property="actualMoney" column="actual_money"/>
+        <result property="beforeMoney" column="before_money"/>
+        <result property="afterMoney" column="after_money"/>
+        <result property="status" column="status"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankCard" column="bank_card"/>
+        <result property="note" column="note"/>
+        <association property="member" column="member_id" select="com.royao.mapper.DmemberMapper.querySimpleById"></association>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		id,member_id,money,actual_money,before_money,after_money,status,created_time,update_time,update_by,name,phone,bank_name,bank_card,note
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_kiting (
+        	member_id,money,actual_money,before_money,after_money,status,created_time,update_time,update_by,name,phone,bank_name,bank_card,note 
+        ) VALUES (
+        	#{memberId} ,
+        	#{money} ,
+        	#{actualMoney} ,
+        	#{beforeMoney} ,
+        	#{afterMoney} ,
+        	#{status},
+        	#{createdTime},
+        	#{updateTime},
+        	#{updateBy},
+        	#{name},
+        	#{phone},
+        	#{bankName},
+        	#{bankCard},
+        	#{note}
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        UPDATE d_area
+        <set>
+        	<if test="memberId != null">member_id = #{memberId} ,</if>
+        	<if test="money != null">money = #{money} ,</if>
+        	<if test="actualMoney != null">actual_money = #{actualMoney} ,</if>
+        	<if test="beforeMoney != null">before_money = #{beforeMoney} ,</if>
+        	<if test="afterMoney != null">after_money = #{afterMoney} ,</if>
+        	<if test="status != null and status != ''">status = #{status},</if>
+        	<if test="createdTime != null">created_time = #{createdTime},</if>
+        	<if test="updateTime != null">update_time = #{updateTime},</if>
+        	<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+        	<if test="name != null and name != ''">name = #{name},</if>
+        	<if test="phone != null and phone != ''">phone = #{phone},</if>
+        	<if test="bankName != null and bankName != ''">bank_name = #{bankName},</if>
+        	<if test="bankCard != null and bankCard != ''">bank_card = #{bankCard},</if>
+        	<if test="note != null and note != ''">note = #{note}</if>
+	    </set>
+        WHERE 
+	        id = #{id} 
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_kiting WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDkiting">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_kiting 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_kiting where 1=1
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultMap="RMDkiting" resultType="com.royao.model.Dkiting">
+        SELECT
+        <include refid="columns"/>
+        FROM d_kiting
+        where 1=1 and member_id = #{memberId} order by created_time DESC
+        <if test="pageInfo != null">
+        limit #{pageInfo.begin}, #{pageInfo.end}
+        </if>
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDkiting">
+        SELECT
+        <include refid="columns"/>
+        FROM d_kiting
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDkiting">
+        SELECT
+        <include refid="columns"/>
+        FROM d_kiting
+        <where>
+         <if test="memberId != null">
+         	and member_id = #{memberId}
+         </if>
+         <if test="status != null">
+         	and status = #{status}
+         </if>
+         <if test="updateBy != null and updateBy !=''">
+         	and update_by = #{updateBy}
+         </if>
+         <if test="name != null and name != ''">
+         	and name = #{name}
+         </if>
+         <if test="bankName != null and bankName !=''">
+         	and bank_name = #{bankName}
+         </if>
+         <if test="bankCard != null and bankCard !=''">
+         	and bank_card = #{bankCard}
+         </if>
+        </where>
+    </select>
+</mapper>
+

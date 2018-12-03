@@ -1,0 +1,204 @@
+package com.royao.pctrl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dmember;
+import com.royao.model.Dtopman;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.DmemberService;
+import com.royao.services.inface.DtopmanService;
+
+/**
+ * 
+ * ClassName: TopmanCenterCtrl 
+ * @Description: 荣耀达人管理
+ * @author Liu Pinghui
+ * @date 2016年1月21日
+ */
+@Controller
+@RequestMapping("/ptopman")
+public class PTopmanCtrl {
+
+	Logger logger = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private DtopmanService topmanService;
+	
+	@Autowired
+	private DmemberService memberService;
+	
+	/**
+	 * 
+	 * @Description: 获取荣耀达人列表
+	 * @param @param request
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月22日
+	 */
+	@ResponseBody
+	@RequestMapping("/list.htm")
+	public String list(HttpServletRequest request){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+        	Dtopman topman = new Dtopman();
+            if (null != requestContent.getBody()) {
+            	//顾客ID
+            	if(StringUtils.isNotBlank(requestContent.getBody().get("memberId"))){
+            		topman.setMemberId(Long.parseLong(requestContent.getBody().get("memberId")));
+            	}
+            	//顾客姓名
+            	if(StringUtils.isNotBlank(requestContent.getBody().get("memberName"))){
+            		topman.setMemberName(requestContent.getBody().get("memberName"));
+            	}
+            	//顾客电话
+            	if(StringUtils.isNotBlank(requestContent.getBody().get("memberMobile"))){
+            		topman.setMemberMobile(requestContent.getBody().get("memberMobile"));
+            	}
+            	//审核状态
+            	if(StringUtils.isNotBlank(requestContent.getBody().get("status"))){
+            		topman.setStatus(requestContent.getBody().get("status"));
+            	}
+            	
+            	PageObject page = new PageObject();
+            	//分页
+            	if(StringUtils.isNotBlank(requestContent.getBody().get("pageNo"))){
+            		page.setPageNo(Integer.parseInt(requestContent.getBody().get("pageNo")));
+            	}else{
+            		page.setPageNo(1);
+            	}
+            	
+            	topman.setPageInfo(page);
+            }
+        
+        	List<Dtopman> list = this.topmanService.listWithPage(topman);
+        	
+        	Integer total = this.topmanService.listWithPageCount(topman);
+        	
+            Map<String,Object> returnMap = new HashMap<String, Object>();
+            returnMap.put("rows", list);
+            returnMap.put("total", total);
+        	
+        	if (list != null && list.size() > 0) {
+                responseContent = ResponseHandler.makeResponse(returnMap, true);
+            } 
+        	
+        	
+            
+        } catch (Exception e) {
+        	logger.info("获取备注列表错误", e);
+        }
+        
+        return JSONObject.toJSONString(responseContent);
+	}
+	
+	/**
+	 * 
+	 * @Description: 获取荣耀达人详细信息
+	 * @param @param request
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月22日
+	 */
+	@ResponseBody
+	@RequestMapping("/detail.htm")
+	public String detail(HttpServletRequest request){
+		
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+		try {
+			if (null != requestContent.getBody()) {
+				
+				if(StringUtils.isNotBlank(requestContent.getBody().get("id"))){
+					
+					Dtopman topman = this.topmanService.queryById(Long.parseLong(requestContent.getBody().get("id")));
+					if(topman != null){
+						responseContent = ResponseHandler.makeResponse(topman, true);
+					}
+				}
+			}
+		} catch (Exception e) {
+			logger.info("获取荣耀达人详细信息错误", e);
+		}
+		
+		return JSONObject.toJSONString(responseContent);
+	}
+	
+	/**
+	 * 
+	 * @Description: 荣耀达人审核
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月22日
+	 */
+	@ResponseBody
+	@RequestMapping("/examine.htm")
+	public String examine(HttpServletRequest request){
+		
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+		try {
+			if (null != requestContent.getBody()) {
+				Dtopman topman = new Dtopman();
+				if(StringUtils.isNotBlank(requestContent.getBody().get("id"))){
+					topman.setId(Long.parseLong(requestContent.getBody().get("id")));
+				}
+				if(StringUtils.isNotBlank(requestContent.getBody().get("status"))){
+					topman.setStatus(requestContent.getBody().get("status"));
+				}
+				if(StringUtils.isNotBlank(requestContent.getBody().get("remark"))){
+					topman.setRemark(requestContent.getBody().get("remark"));
+				}
+				
+				if(topman.getId() != null){
+					
+					//如果同意，则更改状态
+					if(topman.getStatus().equals("examined")){
+						Dtopman m_topman = this.topmanService.queryById(topman.getId());
+						
+						Dmember member = new Dmember();
+						member.setMemberId(m_topman.getMemberId());
+						member.setTopManState(2);//荣耀达人
+						
+						this.memberService.update(member);
+					}
+					
+					Integer state = this.topmanService.update(topman);
+					boolean flag = false;
+					if(state == 1){
+						flag = true;
+					}
+					
+					responseContent = ResponseHandler.makeResponse(flag, true);
+				}
+			}
+		} catch (Exception e) {
+			logger.info("获取荣耀达人详细信息错误", e);
+		}
+		
+		return JSONObject.toJSONString(responseContent);
+	}
+}

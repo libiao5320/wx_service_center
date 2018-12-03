@@ -1,0 +1,22 @@
+package com.royao.db;
+
+import com.royao.model.base.BaseEntity;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by libia on 2015/12/31.
+ */
+public interface BaseDao<T extends BaseEntity> {
+
+    public int save(T t) throws SQLException;
+    public int  update(T t) throws SQLException;
+    public int delete(Long id) throws SQLException;
+    public T queryById(Long id) throws SQLException;
+    public List<T> queryByCondtion(Map<?, ?> map) throws SQLException;
+    public List<T> queryAll() throws SQLException;
+    public List<T> listWithPage(T t) throws SQLException;
+
+}

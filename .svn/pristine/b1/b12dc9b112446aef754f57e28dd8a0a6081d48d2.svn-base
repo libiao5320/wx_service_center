@@ -1,0 +1,39 @@
+package com.royao.commons.enums;
+
+/**
+ * 
+ * ClassName: RedpacketsStatus 
+ * @Description: 紅包狀態
+ * @author Liu Pinghui
+ * @date 2016年1月5日
+ */
+public enum RedpacketsStatus {
+
+	unreceive {
+	    public String getName() {
+	        return "未领取";
+	    }
+	},
+	unuse {
+		public String getName() {
+			return "未使用";
+		}
+	},
+	lockup {
+		public String getName() {
+			return "已锁定";
+		}
+	},
+	used {
+	    public String getName() {
+	        return "已使用";
+	    }
+	},
+	expired {
+		public String getName() {
+			return "已过期";
+		}
+	};
+
+    public abstract String getName();
+}

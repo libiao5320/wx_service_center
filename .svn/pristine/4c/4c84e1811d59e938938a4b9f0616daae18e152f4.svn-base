@@ -1,0 +1,97 @@
+package com.royao.ctrl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.royao.services.inface.DredpacketsDistributeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dredpackets;
+import com.royao.services.inface.DredpacketsService;
+
+/**
+ * ClassName: RedpacketsCenterCtrl
+ *
+ * @author Liu Pinghui
+ * @Description: 红包
+ * @date 2016年1月5日
+ */
+@Controller
+@RequestMapping("/redpackets")
+public class RedpacketsCenterCtrl {
+
+    @Autowired
+    private DredpacketsService redpacketsService;
+
+    @Autowired
+    private DredpacketsDistributeService dredpacketsDistributeService;
+
+    /**
+     * @param @param  request
+     * @param @param  response
+     * @param @return
+     * @return String
+     * @throws
+     * @Description: 根据红包ID获取红包信息
+     * @author Liu Pinghui
+     * @date 2016年1月5日
+     */
+    @ResponseBody
+    @RequestMapping("/getById.htm")
+    public String getById(HttpServletRequest request, HttpServletResponse response) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+                Dredpackets redpackets = this.redpacketsService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+                if (redpackets != null) {
+                    responseContent = ResponseHandler.makeResponse(redpackets, true);
+                } else {
+                    return null;
+                }
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+    @RequestMapping (value = "/shareRedPack.htm")
+    public String  shareRedPack (HttpServletRequest request)
+    {
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+
+
+
+        Long packId = 0l;
+        try {
+            if (null != requestContent.getBody()) {
+                if( null != requestContent.getBody() && null != requestContent.getBody().get("packId") && !"".equals(requestContent.getBody().get("packId")))
+                 packId = Long.parseLong(requestContent.getBody().get("packId"));
+                 boolean flag = this.dredpacketsDistributeService.shareRedPack(packId);
+                 responseContent = ResponseHandler.makeResponse(flag, true);
+
+            }
+            return JSONObject.toJSONString(responseContent);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+
+        return null;
+    }
+}

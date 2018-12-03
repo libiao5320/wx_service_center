@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DgoodsSetMapper">
+
+    <resultMap id="RMDgoodsSet" type="com.royao.model.DgoodsSet">
+        <result property="setId" column="set_id"/>
+        <result property="goodsId" column="goods_id"/>
+        <result property="beginTime" column="begin_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="periodOfValidity" column="period_of_validity"/>
+        <result property="state" column="state"/>
+        <result property="technicianId" column="technician_id"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		set_id,goods_id,begin_time,end_time,period_of_validity,state,technician_id
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="setId">
+        <![CDATA[
+        INSERT INTO d_goods_set (
+        	set_id ,
+        	goods_id ,
+        	begin_time ,
+        	end_time ,
+        	period_of_validity ,
+        	state ,
+        	technician_id 
+        ) VALUES (
+        	#{setId} ,
+        	#{goodsId} ,
+        	#{beginTime} ,
+        	#{endTime} ,
+        	#{periodOfValidity} ,
+        	#{state} ,
+        	#{technicianId} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_goods_set SET
+	        goods_id = #{goodsId} ,
+	        begin_time = #{beginTime} ,
+	        end_time = #{endTime} ,
+	        period_of_validity = #{periodOfValidity} ,
+	        state = #{state} ,
+	        technician_id = #{technicianId} 
+        WHERE 
+	        set_id = #{setId} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_goods_set WHERE
+        set_id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDgoodsSet">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_goods_set 
+	        WHERE 
+		        set_id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_goods_set where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_goods_set
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDgoodsSet">
+        SELECT
+        <include refid="columns"/>
+        FROM d_goods_set
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDgoodsSet">
+        SELECT
+        <include refid="columns"/>
+        FROM d_goods_set
+
+        <where>
+            <if test="@Ognl@isNotEmpty(setId)">
+                AND set_id = #{setId}
+            </if>
+            <if test="@Ognl@isNotEmpty(goodsId)">
+                AND goods_id = #{goodsId}
+            </if>
+            <if test="@Ognl@isNotEmpty(beginTimeBegin)">
+                AND begin_time >= #{beginTimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(beginTimeEnd)">
+                AND begin_time &lt;= #{beginTimeEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(endTimeBegin)">
+                AND end_time >= #{endTimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(endTimeEnd)">
+                AND end_time &lt;= #{endTimeEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(periodOfValidityBegin)">
+                AND period_of_validity >= #{periodOfValidityBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(periodOfValidityEnd)">
+                AND period_of_validity &lt;= #{periodOfValidityEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(state)">
+                AND state = #{state}
+            </if>
+            <if test="@Ognl@isNotEmpty(technicianId)">
+                AND technician_id = #{technicianId}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

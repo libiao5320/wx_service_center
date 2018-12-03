@@ -1,0 +1,22 @@
+package com.royao.services.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.royao.mapper.DmemberRemarkMapper;
+import com.royao.model.DmemberRemark;
+import com.royao.services.inface.DmemberRemarkService;
+
+@Service("memberRemarkService")
+public class DmemberRemarkServiceImpl implements DmemberRemarkService {
+
+	@Autowired
+	private DmemberRemarkMapper memberRemarkMapper;
+	
+	public List<DmemberRemark> findList(DmemberRemark remark) {
+		return this.memberRemarkMapper.findList(remark);
+	}
+
+}

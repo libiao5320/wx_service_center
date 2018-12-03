@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DclearMapper">
+    <resultMap id="RMDclear" type="com.royao.model.Dclear">
+        <result property="id" column="id"/>
+        <result property="seriNo" column="seri_no"/>
+        <result property="storeId" column="store_id"/>
+        <result property="storeName" column="store_name"/>
+        <result property="clearFee" column="clear_fee"/>
+        <result property="saleFee" column="sale_fee"/>
+        <result property="createTime" column="create_time"/>
+        <result property="storeConfirm" column="store_confirm"/>
+        <result property="confirmUser" column="confirm_user"/>
+        <result property="confirmTime" column="confirm_time"/>
+        <result property="clearTime" column="clear_time"/>
+        <result property="clearState" column="clear_state"/>
+        <result property="clearRemark" column="clear_remark"/>
+        <result property="clearUser" column="clear_user"/>
+        <result property="clearModel" column="clear_model"/>
+        <result property="cycleTime" column="cycle_time"/>
+        <result property="realClearFee" column="real_clear_fee"/>
+    </resultMap>
+
+    <resultMap type="com.royao.model.Dclear" extends="RMDclear" id="RMDclearDetail">
+        <association property="orderList" column="id"
+                     select="com.royao.mapper.DorderMapper.queryClearOrder"></association>
+    </resultMap>
+
+    <resultMap type="com.royao.model.Dclear" extends="RMDclear" id="RMDclearCountOrder">
+        <association property="orderCount" column="id" select="queryClearOrderCount"></association>
+    </resultMap>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+
+
+           insert into d_clear (id ,seri_no,store_id,store_name,clear_fee,sale_fee,
+            create_time,store_confirm,confirm_user,
+            confirm_time,clear_time,clear_state,
+            clear_remark,clear_user , cycle_time ) values (#{id},#{seriNo},#{storeId},#{storeName},
+            #{clearFee},#{saleFee},#{createTime},#{storeConfirm},
+            #{confirmUser},#{confirmTime},#{clearTime},
+            #{clearState},#{clearRemark},#{clearUser} ,#{cycleTime});
+
+
+        ]]>
+
+    </insert>
+
+
+
+    <update id="saveDealClear">
+
+        update d_clear set clear_state  = #{clearState} , clear_time = #{clearTime} , real_clear_fee = #{realClearFee} ,clear_remark  = #{clearRemark} where id = #{id}
+
+    </update>
+
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="addClearOrder" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+
+
+          insert into d_clear_order (id,order_id,clear_id) values (#{id},#{orderId},#{clearId});
+
+
+        ]]>
+    </insert>
+
+
+    <select id="queryById" resultMap="RMDclearDetail">
+
+          select * from d_clear where id = #{value}
+
+    </select>
+
+
+    <select id="queryClear" resultMap="RMDclear">
+
+        select a.*, if ( ISNULL(concat(b.accounts,'[',b.account_holder,']',b.accounts_no))
+        ,'无',concat(b.accounts,'[',b.account_holder,']',b.accounts_no)) as clear_model from d_clear a
+        left outer join d_store_extend b on a.store_id = b.store_id
+
+        <where>
+            1=1
+            <if test="storeFieldValue != null and  storeFieldValue != ''">
+
+                <if test="storeFieldName == 'storeName'">
+                    and a.store_name = #{storeFieldValue}
+                </if>
+
+                <if test="storeFieldName == 'storeId'">
+                    and a.store_id = #{storeFieldValue}
+                </if>
+            </if>
+
+
+            <if test="begin != null and  begin != ''">
+
+
+                and a.create_time > #{begin}
+            </if>
+
+
+            <if test="end != null and  end != ''">
+
+
+                and <![CDATA[    a.create_time   <  #{end} ]]>
+            </if>
+
+
+            <if test="orderClearState != null and  orderClearState != ''">
+
+                <if test="orderClearState == 'storeName'">
+                    and a.clear_state = #{orderClearState}
+                </if>
+
+            </if>
+
+        </where>
+        <if test="null != sort and sort == creatime ">
+            order by a.create_time desc
+        </if>
+        <if test="null != sort and sort == cleartime ">
+            order by a.clear_time desc
+        </if>
+
+        limit #{pageNo},#{pageSize}
+
+    </select>
+
+
+    <select id="queryClearCount" resultType="java.lang.Integer">
+
+        select count(a.store_id ) from d_clear a
+
+        <where>
+            1=1
+            <if test="storeFieldValue != null and  storeFieldValue != ''">
+
+                <if test="storeFieldName == 'storeName'">
+                    and a.store_name = #{storeFieldValue}
+                </if>
+
+                <if test="storeFieldName == 'storeId'">
+                    and a.store_id = #{storeFieldValue}
+                </if>
+            </if>
+
+
+            <if test="begin != null and  begin != ''">
+
+
+                and a.create_time > #{begin}
+            </if>
+
+
+            <if test="end != null and  end != ''">
+
+
+                and <![CDATA[    a.create_time   <  #{end} ]]>
+            </if>
+
+
+            <if test="orderClearState != null and  orderClearState != ''">
+
+                <if test="orderClearState == 'storeName'">
+                    and a.clear_state = #{orderClearState}
+                </if>
+
+            </if>
+
+        </where>
+        ;
+
+    </select>
+
+    <select id="queryClearOrderCount" resultType="java.lang.Integer">
+
+          select count(a.clear_id) from d_clear_order a where a.clear_id = #{clearId}
+
+    </select>
+
+
+    <select id="dealClear" resultMap="RMDclear">
+
+          select a.*, if ( ISNULL(concat(b.accounts,'[',b.account_holder,']',b.accounts_no)) ,'无',concat(b.accounts,'[',b.account_holder,']',b.accounts_no)) as clear_model from d_clear a
+          left outer join d_store_extend b on a.store_id = b.store_id
+
+           where a.id = #{clearId}
+
+    </select>
+
+    <select id="listWithPage" resultMap="RMDclear">
+        SELECT *
+        FROM d_clear
+        where 1=1
+        <if test="storeId != null">AND store_id = #{storeId}</if>
+        <if test="storeConfirm != null and storeConfirm != ''">AND store_confirm = #{storeConfirm}</if>
+        <if test="clearState != null and clearState != ''">AND clear_state = #{clearState}</if>
+        <if test="field != null and field != '' and field == 'clearTime'">AND clear_time <![CDATA[>]]> #{startTime} AND
+            clear_time <![CDATA[<]]> #{endTime}
+        </if>
+        <if test="pageInfo != null">
+            limit #{pageInfo.begin}, #{pageInfo.end}
+        </if>
+    </select>
+    <select id="listWithPageCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM d_clear where 1=1
+        <if test="storeId != null">AND store_id = #{storeId}</if>
+        <if test="storeConfirm != null and storeConfirm != ''">AND store_confirm = #{storeConfirm}</if>
+        <if test="clearState != null and clearState != ''">AND clear_state = #{clearState}</if>
+        <if test="field != null and field != '' and field == 'clearTime'">AND clear_time <![CDATA[>]]> #{startTime} AND
+            clear_time <![CDATA[<]]> #{endTime}
+        </if>
+    </select>
+
+    <update id="update">
+        UPDATE d_clear
+        <set>
+            <if test="seriNo != null and seriNo != ''">seri_no = #{seriNo} ,</if>
+            <if test="storeName != null and storeName != ''">store_name = #{storeName} ,</if>
+            <if test="clearFee != null">clear_fee = #{clearFee} ,</if>
+            <if test="saleFee != null">sale_fee = #{saleFee} ,</if>
+            <if test="createTime != null and createTime != ''">create_time = #{createTime} ,</if>
+            <if test="storeConfirm != null">store_confirm = #{storeConfirm} ,</if>
+            <if test="confirmUser != null and confirmUser != ''">confirm_user = #{confirmUser} ,</if>
+            <if test="confirmTime != null and confirmTime != ''">confirm_time = #{confirmTime} ,</if>
+            <if test="clearTime != null and clearTime != ''">clear_time = #{clearTime} ,</if>
+            <if test="clearState != null and clearState != ''">clear_state = #{clearState} ,</if>
+            <if test="clearRemark != null and clearRemark != ''">clear_remark = #{clearRemark} ,</if>
+            <if test="clearUser != null">clear_user = #{clearUser} ,</if>
+        </set>
+        WHERE
+        id = #{id} AND store_id = #{storeId}
+    </update>
+
+    <!-- B端统计未处理的对账单 -->
+    <select id="countUnClear" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM
+        d_clear
+        WHERE
+        1=1
+        <if test="storeId">AND store_id = #{storeId}</if>
+        <if test="clearState">AND clear_state = #{clearState}</if>
+    </select>
+
+    <select id="queryClearOrder" resultType="java.util.HashMap">
+        <![CDATA[  select a.order_id as orderId ,if( (c.goods_price - (c.goods_price * e.service_ratio / 100) ) < 1 ,0,(c.goods_price - (c.goods_price * e.service_ratio / 100) )) as clearFee ,a.order_state as orderState , d.grade ,(c.goods_price * e.service_ratio / 100 ) as serviceFee , a.book_final_payment as finalPay , e.service_ratio as serviceRatio , c.goods_price as goodPrice  , c.goods_name as goodName  , a.finnshed_time as finishTime , a.settlement_state as clearState     ]]> from d_order  a
+    left outer join d_goods c on a.goods_id = c.goods_id
+    left outer join d_evaluate d on a.order_id = d.order_id
+    left outer join d_store b on a.store_id = b.store_id
+    left outer join d_store_extend e on a.store_id = e.store_id
+    left outer join d_clear_order f on a.order_id = f.order_id where f.clear_id = #{clearId}
+
+    <if test="null != pageNo and pageNo != ''">
+        limit #{pageNo}, #{pageSize}
+        </if>
+    </select>
+
+
+
+
+
+
+</mapper>

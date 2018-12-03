@@ -1,0 +1,97 @@
+package com.royao.ctrl;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dorder;
+import com.royao.services.inface.DorderService;
+import com.royao.util.JsonUtil;
+
+/**
+ * 
+ * @ClassName: OrderCtrl
+ * @Description: TODO(处理订单请求)
+ * @author 庞亮
+ * @date 2016年1月8日
+ *
+ */
+@Controller
+@RequestMapping("/order")
+public class OrderCtrl {
+
+	@Autowired
+	private DorderService dorderService;
+
+	Logger logger = Logger.getLogger(this.getClass());
+
+	@ResponseBody
+	@RequestMapping("/createdOrder.htm")
+	public String createdOrder(HttpServletRequest request, HttpServletResponse response) {
+
+		ResponseContent responseContent = new ResponseContent();
+		RequestContent requestContent = RequestHandler.execute(request);
+
+		Map<?, ?> params = requestContent.getBody();
+		Map<String, Object> m = new HashMap<String, Object>();
+		Dorder dorder = JSON.parseObject(JsonUtil.map2json(params), Dorder.class);
+		dorder.setAddTime(new Date());
+		dorder.setPaymentCode("余额支付");
+		dorder.setOrderState(1); // 订单状态-未支付
+		dorder.setOrderFrom(2); // 订单来源-mobile
+		dorder.setDeleteState(0); // 订单状态 - 正常
+
+		String sn_list = "";
+		// 根据订单数量产生订单条数!
+
+		Long good_size = dorder.getGoodsNum(); // 产品数量作为循环参数
+		try {
+			for (int i = 0; i < good_size; i++) {
+				dorder.setOrderId(null);
+				dorder.setOrderSn(Long.parseLong(this.getOrderNum()));
+				sn_list = sn_list + "," + this.getOrderNum(); // 保存订单号集合
+				dorder.setGoodsNum(1L);
+				this.dorderService.save(dorder);
+			}
+			m.put("status", "true");
+			m.put("sn_list", sn_list.trim());
+			responseContent = ResponseHandler.makeResponse(m, true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			m.put("status", "false");
+			try {
+				responseContent = ResponseHandler.makeResponse(m, true);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			this.logger.info("保存订单出错!");
+		}
+
+		return JSONObject.toJSONString(responseContent);
+
+	}
+
+	public String getOrderNum() {
+		int r1 = (int) (Math.random() * (10));// 产生2个0-9的随机数
+		int r2 = (int) (Math.random() * (10));
+		long now = System.currentTimeMillis();// 一个13位的时间戳
+		String paymentID = String.valueOf(r1) + String.valueOf(r2) + String.valueOf(now);// 订单ID
+		return paymentID;
+
+	}
+}

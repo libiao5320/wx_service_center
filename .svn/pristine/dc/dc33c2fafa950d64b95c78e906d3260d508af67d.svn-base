@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DareaMapper">
+
+    <resultMap id="RMDarea" type="com.royao.model.Darea">
+        <result property="areaId" column="area_id"/>
+        <result property="areaName" column="area_name"/>
+        <result property="areaParentId" column="area_parent_id"/>
+        <result property="areaSort" column="area_sort"/>
+        <result property="areaDeep" column="area_deep"/>
+        <result property="areaRegion" column="area_region"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		area_id,area_name,area_parent_id,area_sort,area_deep,area_region
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="areaId">
+        <![CDATA[
+        INSERT INTO d_area (
+        	area_id ,
+        	area_name ,
+        	area_parent_id ,
+        	area_sort ,
+        	area_deep ,
+        	area_region 
+        ) VALUES (
+        	#{areaId} ,
+        	#{areaName} ,
+        	#{areaParentId} ,
+        	#{areaSort} ,
+        	#{areaDeep} ,
+        	#{areaRegion} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_area SET
+	        area_name = #{areaName} ,
+	        area_parent_id = #{areaParentId} ,
+	        area_sort = #{areaSort} ,
+	        area_deep = #{areaDeep} ,
+	        area_region = #{areaRegion} 
+        WHERE 
+	        area_id = #{areaId} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_area WHERE
+        area_id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDarea">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_area 
+	        WHERE 
+		        area_id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_area where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultMap="RMDarea" resultType="com.royao.model.Darea">
+        SELECT
+        <include refid="columns"/>
+        FROM d_area
+        where 1=1
+        limit #{pageInfo.begin}, #{pageInfo.end}
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDarea">
+        SELECT
+        <include refid="columns"/>
+        FROM d_area
+    </select>
+
+
+
+    <select id="queryByDeep" resultMap="RMDarea">
+        SELECT
+        <include refid="columns"/>
+        FROM d_area where area_deep = #{0}
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDarea">
+        SELECT
+        <include refid="columns"/>
+        FROM d_area
+
+        <where>
+            <if test="@Ognl@isNotEmpty(areaId)">
+                AND area_id = #{areaId}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaName)">
+                AND area_name = #{areaName}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaParentId)">
+                AND area_parent_id = #{areaParentId}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaSort)">
+                AND area_sort = #{areaSort}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaDeep)">
+                AND area_deep = #{areaDeep}
+            </if>
+            <if test="@Ognl@isNotEmpty(areaRegion)">
+                AND area_region = #{areaRegion}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

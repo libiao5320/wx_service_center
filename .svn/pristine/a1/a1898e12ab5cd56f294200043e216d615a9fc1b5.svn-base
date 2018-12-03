@@ -1,0 +1,16 @@
+package com.royao.services.base.impl;
+
+
+
+import com.royao.model.base.BaseEntity;
+import com.royao.services.base.BaseService;
+import org.springframework.context.support.ApplicationObjectSupport;
+
+/**
+ * Created by libia on 2015/12/31.
+ */
+public abstract class BaseServiceImpl<T extends BaseEntity> extends ApplicationObjectSupport implements BaseService<T> {
+
+
+
+}

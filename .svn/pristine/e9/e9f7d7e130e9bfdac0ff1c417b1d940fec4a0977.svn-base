@@ -1,0 +1,58 @@
+package com.royao.ctrl;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dorder;
+import com.royao.services.inface.DorderService;
+
+/**
+ * 
+ * ClassName: OrderCenterCtrl 
+ * @Description: 处理订单详情
+ * @author Liu Pinghui
+ * @date 2016年1月15日
+ */
+@Controller
+@RequestMapping("/order/detail")
+public class OrderCenterCtrl {
+	
+	Logger logger = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	private DorderService orderService;
+	
+	@ResponseBody
+	@RequestMapping("/detail.htm")
+	public String detail(HttpServletRequest request, HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        try {
+            if (null != requestContent.getBody()) {
+            	Dorder order = this.orderService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+                if (order != null) {
+                    responseContent = ResponseHandler.makeResponse(order, true);
+                } else {
+                    return null;
+                }
+            }
+            return JSONObject.toJSONString(responseContent);
+        } catch (Exception e) {
+        	logger.info("获取订单详情失败！", e);
+        }
+        
+        return JSONObject.toJSONString(responseContent);
+	}
+}

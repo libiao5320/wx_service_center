@@ -1,0 +1,98 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class DstoreManager extends BaseEntity implements java.io.Serializable {
+    private static final long serialVersionUID = 5454155825314635342L;
+
+    //alias
+    public static final String TABLE_ALIAS = "DstoreManager";
+    public static final String ALIAS_SM_ID = "smId";
+    public static final String ALIAS_SM_STORE_ID = "商家ID";
+    public static final String ALIAS_SM_STORE_NAME = "商家名称";
+    public static final String ALIAS_SM_NAME = "经理名称";
+    public static final String ALIAS_SM_PHONE = "联系手机";
+
+    //date formats
+
+    //可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+    //columns START
+
+    private Integer smId;
+
+    private Integer smStoreId;
+
+    private String smStoreName;
+
+    private String smName;
+
+    private String smPhone;
+    //columns END
+
+    public DstoreManager() {
+    }
+
+    public DstoreManager(
+            Integer smId
+    ) {
+        this.smId = smId;
+    }
+
+    public void setSmId(Integer value) {
+        this.smId = value;
+    }
+
+    public Integer getSmId() {
+        return this.smId;
+    }
+
+    public void setSmStoreId(Integer value) {
+        this.smStoreId = value;
+    }
+
+    public Integer getSmStoreId() {
+        return this.smStoreId;
+    }
+
+    public void setSmStoreName(String value) {
+        this.smStoreName = value;
+    }
+
+    public String getSmStoreName() {
+        return this.smStoreName;
+    }
+
+    public void setSmName(String value) {
+        this.smName = value;
+    }
+
+    public String getSmName() {
+        return this.smName;
+    }
+
+    public void setSmPhone(String value) {
+        this.smPhone = value;
+    }
+
+    public String getSmPhone() {
+        return this.smPhone;
+    }
+
+
+}
+

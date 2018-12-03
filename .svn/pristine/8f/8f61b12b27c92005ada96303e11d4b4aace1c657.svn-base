@@ -1,0 +1,97 @@
+package com.royao.ctrl;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.royao.http.*;
+import com.royao.model.*;
+import com.royao.model.base.PageObject;
+import com.royao.services.inface.*;
+import com.royao.util.JsonUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by libia on 2015/12/31.
+ */
+
+
+@Controller
+@RequestMapping("/index")
+public class Index  {
+
+
+
+    @Autowired
+    private DwxBannerService dwxBannerService;
+    @Autowired
+    private DeventImageService deventImageService;
+
+
+
+
+
+
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/index.htm" )
+    public String test(  HttpServletRequest request , HttpServletResponse response)
+    {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        response.setCharacterEncoding("utf-8");
+        Darea darea = null;
+        try {
+             List<DwxBanner> bannerlist = dwxBannerService.queryHomeBanner();
+             List<DeventImage> eventImgList = deventImageService.queryHomeEventImgage();
+             Map m = new HashMap();
+             m.put("bannerlist",bannerlist);
+             m.put("eventImgList",eventImgList);
+            responseContent = ResponseHandler.makeResponse(m,true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+
+    public String search(  HttpServletRequest request , HttpServletResponse response ) {
+
+        ResponseContent responseContent = new ResponseContent();
+        RequestContent requestContent = RequestHandler.execute(request);
+        Map<?, ?> params = requestContent.getBody();
+
+        response.setCharacterEncoding("utf-8");
+        Darea darea = null;
+        try {
+            List<DwxBanner> bannerlist = dwxBannerService.queryHomeBanner();
+            List<DeventImage> eventImgList = deventImageService.queryHomeEventImgage();
+            Map m = new HashMap();
+            m.put("bannerlist", bannerlist);
+            m.put("eventImgList", eventImgList);
+            responseContent = ResponseHandler.makeResponse(m, true);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return JSONObject.toJSONString(responseContent);
+    }
+
+}

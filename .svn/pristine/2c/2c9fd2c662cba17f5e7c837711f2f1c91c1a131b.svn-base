@@ -1,0 +1,184 @@
+package com.royao.ctrl;
+
+import java.util.Date;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.fastjson.JSONObject;
+import com.royao.commons.enums.RedpacketsStatus;
+import com.royao.http.RequestContent;
+import com.royao.http.RequestHandler;
+import com.royao.http.ResponseContent;
+import com.royao.http.ResponseHandler;
+import com.royao.model.Dredpackets;
+import com.royao.model.DredpacketsDistribute;
+import com.royao.services.inface.DredpacketsDistributeService;
+import com.royao.services.inface.DredpacketsService;
+
+/**
+ * 
+ * ClassName: RedpacketsDistributeCenterCtrl 
+ * @Description: 红包派发管理
+ * @author Liu Pinghui
+ * @date 2016年1月5日
+ */
+@Controller
+@RequestMapping("/distribute")
+public class RedpacketsDistributeCenterCtrl {
+
+	@Autowired
+	private DredpacketsDistributeService redpacketsDistributeService;
+	
+	@Autowired
+	private DredpacketsService redpacketsService;
+	/**
+	 * 
+	 * @Description: 检查用户是否有领取红包的权限
+	 * @param @param request
+	 * @param @param response
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月5日
+	 */
+	@ResponseBody
+	@RequestMapping("/checkReceive.htm")
+	public String checkReceive(HttpServletRequest request , HttpServletResponse response){
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+		try {
+			if(null != requestContent.getBody()){
+				DredpacketsDistribute red = new DredpacketsDistribute();
+				red.setRedpacketsId(Long.parseLong(requestContent.getBody().get("id").toString()));
+				red.setMemberId(Long.parseLong(requestContent.getBody().get("memberId").toString()));
+				
+				List<DredpacketsDistribute> list = this.redpacketsDistributeService.queryByredIdAndMemberId(red);
+				if(list != null && list.size() > 0){
+					Dredpackets redpackets = this.redpacketsService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+					if(redpackets.getReceiveNumber() <= list.size()){//用户领取的红包是否超过红包的领取限制
+						//已经超过允许领取的红包，不可以再领取
+						responseContent = ResponseHandler.makeResponse(list.get(0),true);
+					}
+				}
+			}
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @Description: 领取红包
+	 * @param @param request
+	 * @param @param response
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月5日
+	 */
+	@ResponseBody
+	@RequestMapping("/updateByRedpacketsId.htm")
+	public String updateByRedpacketsId(HttpServletRequest request , HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+		try {
+			if(null != requestContent.getBody()){
+				
+				DredpacketsDistribute red = new DredpacketsDistribute();
+				red.setRedpacketsId(Long.parseLong(requestContent.getBody().get("id").toString()));
+				red.setStatus(RedpacketsStatus.unreceive);//未领取状态
+				List<DredpacketsDistribute> dd = this.redpacketsDistributeService.queryByredpacketsId(red);
+				if(dd != null && dd.size() > 0){//说明还有红包
+					red = new DredpacketsDistribute();
+					red = dd.get(0);//默认将第一个红包送给领取的人
+					red.setMemberId(Long.parseLong(requestContent.getBody().get("memberId").toString()));
+					red.setStatus(RedpacketsStatus.unuse);//将状态更改为未使用
+					red.setCreateTime(new Date());//领取时间
+					try{
+						Dredpackets redpackets = this.redpacketsService.queryById(Long.parseLong(requestContent.getBody().get("id").toString()));
+						redpackets.setReceive(redpackets.getReceive()+1);//更改红包的被领取数
+						this.redpacketsService.update(redpackets);
+						this.redpacketsDistributeService.update(red);//更新状态
+						
+						responseContent = ResponseHandler.makeResponse(red,true);
+					}catch(Exception e){
+						System.out.println("红包领取错误，member="+red.getMemberId()+";红包ID="+red.getRedpacketsId());
+						e.printStackTrace();
+					}
+	             }else{
+	            	//说明红包被领取完了
+	             }
+			}
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @Description: 获取领取的红包列表
+	 * @param @param request
+	 * @param @param response
+	 * @param @return   
+	 * @return String  
+	 * @throws
+	 * @author Liu Pinghui
+	 * @date 2016年1月5日
+	 */
+	@ResponseBody
+	@RequestMapping("/findListByMemberId.htm")
+	public String findListByMemberId(HttpServletRequest request , HttpServletResponse response){
+		
+		ResponseContent responseContent = new ResponseContent();
+        RequestContent  requestContent  = RequestHandler.execute(request);
+		try {
+			if(null != requestContent.getBody()){
+				Long member = null;
+				
+				if(null != requestContent.getBody().get("memberId")){
+					member = Long.parseLong(requestContent.getBody().get("memberId"));
+				}
+				if(member != null){
+					DredpacketsDistribute red = new DredpacketsDistribute();
+					red.setMemberId(member);
+					if(requestContent.getBody().get("status").endsWith("all")){
+						red.setStatus(null);//查询所有
+					}else{
+						if(requestContent.getBody().get("status").endsWith("used"))
+							red.setStatus(RedpacketsStatus.used);
+						if(requestContent.getBody().get("status").endsWith("expired"))
+							red.setStatus(RedpacketsStatus.expired);
+					}
+					
+					List<DredpacketsDistribute> list = this.redpacketsDistributeService.queryByMemberId(red);
+					responseContent = ResponseHandler.makeResponse(list,true);
+				}
+				
+			}
+			return JSONObject.toJSONString(responseContent);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+}

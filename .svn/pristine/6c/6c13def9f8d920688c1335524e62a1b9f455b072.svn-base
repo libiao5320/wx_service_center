@@ -1,0 +1,48 @@
+package com.royao.services.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.royao.mapper.DstoreTextMapper;
+import com.royao.model.DstoreText;
+import com.royao.services.inface.DstoreTextService;
+
+@Service("storeTextService")
+public class DstoreTextServiceImpl implements DstoreTextService {
+
+	@Autowired
+	private DstoreTextMapper storeTextMapper;
+	
+	public int update(DstoreText t) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int delete(Long id) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public DstoreText queryById(Long id) throws Exception {
+		return this.storeTextMapper.queryById(id);
+	}
+
+	public List<DstoreText> queryByCondtion(Map map) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<DstoreText> queryAll() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<DstoreText> listWithPage(DstoreText t) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

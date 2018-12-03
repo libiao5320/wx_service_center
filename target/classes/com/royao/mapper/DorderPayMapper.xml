@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- 不使用namespace的话sql搜索定位会比较方便 -->
+<mapper namespace="com.royao.mapper.DorderPayMapper">
+
+    <resultMap id="RMDorderPay" type="com.royao.model.DorderPay">
+        <result property="id" column="id"/>
+        <result property="pdAmount" column="pd_amount"/>
+        <result property="couponAmount" column="coupon_amount"/>
+        <result property="redpacketsAmount" column="redpackets_amount"/>
+        <result property="addTime" column="add_time"/>
+        <result property="state" column="state"/>
+    </resultMap>
+
+    <!-- 用于select查询公用抽取的列 -->
+    <sql id="columns">
+        <![CDATA[
+		id,pd_amount,coupon_amount,redpackets_amount,add_time,state
+	    ]]>
+    </sql>
+
+    <!-- useGeneratedKeys="true" keyProperty="xxx" for sqlserver and mysql -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+        INSERT INTO d_order_pay (
+        	id ,
+        	pd_amount ,
+        	coupon_amount ,
+        	redpackets_amount ,
+        	add_time ,
+        	state 
+        ) VALUES (
+        	#{id} ,
+        	#{pdAmount} ,
+        	#{couponAmount} ,
+        	#{redpacketsAmount} ,
+        	#{addTime} ,
+        	#{state} 
+        )
+    ]]>
+        <!--
+            oracle: order="BEFORE" SELECT sequenceName.nextval AS ID FROM DUAL
+            DB2: order="BEFORE"" values nextval for sequenceName
+        <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="userId">
+            SELECT sequenceName.nextval AS ID FROM DUAL
+        </selectKey>
+        -->
+    </insert>
+
+    <update id="update">
+        <![CDATA[
+        UPDATE d_order_pay SET
+	        pd_amount = #{pdAmount} ,
+	        coupon_amount = #{couponAmount} ,
+	        redpackets_amount = #{redpacketsAmount} ,
+	        add_time = #{addTime} ,
+	        state = #{state} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM d_order_pay WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+
+    <select id="queryById" resultMap="RMDorderPay">
+        SELECT
+        <include refid="columns"/>
+        <![CDATA[
+		    FROM d_order_pay 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+
+    <select id="listWithPageCount" resultType="long">
+        SELECT count(*) FROM d_order_pay where 1=1
+
+    </select>
+
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 offset,pageSize,lastRows 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="listWithPage" resultType="java.util.HashMap">
+        SELECT
+        <include refid="columns"/>
+        FROM d_order_pay
+        where 1=1
+        limit #begin# , #end#
+    </select>
+
+
+    <select id="queryAll" resultMap="RMDorderPay">
+        SELECT
+        <include refid="columns"/>
+        FROM d_order_pay
+    </select>
+
+    <select id="queryByCondition" resultMap="RMDorderPay">
+        SELECT
+        <include refid="columns"/>
+        FROM d_order_pay
+
+        <where>
+            <if test="@Ognl@isNotEmpty(id)">
+                AND id = #{id}
+            </if>
+            <if test="@Ognl@isNotEmpty(pdAmount)">
+                AND pd_amount = #{pdAmount}
+            </if>
+            <if test="@Ognl@isNotEmpty(couponAmount)">
+                AND coupon_amount = #{couponAmount}
+            </if>
+            <if test="@Ognl@isNotEmpty(redpacketsAmount)">
+                AND redpackets_amount = #{redpacketsAmount}
+            </if>
+            <if test="@Ognl@isNotEmpty(addTimeBegin)">
+                AND add_time >= #{addTimeBegin}
+            </if>
+            <if test="@Ognl@isNotEmpty(addTimeEnd)">
+                AND add_time &lt;= #{addTimeEnd}
+            </if>
+            <if test="@Ognl@isNotEmpty(state)">
+                AND state = #{state}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>
+

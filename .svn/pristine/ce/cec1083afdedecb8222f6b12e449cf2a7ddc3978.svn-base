@@ -1,0 +1,58 @@
+/*
+ * Powered By [rapid-framework]
+ * Web Site: http://www.rapid-framework.org.cn
+ * Google Code: http://code.google.com/p/rapid-framework/
+ * Since 2008 - 2015
+ */
+
+package com.royao.model;
+
+import com.royao.model.base.BaseEntity;
+
+/**
+ * @author badqiu email:badqiu(a)gmail.com
+ * @version 1.0
+ * @since 1.0
+ */
+
+
+public class DgoodsText extends BaseEntity implements java.io.Serializable {
+    private static final long serialVersionUID = 5454155825314635342L;
+
+    //alias
+    public static final String TABLE_ALIAS = "DgoodsText";
+    public static final String ALIAS_GOODS_ID = "goodsId";
+    public static final String ALIAS_TEXT = "商品详情样式";
+
+    //date formats
+
+    //可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
+    //columns START
+
+    private Long goodsId;
+
+    private String text;
+    //columns END
+
+    public DgoodsText() {
+    }
+
+
+    public void setGoodsId(Long value) {
+        this.goodsId = value;
+    }
+
+    public Long getGoodsId() {
+        return this.goodsId;
+    }
+
+    public void setText(String value) {
+        this.text = value;
+    }
+
+    public String getText() {
+        return this.text;
+    }
+
+}
+
